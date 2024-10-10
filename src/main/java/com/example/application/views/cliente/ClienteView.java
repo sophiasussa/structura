@@ -48,7 +48,7 @@ public class ClienteView extends Composite<VerticalLayout> {
         tabSheet.add("Adicionar Cliente", addClientesContent);
     }
 
-    //This method creates the content for the "Adicionar Cliente" tab, which consists of a form to see all the clients and search for a specific client
+    //This method creates the content for the "Clientes" tab, which consists of a form to see all the clients and search for a specific client
     private Div createClientesContent(){
         Div clientesContentDiv = new Div();
         Div space = new Div();
