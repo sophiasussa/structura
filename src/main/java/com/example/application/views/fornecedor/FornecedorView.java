@@ -5,13 +5,12 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.example.application.views.MainLayout;
 
 @PageTitle("Fornecedor")
-@Menu(icon = "line-awesome/svg/pencil-ruler-solid.svg", order = 3)
-@Route(value = "my-view3")
+@Route(value = "my-view3", layout = MainLayout.class)
 public class FornecedorView extends Composite<VerticalLayout> {
 
     public FornecedorView() {

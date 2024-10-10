@@ -1,20 +1,20 @@
-package com.example.application.views.funcionário;
+package com.example.application.views.funcionario;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.example.application.views.MainLayout;
+
 
 @PageTitle("Funcionário")
-@Menu(icon = "line-awesome/svg/pencil-ruler-solid.svg", order = 2)
-@Route(value = "my-view2")
-public class FuncionárioView extends Composite<VerticalLayout> {
+@Route(value = "my-view2", layout = MainLayout.class)
+public class FuncionarioView extends Composite<VerticalLayout> {
 
-    public FuncionárioView() {
+    public FuncionarioView() {
         TabSheet tabSheet = new TabSheet();
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");

@@ -13,25 +13,21 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import com.example.application.views.MainLayout;
 
-import ch.qos.logback.core.Layout;
 
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.button.ButtonVariant;
 
 @PageTitle("Cliente")
-@Menu(icon = "line-awesome/svg/pencil-ruler-solid.svg", order = 1)
-@Route(value = "my-view")
+@Route(value = "my-view", layout = MainLayout.class)
 public class ClienteView extends Composite<VerticalLayout> {
 
     public ClienteView() {
