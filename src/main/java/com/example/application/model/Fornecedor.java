@@ -4,7 +4,7 @@ public class Fornecedor extends Pessoa{
     private Long id;
     private String descriProdu;
 
-    public Fornecedor(String nome, int cpf, int rg, long telefone, String endereco,
+    public Fornecedor(String nome, Long cpf, Long rg, long telefone, String endereco,
             long id, String descriProdu) {
         super(nome, cpf, rg, telefone, endereco);
         this.id = id;

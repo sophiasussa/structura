@@ -101,7 +101,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
         TextField nome = new TextField("Nome");
-        TextArea produto = new TextArea("Produto");
+        TextArea produto = new TextArea("Descrição do Produto Fornecido");
         TextField cpf = new TextField("CNPJ/CPF");
         TextField rg = new TextField("IE/RG");
         TextField telefone = new TextField("Telefone");
@@ -120,7 +120,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         produto.addClassName("rounded-text-field");
         nome.setRequiredIndicatorVisible(true);
         telefone.setRequiredIndicatorVisible(true);
-        produto.setPlaceholder("Descrição do produto fornecido");
         endereco.setWidth("100%");
         endereco.setHeight("90px");
         layout2.getStyle().set("border-radius", "15px");

@@ -6,7 +6,7 @@ public class Funcionario extends Pessoa  {
     private LocalDate dataAdmissao;
     private Double salario;
 
-    public Funcionario(String nome, int cpf, int rg, long telefone, String endereco,
+    public Funcionario(String nome, Long cpf, Long rg, long telefone, String endereco,
             long id, LocalDate dataAdmissao, Double salario) {
         super(nome, cpf, rg, telefone, endereco);
         this.id = id;

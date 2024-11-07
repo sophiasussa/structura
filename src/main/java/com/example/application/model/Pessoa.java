@@ -7,7 +7,7 @@ public class Pessoa {
     private Long telefone;
     private String endereco;
 
-    public Pessoa(String nome, long cpf, long rg, Long telefone, String endereco) {
+    public Pessoa(String nome, Long cpf, Long rg, Long telefone, String endereco) {
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
@@ -41,14 +41,13 @@ public class Pessoa {
     public Long getTelefone() {
         return telefone;
     }
-
     public void setTelefone(Long telefone) {
         this.telefone = telefone;
     }
+
     public String getEndereco() {
         return endereco;
     }
-
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }

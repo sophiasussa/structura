@@ -1,6 +1,7 @@
 package com.example.application.views.cliente;
 
 import com.example.application.model.Cliente;
+import com.example.application.repository.DaoCliente;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -29,6 +30,8 @@ import com.vaadin.flow.component.button.ButtonVariant;
 @PageTitle("Cliente")
 @Route(value = "my-view", layout = MainLayout.class)
 public class ClienteView extends Composite<VerticalLayout> {
+
+    DaoCliente clienteRepository = new DaoCliente();
 
     public ClienteView() {
         TabSheet tabSheet = new TabSheet();
@@ -109,7 +112,26 @@ public class ClienteView extends Composite<VerticalLayout> {
         TextArea endereco = new TextArea("Endereço");
 
         Button saveButton = new Button("Salvar", event -> {
-            Notification.show("Client saved!");
+            if(nome.isEmpty() || telefone.isEmpty()){
+                Notification.show("Preencha os campos obrigatórios: Nome e Telefone", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            String nomeCliente = nome.getValue();
+            long cpfCliente = cpf.isEmpty() ? 0 : Long.parseLong(cpf.getValue());
+            long rgCliente = rg.isEmpty() ? 0 : Long.parseLong(rg.getValue());
+            long telefoneCliente = Long.parseLong(telefone.getValue());
+            String enderecoCliente = endereco.getValue();
+
+            Cliente cliente = new Cliente(nomeCliente, cpfCliente, rgCliente, telefoneCliente, enderecoCliente);
+        
+            boolean sucesso = clienteRepository.inserir(cliente);
+
+            if(sucesso){
+                Notification.show("Cliente salvo com sucesso!");
+            }else{
+                Notification.show("Erro ao salvar o cliente", 3000, Notification.Position.MIDDLE);
+            }
         });
 
         //For a better interface
