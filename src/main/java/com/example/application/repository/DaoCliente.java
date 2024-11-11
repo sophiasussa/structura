@@ -82,4 +82,32 @@ public class DaoCliente {
         }
     }
 
+    public List<Cliente> pesquisarCliente(String pesquisa){
+        List<Cliente> lista = new ArrayList<>();
+        String consulta = "SELECT * FROM cliente WHERE nome LIKE ? OR CAST(cpf AS CHAR) LIKE ? OR CAST(rg AS CHAR) LIKE ?";
+
+        try(Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement prepareStatement = connection.prepareStatement(consulta)){
+            
+            String busca = "%" + pesquisa + "%";
+            prepareStatement.setString(1, busca);
+            prepareStatement.setString(2, busca);
+            prepareStatement.setString(3, busca);
+
+            ResultSet resultSet = prepareStatement.executeQuery();
+
+            while(resultSet.next()){
+                Cliente cliente = new Cliente();
+                cliente.setId(resultSet.getLong("id"));
+                cliente.setNome(resultSet.getString("nome"));
+                cliente.setCpf(resultSet.getLong("cpf"));
+                cliente.setRg(resultSet.getLong("rg"));
+                cliente.setTelefone(resultSet.getLong("telefone"));
+                lista.add(cliente);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }

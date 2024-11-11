@@ -67,6 +67,19 @@ public class ClienteView extends Composite<VerticalLayout> {
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
 
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<Cliente> resultados;
+
+            if(pesquisa.isEmpty()){
+                resultados = clienteRepository.pesquisarTodos();
+            }else{
+                resultados = clienteRepository.pesquisarCliente(pesquisa);
+            }
+
+            minimalistGrid.setItems(resultados);
+        });
+
         //For a better interface
         textField.setPlaceholder("Nome, CNPJ/CPF ou IE/RG");
         textField.setWidth("250px");
