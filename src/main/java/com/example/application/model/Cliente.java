@@ -3,8 +3,8 @@ package com.example.application.model;
 public class Cliente extends Pessoa {
     private Long id;
 
-    public Cliente(String nome, Long cpf, Long rg, long telefone, String endereco) {
-        super(nome, cpf, rg, telefone, endereco);
+    public Cliente(String nome, Long cpf, Long rg, long telefone) {
+        super(nome, cpf, rg, telefone);
     }
 
     public Cliente() {

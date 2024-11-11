@@ -5,14 +5,12 @@ public class Pessoa {
     private long cpf;
     private long rg;
     private Long telefone;
-    private String endereco;
 
-    public Pessoa(String nome, Long cpf, Long rg, Long telefone, String endereco) {
+    public Pessoa(String nome, Long cpf, Long rg, Long telefone) {
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
         this.telefone = telefone;
-        this.endereco = endereco;
     }
 
     public Pessoa() {
@@ -43,13 +41,6 @@ public class Pessoa {
     }
     public void setTelefone(Long telefone) {
         this.telefone = telefone;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
     }
 
 }

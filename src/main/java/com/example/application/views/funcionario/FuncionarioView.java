@@ -82,7 +82,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         minimalistGrid.addColumn(Funcionario::getCpf).setHeader("CNPJ/CPF");
         minimalistGrid.addColumn(Funcionario::getRg).setHeader("IE/RG");
         minimalistGrid.addColumn(Funcionario::getTelefone).setHeader("Telefone");
-        minimalistGrid.addColumn(Funcionario::getEndereco).setHeader("Endereço");
         minimalistGrid.addColumn(Funcionario::getDataAdmissao).setHeader("Admissão");
         minimalistGrid.addColumn(Funcionario::getSalario).setHeader("Salário");
 
@@ -106,7 +105,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         TextField cpf = new TextField("CNPJ/CPF");
         TextField rg = new TextField("IE/RG");
         TextField telefone = new TextField("Telefone");
-        TextArea endereco = new TextArea("Endereço");
         TextField salario = new TextField("Salário");
         DatePicker admissao = new DatePicker("Data Admissão");
 
@@ -119,13 +117,10 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         cpf.addClassName("rounded-text-field");
         rg.addClassName("rounded-text-field");
         telefone.addClassName("rounded-text-field");
-        endereco.addClassName("rounded-text-field");
         salario.addClassName("rounded-text-field");
         admissao.addClassName("rounded-text-field");
         nome.setRequiredIndicatorVisible(true);
         telefone.setRequiredIndicatorVisible(true);
-        endereco.setWidth("100%");
-        endereco.setHeight("90px");
         layout2.getStyle().set("border-radius", "15px");
         layout2.getStyle().set("border", "1px solid #ccc");
         layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
@@ -134,7 +129,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         saveButton.getStyle().set("border-radius", "25px");
         
         formLayout2Col.add(nome, cpf, rg, telefone, admissao, salario);
-        layout2.add(formLayout2Col, endereco, space);
+        layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addFuncionariosContentDiv.add(layout);

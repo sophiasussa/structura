@@ -13,13 +13,12 @@ public class DaoCliente {
     public boolean inserir(Cliente cliente){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO cliente (nome, cpf, rg, telefone, endereco) VALUE (?,?,?,?,?)";
+            String insert = "INSERT INTO cliente (nome, cpf, rg, telefone) VALUE (?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
             prepareStatement.setString(1, cliente.getNome());
             prepareStatement.setLong(2, cliente.getCpf());
             prepareStatement.setLong(3, cliente.getRg());
             prepareStatement.setLong(4, cliente.getTelefone());
-            prepareStatement.setString(5, cliente.getEndereco());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -31,13 +30,12 @@ public class DaoCliente {
     public boolean alterar(Cliente cliente){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE cliente set nome = ? cpf = ? rg = ? telefone = ? endereco = ? where id = ?";
+            String update = "UPDATE cliente set nome = ? cpf = ? rg = ? telefone = ? where id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, cliente.getNome());
             prepareStatement.setLong(2, cliente.getCpf());
             prepareStatement.setLong(3, cliente.getRg());
             prepareStatement.setLong(4, cliente.getTelefone());
-            prepareStatement.setString(5, cliente.getEndereco());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){
@@ -72,6 +70,9 @@ public class DaoCliente {
                 cliente = new Cliente();
                 cliente.setId(resultSet.getLong("id"));
                 cliente.setNome(resultSet.getString("nome"));
+                cliente.setCpf(resultSet.getLong("cpf"));
+                cliente.setRg(resultSet.getLong("rg"));
+                cliente.setTelefone(resultSet.getLong("telefone"));
                 lista.add(cliente);
             }
             return lista;

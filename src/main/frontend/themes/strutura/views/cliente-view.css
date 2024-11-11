@@ -26,6 +26,11 @@
   padding: 0 10px;
 }
 
+.borderless-grid {
+  border: none;
+}
+
+
 .cliente-view[dragging] {
   --cv-checkerboard-color1: hsl(var(--cv-blue) / 0.2);
   --cv-checkerboard-color2: hsl(var(--cv-blue) / 0.1);

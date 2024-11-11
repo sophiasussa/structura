@@ -6,9 +6,9 @@ public class Funcionario extends Pessoa  {
     private LocalDate dataAdmissao;
     private Double salario;
 
-    public Funcionario(String nome, Long cpf, Long rg, long telefone, String endereco,
+    public Funcionario(String nome, Long cpf, Long rg, long telefone,
             long id, LocalDate dataAdmissao, Double salario) {
-        super(nome, cpf, rg, telefone, endereco);
+        super(nome, cpf, rg, telefone);
         this.id = id;
         this.dataAdmissao = dataAdmissao;
         this.salario = salario;

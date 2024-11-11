@@ -82,7 +82,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         minimalistGrid.addColumn(Fornecedor::getCpf).setHeader("CNPJ/CPF");
         minimalistGrid.addColumn(Fornecedor::getRg).setHeader("IE/RG");
         minimalistGrid.addColumn(Fornecedor::getTelefone).setHeader("Telefone");
-        minimalistGrid.addColumn(Fornecedor::getEndereco).setHeader("Endereço");
 
         layout.add(layoutRow, space, minimalistGrid);
         fornecedorContentDiv.add(layout);
@@ -105,7 +104,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         TextField cpf = new TextField("CNPJ/CPF");
         TextField rg = new TextField("IE/RG");
         TextField telefone = new TextField("Telefone");
-        TextArea endereco = new TextArea("Endereço");
 
         Button saveButton = new Button("Salvar", event -> {
             Notification.show("Client saved!");
@@ -116,12 +114,9 @@ public class FornecedorView extends Composite<VerticalLayout> {
         cpf.addClassName("rounded-text-field");
         rg.addClassName("rounded-text-field");
         telefone.addClassName("rounded-text-field");
-        endereco.addClassName("rounded-text-field");
         produto.addClassName("rounded-text-field");
         nome.setRequiredIndicatorVisible(true);
         telefone.setRequiredIndicatorVisible(true);
-        endereco.setWidth("100%");
-        endereco.setHeight("90px");
         layout2.getStyle().set("border-radius", "15px");
         layout2.getStyle().set("border", "1px solid #ccc");
         layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
@@ -130,7 +125,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         saveButton.getStyle().set("border-radius", "25px");
         
         formLayout2Col.add(nome, cpf, rg, produto, telefone);
-        layout2.add(formLayout2Col, endereco, space);
+        layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addFornecedorContentDiv.add(layout);
