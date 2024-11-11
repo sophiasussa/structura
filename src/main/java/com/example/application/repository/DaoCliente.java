@@ -29,14 +29,18 @@ public class DaoCliente {
 
     public boolean alterar(Cliente cliente){
         try{
+
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE cliente set nome = ? cpf = ? rg = ? telefone = ? where id = ?";
+            String update = "UPDATE cliente SET nome = ?, cpf = ?, rg = ?, telefone = ? WHERE id = ?";
+            
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, cliente.getNome());
             prepareStatement.setLong(2, cliente.getCpf());
             prepareStatement.setLong(3, cliente.getRg());
             prepareStatement.setLong(4, cliente.getTelefone());
+            prepareStatement.setLong(5, cliente.getId());
             int resultado = prepareStatement.executeUpdate();
+            
             return resultado > 0;
         } catch (Exception e){
             e.printStackTrace();

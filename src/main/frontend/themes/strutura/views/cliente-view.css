@@ -30,6 +30,15 @@
   border: none;
 }
 
+.grid .even-row {
+  background-color: #f9f9f9; /* Cor de fundo clara */
+}
+
+/* Estilo para as linhas pares (segunda, quarta, sexta, etc.) */
+.grid .odd-row {
+  background-color: #e0e0e0; /* Cor de fundo mais escura */
+}
+
 
 .cliente-view[dragging] {
   --cv-checkerboard-color1: hsl(var(--cv-blue) / 0.2);
