@@ -96,6 +96,8 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         Div addFuncionariosContentDiv = new Div();
         Div space = new Div();
         space.setHeight("10px");
+        Div space1 = new Div();
+        space1.setHeight("10px");
 
         VerticalLayout layout = new VerticalLayout();
         VerticalLayout layout2 = new VerticalLayout();
@@ -124,6 +126,8 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         layout2.getStyle().set("border-radius", "15px");
         layout2.getStyle().set("border", "1px solid #ccc");
         layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
         layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
@@ -132,7 +136,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
-        addFuncionariosContentDiv.add(layout);
+        addFuncionariosContentDiv.add(space1, layout);
 
         return addFuncionariosContentDiv;
     }

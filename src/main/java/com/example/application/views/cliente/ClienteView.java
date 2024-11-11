@@ -142,6 +142,8 @@ public class ClienteView extends Composite<VerticalLayout> {
         Div addClientesContentDiv = new Div();
         Div space = new Div();
         space.setHeight("10px");
+        Div space1 = new Div();
+        space1.setHeight("10px");
 
         VerticalLayout layout = new VerticalLayout();
         VerticalLayout layout2 = new VerticalLayout();
@@ -180,18 +182,20 @@ public class ClienteView extends Composite<VerticalLayout> {
         telefone.addClassName("rounded-text-field");
         nome.setRequiredIndicatorVisible(true);
         telefone.setRequiredIndicatorVisible(true);
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
         layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
         
         formLayout2Col.add(nome, cpf, rg, telefone);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
-        addClientesContentDiv.add(layout);
+        addClientesContentDiv.add(space1, layout);
 
         return addClientesContentDiv;
     }
