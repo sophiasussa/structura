@@ -162,15 +162,33 @@ public class ClienteView extends Composite<VerticalLayout> {
         rg = new TextField("IE/RG");
         telefone = new TextField("Telefone");
 
+        cpf.addValueChangeListener(event -> {
+            String value = event.getValue().replaceAll("[^\\d]", "");
+            if (value.length() <= 11) {
+                value = value.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+            }
+            cpf.setValue(value);
+        });
+        cpf.setMaxLength(14);
+
+        rg.addValueChangeListener(event -> {
+            String value = event.getValue().replaceAll("[^\\d]", "");
+            if (value.length() <= 9) {
+                value = value.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{1})", "$1.$2.$3-$4");
+            }
+            rg.setValue(value);
+        });
+        rg.setMaxLength(12);
+
         Button saveButton = new Button("Salvar", event -> {
             if (nome.isEmpty() || telefone.isEmpty()) {
                 Notification.show("Preencha os campos obrigatórios: Nome e Telefone", 3000, Notification.Position.MIDDLE);
                 return;
             }
             String nomeCliente = nome.getValue();
-            long cpfCliente = cpf.isEmpty() ? 0 : Long.parseLong(cpf.getValue());
-            long rgCliente = rg.isEmpty() ? 0 : Long.parseLong(rg.getValue());
-            long telefoneCliente = Long.parseLong(telefone.getValue());
+            String cpfCliente = cpf.isEmpty() ? "" : cpf.getValue();
+            String rgCliente = rg.isEmpty() ? "" : rg.getValue();
+            String telefoneCliente = telefone.getValue();
         
             Cliente cliente = new Cliente(nomeCliente, cpfCliente, rgCliente, telefoneCliente);
             cliente.setId(clienteId);

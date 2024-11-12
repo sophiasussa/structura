@@ -2,11 +2,11 @@ package com.example.application.model;
 
 public class Pessoa {
     private String nome;
-    private long cpf;
-    private long rg;
-    private Long telefone;
+    private String cpf;
+    private String rg;
+    private String telefone;
 
-    public Pessoa(String nome, Long cpf, Long rg, Long telefone) {
+    public Pessoa(String nome, String cpf, String rg, String telefone) {
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
@@ -24,22 +24,22 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public long getCpf() {
+    public String getCpf() {
         return cpf;
     }
-    public void setCpf(long cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
-    public long getRg() {
+    public String getRg() {
         return rg;
     }
-    public void setRg(long rg) {
+    public void setRg(String rg) {
         this.rg = rg;
     }
-    public Long getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
-    public void setTelefone(Long telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 

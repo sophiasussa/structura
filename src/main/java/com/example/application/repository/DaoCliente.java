@@ -16,9 +16,9 @@ public class DaoCliente {
             String insert = "INSERT INTO cliente (nome, cpf, rg, telefone) VALUE (?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
             prepareStatement.setString(1, cliente.getNome());
-            prepareStatement.setLong(2, cliente.getCpf());
-            prepareStatement.setLong(3, cliente.getRg());
-            prepareStatement.setLong(4, cliente.getTelefone());
+            prepareStatement.setString(2, cliente.getCpf());
+            prepareStatement.setString(3, cliente.getRg());
+            prepareStatement.setString(4, cliente.getTelefone());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -35,9 +35,9 @@ public class DaoCliente {
             
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, cliente.getNome());
-            prepareStatement.setLong(2, cliente.getCpf());
-            prepareStatement.setLong(3, cliente.getRg());
-            prepareStatement.setLong(4, cliente.getTelefone());
+            prepareStatement.setString(2, cliente.getCpf());
+            prepareStatement.setString(3, cliente.getRg());
+            prepareStatement.setString(4, cliente.getTelefone());
             prepareStatement.setLong(5, cliente.getId());
             int resultado = prepareStatement.executeUpdate();
             
@@ -74,9 +74,9 @@ public class DaoCliente {
                 cliente = new Cliente();
                 cliente.setId(resultSet.getLong("id"));
                 cliente.setNome(resultSet.getString("nome"));
-                cliente.setCpf(resultSet.getLong("cpf"));
-                cliente.setRg(resultSet.getLong("rg"));
-                cliente.setTelefone(resultSet.getLong("telefone"));
+                cliente.setCpf(resultSet.getString("cpf"));
+                cliente.setRg(resultSet.getString("rg"));
+                cliente.setTelefone(resultSet.getString("telefone"));
                 lista.add(cliente);
             }
             return lista;
@@ -104,9 +104,9 @@ public class DaoCliente {
                 Cliente cliente = new Cliente();
                 cliente.setId(resultSet.getLong("id"));
                 cliente.setNome(resultSet.getString("nome"));
-                cliente.setCpf(resultSet.getLong("cpf"));
-                cliente.setRg(resultSet.getLong("rg"));
-                cliente.setTelefone(resultSet.getLong("telefone"));
+                cliente.setCpf(resultSet.getString("cpf"));
+                cliente.setRg(resultSet.getString("rg"));
+                cliente.setTelefone(resultSet.getString("telefone"));
                 lista.add(cliente);
             }
         }catch(Exception e){
