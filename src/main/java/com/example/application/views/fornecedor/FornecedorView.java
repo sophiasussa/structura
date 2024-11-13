@@ -281,7 +281,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         if(sucess){
             refreshGrid();
         }else{
-            System.out.println("Erro ao excluir cliente");
+            System.out.println("Erro ao excluir fornecedor");
         }
     }
 

@@ -40,6 +40,7 @@ public class DaoFuncionario {
             prepareStatement.setString(4, funcionario.getTelefone());
             prepareStatement.setDate(5, java.sql.Date.valueOf(funcionario.getDataAdmissao()));
             prepareStatement.setBigDecimal(6, funcionario.getSalario());
+            prepareStatement.setLong(7, funcionario.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e) {

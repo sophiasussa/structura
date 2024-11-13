@@ -26,6 +26,10 @@
   --cv-layout-border-color: var(--cv-dropzone-border-color);
 }
 
+.borderless-grid {
+  border: none;
+}
+
 .funcionário-view .preview-container {
   display: contents;
 }
