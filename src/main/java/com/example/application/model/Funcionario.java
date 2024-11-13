@@ -1,24 +1,29 @@
 package com.example.application.model;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Funcionario extends Pessoa  {
     private Long id;
     private LocalDate dataAdmissao;
-    private Double salario;
+    private BigDecimal salario;
 
     public Funcionario(String nome, String cpf, String rg, String telefone,
-            Long id, LocalDate dataAdmissao, Double salario) {
+            Long id, LocalDate dataAdmissao, BigDecimal salario) {
         super(nome, cpf, rg, telefone);
         this.id = id;
         this.dataAdmissao = dataAdmissao;
         this.salario = salario;
     }
 
+    public Funcionario(){
+        super();
+    }
+
     public Long getId(){
         return id;
     }
 
-    public void setIdFuncionario(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
  
@@ -30,11 +35,11 @@ public class Funcionario extends Pessoa  {
         this.dataAdmissao = dataAdmissao;
     }
 
-    public Double getSalario(){
+    public BigDecimal getSalario(){
         return salario;
     }
 
-    public void setSalario(Double salario){
+    public void setSalario(BigDecimal salario){
         this.salario = salario;
     }
 
