@@ -100,7 +100,7 @@ public class ClienteView extends Composite<VerticalLayout> {
         grid.addClassName("borderless-grid");
 
         buttonPrimary.addClickListener(cliente -> {
-            Notification.show("Search for: " + textField.getValue());
+            Notification.show("Pesquisar por: " + textField.getValue());
         });
 
         grid.addColumn(Cliente::getNome).setHeader("Nome");

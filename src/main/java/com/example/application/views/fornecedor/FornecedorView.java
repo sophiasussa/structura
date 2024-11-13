@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -17,18 +18,34 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+import java.util.List;
+
 import com.example.application.model.Fornecedor;
+import com.example.application.repository.DaoFornecedor;
 import com.example.application.views.MainLayout;
 
 @PageTitle("Fornecedor")
 @Route(value = "my-view3", layout = MainLayout.class)
 public class FornecedorView extends Composite<VerticalLayout> {
 
+    DaoFornecedor fornecedorRepository = new DaoFornecedor();
+    Grid<Fornecedor> grid = new Grid<>();
+    TextField nome = new TextField();
+    TextField cnpj = new TextField();
+    TextField ie = new TextField();
+    TextField telefone = new TextField();
+    TextField email = new TextField();
+    TextArea produto = new TextArea();
+    private Long fornecedorId;
+    private TabSheet tabSheet;
+
     public FornecedorView() {
-        TabSheet tabSheet = new TabSheet();
+        tabSheet = new TabSheet();
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         tabSheet.setWidth("100%");
@@ -55,10 +72,22 @@ public class FornecedorView extends Composite<VerticalLayout> {
         HorizontalLayout layoutRow = new HorizontalLayout();
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
-        Grid<Fornecedor> minimalistGrid = new Grid(Fornecedor.class, false);
+
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<Fornecedor> resultados;
+
+            if(pesquisa.isEmpty()){
+                resultados = fornecedorRepository.pesquisarTodos();
+            }else{
+                resultados = fornecedorRepository.pesquisarFornecedor(pesquisa);
+            }
+
+            grid.setItems(resultados);
+        });
 
         //For a better interface
-        textField.setPlaceholder("Nome, CNPJ/CPF ou IE/RG");
+        textField.setPlaceholder("Nome, CNPJ ou IE");
         textField.setWidth("250px");
         layoutRow.setWidthFull();
         layoutRow.addClassName(Gap.MEDIUM);
@@ -71,26 +100,56 @@ public class FornecedorView extends Composite<VerticalLayout> {
         buttonPrimary.getStyle().set("border-radius", "50%");
         textField.addClassName("rounded-text-field");
         layoutRow.add(textField, buttonPrimary);
-        minimalistGrid.setAllRowsVisible(true);
+        grid.setAllRowsVisible(true);
+        grid.addClassName("borderless-grid");
 
-        buttonPrimary.addClickListener(event -> {
-            Notification.show("Search for: " + textField.getValue());
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getNome).setHeader("Nome");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getCpf).setHeader("CNPJ");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getRg).setHeader("IE");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getTelefone).setHeader("Telefone");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getEmail).setHeader("Email");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getDescriProdu).setHeader("Produto");
+
+
+        grid.addComponentColumn(fornecedor -> {
+            Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
+                Dialog confirm = new Dialog();
+                confirm.setHeaderTitle("Confirmar Exclusão");
+                VerticalLayout content = new VerticalLayout();
+                content.add(new Text("Você tem certeza que deseja excluir o fornecedor" + fornecedor.getNome() + "?"));
+
+                Button confirmButton = new Button("Confirmar", event -> {
+                    deleteFornecedor(fornecedor);
+                    confirm.close();
+                });
+
+                Button cancel = new Button("Cancelar", event -> confirm.close());
+
+                confirm.getFooter().add(confirmButton, cancel);
+                confirm.add(content);
+                confirm.open();
+            });
+            delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            return delete;
+        }).setHeader("Ações");
+
+        grid.addItemClickListener(event -> {
+            Fornecedor fornecedor = event.getItem();
+            editFornecedor(fornecedor);
+            tabSheet.setSelectedIndex(1);
         });
 
-        minimalistGrid.addColumn(Fornecedor::getNome).setHeader("Nome");
-        minimalistGrid.addColumn(Fornecedor::getDescriProdu).setHeader("Produto");
-        minimalistGrid.addColumn(Fornecedor::getCpf).setHeader("CNPJ/CPF");
-        minimalistGrid.addColumn(Fornecedor::getRg).setHeader("IE/RG");
-        minimalistGrid.addColumn(Fornecedor::getTelefone).setHeader("Telefone");
+        List<Fornecedor> listaDeFornecedores = fornecedorRepository.pesquisarTodos();
+        grid.setItems(listaDeFornecedores);
 
-        layout.add(layoutRow, space, minimalistGrid);
+        layout.add(layoutRow, space, grid);
         fornecedorContentDiv.add(layout);
 
         return fornecedorContentDiv;
     }
 
-    //This method creates the content for the "Adicionar Fornecedor" tab, which consists of a form to add a new supplier.
-    private Div createAddFornecedorContent(){
+    // This method creates the content for the "Adicionar Fornecedor" tab, which consists of a form to add a new supplier.
+    private Div createAddFornecedorContent() {
         Div addFornecedorContentDiv = new Div();
         Div space = new Div();
         space.setHeight("10px");
@@ -101,21 +160,75 @@ public class FornecedorView extends Composite<VerticalLayout> {
         VerticalLayout layout2 = new VerticalLayout();
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
-        TextField nome = new TextField("Nome");
-        TextArea produto = new TextArea("Descrição do Produto Fornecido");
-        TextField cpf = new TextField("CNPJ/CPF");
-        TextField rg = new TextField("IE/RG");
-        TextField telefone = new TextField("Telefone");
+        
+        nome = new TextField("Nome");
+        cnpj = new TextField("CNPJ");
+        ie = new TextField("Inscrição Estadual");
+        telefone = new TextField("Telefone");
+        email = new TextField("Email");
+        produto = new TextArea("Descrição do Produto Fornecido");
+
+        cnpj.addValueChangeListener(event -> {
+            String value = event.getValue().replaceAll("[^\\d]", "");
+            if (value.length() <= 11) {
+                value = value.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+            }
+            cnpj.setValue(value);
+        });
+        cnpj.setMaxLength(14);
+
+        ie.addValueChangeListener(event -> {
+            String value = event.getValue().replaceAll("[^\\d]", "");
+            ie.setValue(value);
+        });
+        ie.setMaxLength(12);
 
         Button saveButton = new Button("Salvar", event -> {
-            Notification.show("Client saved!");
+            if (nome.isEmpty() || telefone.isEmpty()) {
+                Notification.show("Preencha os campos obrigatórios: Nome e Telefone", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            String nomeFornecedor = nome.getValue();
+            String cnpjFornecedor = cnpj.isEmpty() ? "" : cnpj.getValue();
+            String ieFornecedor = ie.isEmpty() ? "" : ie.getValue();
+            String telefoneFornecedor = telefone.getValue();
+            String emailFornecedor = email.getValue();
+            String descriFornecedor = produto.getValue();
+
+            Fornecedor fornecedor = new Fornecedor(nomeFornecedor, cnpjFornecedor, ieFornecedor, telefoneFornecedor, emailFornecedor, descriFornecedor);
+            fornecedor.setId(fornecedorId);
+
+            boolean sucesso;
+            if (fornecedorId != null && fornecedorId > 0) {
+                sucesso = fornecedorRepository.alterar(fornecedor);
+                if (sucesso) {
+                    Notification.show("Fornecedor atualizado com sucesso!");
+                } else {
+                    Notification.show("Erro ao atualizar o fornecedor", 3000, Notification.Position.MIDDLE);
+                }
+            } else {
+                sucesso = fornecedorRepository.inserir(fornecedor);
+                if (sucesso) {
+                    Notification.show("Fornecedor salvo com sucesso!");
+                } else {
+                    Notification.show("Erro ao salvar fornecedor", 3000, Notification.Position.MIDDLE);
+                }
+            }
+
+            if (sucesso) {
+                clearForm();
+                tabSheet.setSelectedIndex(0);
+                refreshGrid();
+            }
         });
 
-        //For a better interface
+        // Estilos e classes de CSS
         nome.addClassName("rounded-text-field");
-        cpf.addClassName("rounded-text-field");
-        rg.addClassName("rounded-text-field");
+        cnpj.addClassName("rounded-text-field");
+        ie.addClassName("rounded-text-field");
         telefone.addClassName("rounded-text-field");
+        email.addClassName("rounded-text-field");
         produto.addClassName("rounded-text-field");
         nome.setRequiredIndicatorVisible(true);
         telefone.setRequiredIndicatorVisible(true);
@@ -127,13 +240,48 @@ public class FornecedorView extends Composite<VerticalLayout> {
         layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
-        
-        formLayout2Col.add(nome, cpf, rg, produto, telefone);
+
+        // Adiciona componentes ao layout
+        formLayout2Col.add(nome, cnpj, ie, produto, email, telefone);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addFornecedorContentDiv.add(space1, layout);
 
         return addFornecedorContentDiv;
+    }
+
+    private void refreshGrid(){
+        List<Fornecedor> fornecedores = fornecedorRepository.pesquisarTodos();
+        grid.setItems(fornecedores);
+    }
+
+    private void deleteFornecedor(Fornecedor fornecedor){
+        boolean sucess = fornecedorRepository.excluir(fornecedor);
+        if(sucess){
+            refreshGrid();
+        }else{
+            System.out.println("Erro ao excluir cliente");
+        }
+    }
+
+    private void editFornecedor(Fornecedor fornecedor){
+        fornecedorId = fornecedor.getId();
+        nome.setValue(fornecedor.getNome());
+        cnpj.setValue(String.valueOf(fornecedor.getCpf()));
+        ie.setValue(String.valueOf(fornecedor.getRg()));
+        telefone.setValue(String.valueOf(fornecedor.getTelefone()));
+        email.setValue(String.valueOf(fornecedor.getEmail()));
+        produto.setValue(String.valueOf(fornecedor.getDescriProdu()));
+    }
+
+    private void clearForm(){
+        fornecedorId = null;
+        nome.clear();
+        cnpj.clear();
+        ie.clear();
+        telefone.clear();
+        email.clear();
+        produto.clear();
     }
 }

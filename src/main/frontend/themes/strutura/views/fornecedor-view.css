@@ -20,6 +20,10 @@
   --cv-checkerboard-size: 16px;
 }
 
+.borderless-grid {
+  border: none;
+}
+
 .fornecedor-view[dragging] {
   --cv-checkerboard-color1: hsl(var(--cv-blue) / 0.2);
   --cv-checkerboard-color2: hsl(var(--cv-blue) / 0.1);
