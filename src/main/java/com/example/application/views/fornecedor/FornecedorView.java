@@ -109,8 +109,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getTelefone).setHeader("Telefone");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getEmail).setHeader("Email");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getDescriProdu).setHeader("Produto");
-
-
         grid.addComponentColumn(fornecedor -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -168,20 +166,42 @@ public class FornecedorView extends Composite<VerticalLayout> {
         email = new TextField("Email");
         produto = new TextArea("Descrição do Produto Fornecido");
 
-        cnpj.addValueChangeListener(event -> {
-            String value = event.getValue().replaceAll("[^\\d]", "");
+        cnpj.addBlurListener(event -> {
+            String value = cnpj.getValue().replaceAll("[^\\d]", "");
+
             if (value.length() <= 11) {
                 value = value.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+            } else {
+                value = value.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5");
             }
             cnpj.setValue(value);
         });
-        cnpj.setMaxLength(14);
+        cnpj.setMaxLength(18);
 
-        ie.addValueChangeListener(event -> {
-            String value = event.getValue().replaceAll("[^\\d]", "");
+        ie.addBlurListener(event -> {
+            String value = ie.getValue().replaceAll("[^\\d]", "");
+
+            if (value.length() == 9) {
+                value = value.replaceAll("(\\d{2})(\\d{3})(\\d{3})", "$1.$2.$3");
+            } else if (value.length() == 12) {
+                value = value.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{3})", "$1.$2.$3.$4");
+            }
             ie.setValue(value);
         });
         ie.setMaxLength(12);
+
+        telefone.addBlurListener(event -> {
+            String value = telefone.getValue().replaceAll("[^\\d]", "");
+        
+            if (value.length() == 10) {
+                value = value.replaceAll("(\\d{2})(\\d{4})(\\d{4})", "($1) $2-$3");
+            } else if (value.length() == 11) {
+                value = value.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3");
+            }
+        
+            telefone.setValue(value);
+        });
+        telefone.setMaxLength(15);
 
         Button saveButton = new Button("Salvar", event -> {
             if (nome.isEmpty() || telefone.isEmpty()) {
