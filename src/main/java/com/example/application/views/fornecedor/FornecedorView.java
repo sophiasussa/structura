@@ -18,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -26,6 +27,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import java.util.List;
 
 import com.example.application.model.Fornecedor;
+import com.example.application.model.Funcionario;
 import com.example.application.repository.DaoFornecedor;
 import com.example.application.views.MainLayout;
 
@@ -104,11 +106,8 @@ public class FornecedorView extends Composite<VerticalLayout> {
         grid.addClassName("borderless-grid");
 
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getNome).setHeader("Nome");
-        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getCpf).setHeader("CNPJ");
-        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getRg).setHeader("IE");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getTelefone).setHeader("Telefone");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getEmail).setHeader("Email");
-        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getDescriProdu).setHeader("Produto");
         grid.addComponentColumn(fornecedor -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -131,7 +130,15 @@ public class FornecedorView extends Composite<VerticalLayout> {
             return delete;
         }).setHeader("Ações");
 
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(createPersonDetailsRenderer());
+
         grid.addItemClickListener(event -> {
+            Fornecedor fornecedor = event.getItem();
+            grid.setDetailsVisible(fornecedor, !grid.isDetailsVisible(fornecedor));
+        });
+
+        grid.addItemDoubleClickListener(event -> {
             Fornecedor fornecedor = event.getItem();
             editFornecedor(fornecedor);
             tabSheet.setSelectedIndex(1);
@@ -303,5 +310,33 @@ public class FornecedorView extends Composite<VerticalLayout> {
         telefone.clear();
         email.clear();
         produto.clear();
+    }
+
+    private static ComponentRenderer<HorizontalLayout, Fornecedor> createPersonDetailsRenderer() {
+        return new ComponentRenderer<>(fornecedor -> {
+            HorizontalLayout detailsLayout = new HorizontalLayout();
+            detailsLayout.setSpacing(true);
+            detailsLayout.setPadding(true);
+            detailsLayout.addClassName("details-layout");
+    
+            TextField cpfField = new TextField("CNPJ");
+            cpfField.setValue(fornecedor.getCpf());
+            cpfField.setReadOnly(true);
+            cpfField.addClassName("rounded-text-field");
+    
+            TextField rgField = new TextField("IE");
+            rgField.setValue(fornecedor.getRg());
+            rgField.setReadOnly(true);
+            rgField.addClassName("rounded-text-field");
+    
+            TextArea produtoArea = new TextArea("Produtos");
+            produtoArea.setValue(fornecedor.getDescriProdu().toString());
+            produtoArea.setReadOnly(true);
+            produtoArea.addClassName("rounded-text-field");
+    
+            detailsLayout.add(cpfField, rgField, produtoArea);
+    
+            return detailsLayout;
+        });
     }
 }

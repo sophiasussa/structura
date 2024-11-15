@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -17,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
@@ -107,11 +109,8 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         grid.addClassName("borderless-grid");
 
         grid.addColumn(Funcionario::getNome).setHeader("Nome");
-        grid.addColumn(Funcionario::getCpf).setHeader("CNPJ/CPF");
-        grid.addColumn(Funcionario::getRg).setHeader("IE/RG");
         grid.addColumn(Funcionario::getTelefone).setHeader("Telefone");
         grid.addColumn(Funcionario::getDataAdmissao).setHeader("Admissão");
-        grid.addColumn(Funcionario::getSalario).setHeader("Salário");
         grid.addComponentColumn(funcionario -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -134,7 +133,15 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             return delete;
         }).setHeader("Ações");
 
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(createPersonDetailsRenderer());
+
         grid.addItemClickListener(event -> {
+            Funcionario funcionario = event.getItem();
+            grid.setDetailsVisible(funcionario, !grid.isDetailsVisible(funcionario));
+        });
+
+        grid.addItemDoubleClickListener(event -> {
             Funcionario funcionario = event.getItem();
             editFuncionario(funcionario);
             tabSheet.setSelectedIndex(1);
@@ -301,5 +308,33 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         telefone.clear();
         salario.clear();
         data.clear();
+    }
+
+    private static ComponentRenderer<HorizontalLayout, Funcionario> createPersonDetailsRenderer() {
+        return new ComponentRenderer<>(funcionario -> {
+            HorizontalLayout detailsLayout = new HorizontalLayout();
+            detailsLayout.setSpacing(true);
+            detailsLayout.setPadding(true);
+            detailsLayout.addClassName("details-layout");
+    
+            TextField cpfField = new TextField("CPF");
+            cpfField.setValue(funcionario.getCpf());
+            cpfField.setReadOnly(true);
+            cpfField.addClassName("rounded-text-field");
+    
+            TextField rgField = new TextField("RG");
+            rgField.setValue(funcionario.getRg());
+            rgField.setReadOnly(true);
+            rgField.addClassName("rounded-text-field");
+    
+            TextField salarioField = new TextField("Salário");
+            salarioField.setValue(funcionario.getSalario().toString());
+            salarioField.setReadOnly(true);
+            salarioField.addClassName("rounded-text-field");
+    
+            detailsLayout.add(cpfField, rgField, salarioField);
+    
+            return detailsLayout;
+        });
     }
 }

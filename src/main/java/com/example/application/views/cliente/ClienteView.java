@@ -3,6 +3,7 @@ package com.example.application.views.cliente;
 import java.util.List;
 
 import com.example.application.model.Cliente;
+import com.example.application.model.Funcionario;
 import com.example.application.repository.DaoCliente;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Composite;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
@@ -104,8 +106,6 @@ public class ClienteView extends Composite<VerticalLayout> {
         });
 
         grid.addColumn(Cliente::getNome).setHeader("Nome");
-        grid.addColumn(Cliente::getCpf).setHeader("CNPJ/CPF");
-        grid.addColumn(Cliente::getRg).setHeader("IE/RG");
         grid.addColumn(Cliente::getTelefone).setHeader("Telefone");
  
         grid.addComponentColumn(cliente -> {
@@ -130,7 +130,15 @@ public class ClienteView extends Composite<VerticalLayout> {
             return delete;
         }).setHeader("Ações");
 
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(createPersonDetailsRenderer());
+
         grid.addItemClickListener(event -> {
+            Cliente cliente = event.getItem();
+            grid.setDetailsVisible(cliente, !grid.isDetailsVisible(cliente));
+        });
+
+        grid.addItemDoubleClickListener(event -> {
             Cliente cliente = event.getItem();
             editCliente(cliente);
             tabSheet.setSelectedIndex(1);
@@ -180,6 +188,19 @@ public class ClienteView extends Composite<VerticalLayout> {
         });
         rg.setMaxLength(12);
 
+        telefone.addBlurListener(event -> {
+            String value = telefone.getValue().replaceAll("[^\\d]", "");
+        
+            if (value.length() == 10) {
+                value = value.replaceAll("(\\d{2})(\\d{4})(\\d{4})", "($1) $2-$3");
+            } else if (value.length() == 11) {
+                value = value.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3");
+            }
+        
+            telefone.setValue(value);
+        });
+        telefone.setMaxLength(15);
+
         Button saveButton = new Button("Salvar", event -> {
             if (nome.isEmpty() || telefone.isEmpty()) {
                 Notification.show("Preencha os campos obrigatórios: Nome e Telefone", 3000, Notification.Position.MIDDLE);
@@ -211,9 +232,9 @@ public class ClienteView extends Composite<VerticalLayout> {
             }
         
             if (sucesso) {
+                clearForm();
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
-                clearForm();
             }
         });
 
@@ -270,6 +291,29 @@ public class ClienteView extends Composite<VerticalLayout> {
         rg.clear();
         cpf.clear();
         telefone.clear();
+    }
+
+    private static ComponentRenderer<HorizontalLayout, Cliente> createPersonDetailsRenderer() {
+        return new ComponentRenderer<>(cliente -> {
+            HorizontalLayout detailsLayout = new HorizontalLayout();
+            detailsLayout.setSpacing(true);
+            detailsLayout.setPadding(true);
+            detailsLayout.addClassName("details-layout");
+    
+            TextField cpfField = new TextField("CNPJ/CPF");
+            cpfField.setValue(cliente.getCpf());
+            cpfField.setReadOnly(true);
+            cpfField.addClassName("rounded-text-field");
+    
+            TextField rgField = new TextField("IE/RG");
+            rgField.setValue(cliente.getRg());
+            rgField.setReadOnly(true);
+            rgField.addClassName("rounded-text-field");
+    
+            detailsLayout.add(cpfField, rgField);
+    
+            return detailsLayout;
+        });
     }
 
 }
