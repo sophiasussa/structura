@@ -41,7 +41,6 @@ public class ClienteView extends Composite<VerticalLayout> {
     private Long clienteId;
     private TabSheet tabSheet;
 
-
     public ClienteView() {
         tabSheet = new TabSheet();
         getContent().setWidth("100%");

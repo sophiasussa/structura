@@ -9,8 +9,12 @@ public class Pedra extends Estoque{
     private Material material;
     private UnidMedida unidMedida;
 
-    public Pedra(String nome, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario){
+    public Pedra(String nome, String modelo, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario, Cor cor, Material material, UnidMedida unidMedida) {
         super(nome, quantidadeAtual, quantidadeMinima, custoUnitario);
+        this.modelo = modelo;
+        this.cor = cor;
+        this.material = material;
+        this.unidMedida = unidMedida;
     }
 
     public Pedra(){
