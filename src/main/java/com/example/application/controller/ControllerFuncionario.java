@@ -24,7 +24,7 @@ public class ControllerFuncionario {
         return dao.pesquisarTodos();
     }
 
-    public List<Funcionario> pesqFuncionarios(String pesquisa){
+    public List<Funcionario> pesquisarFuncionario(String pesquisa){
         return dao.pesquisarFuncionario(pesquisa);
     }
 }

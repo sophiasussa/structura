@@ -3,6 +3,7 @@ package com.example.application.controller;
 import java.util.List;
 
 import com.example.application.model.Cliente;
+import com.example.application.model.Funcionario;
 import com.example.application.repository.DaoCliente;
 
 public class ControllerCliente {
@@ -22,5 +23,9 @@ public class ControllerCliente {
 
     public List<Cliente> pesquisarTodos(){
         return dao.pesquisarTodos();
+    }
+    
+    public List<Cliente> pesquisarCliente(String pesquisa){
+        return dao.pesquisarCliente(pesquisa);
     }
 }
