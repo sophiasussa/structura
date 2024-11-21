@@ -38,6 +38,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
     DaoFornecedor fornecedorRepository = new DaoFornecedor();
     Grid<Fornecedor> grid = new Grid<>();
     TextField nome = new TextField();
+    TextField nomeVendedor = new TextField();
     TextField cnpj = new TextField();
     TextField ie = new TextField();
     TextField telefone = new TextField();
@@ -106,8 +107,8 @@ public class FornecedorView extends Composite<VerticalLayout> {
         grid.addClassName("borderless-grid");
 
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getNome).setHeader("Nome");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getNomeVendedor).setHeader("Nome Vendedor");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getTelefone).setHeader("Telefone");
-        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getEmail).setHeader("Email");
         grid.addComponentColumn(fornecedor -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -167,6 +168,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         FormLayout formLayout2Col = new FormLayout();
         
         nome = new TextField("Nome");
+        nomeVendedor = new TextField("Nome do Vendedor");
         cnpj = new TextField("CNPJ");
         ie = new TextField("Inscrição Estadual");
         telefone = new TextField("Telefone");
@@ -217,13 +219,14 @@ public class FornecedorView extends Composite<VerticalLayout> {
             }
 
             String nomeFornecedor = nome.getValue();
+            String nomeVendedorFornecedor = nomeVendedor.getValue();
             String cnpjFornecedor = cnpj.isEmpty() ? "" : cnpj.getValue();
             String ieFornecedor = ie.isEmpty() ? "" : ie.getValue();
             String telefoneFornecedor = telefone.getValue();
             String emailFornecedor = email.getValue();
             String descriFornecedor = produto.getValue();
 
-            Fornecedor fornecedor = new Fornecedor(nomeFornecedor, cnpjFornecedor, ieFornecedor, telefoneFornecedor, emailFornecedor, descriFornecedor);
+            Fornecedor fornecedor = new Fornecedor(nomeFornecedor, nomeVendedorFornecedor, cnpjFornecedor, ieFornecedor, telefoneFornecedor, emailFornecedor, descriFornecedor);
             fornecedor.setId(fornecedorId);
 
             boolean sucesso;
@@ -269,7 +272,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         saveButton.getStyle().set("border-radius", "25px");
 
         // Adiciona componentes ao layout
-        formLayout2Col.add(nome, cnpj, ie, produto, email, telefone);
+        formLayout2Col.add(nome, nomeVendedor, cnpj, ie, produto, email, telefone);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
@@ -295,16 +298,18 @@ public class FornecedorView extends Composite<VerticalLayout> {
     private void editFornecedor(Fornecedor fornecedor){
         fornecedorId = fornecedor.getId();
         nome.setValue(fornecedor.getNome());
-        cnpj.setValue(String.valueOf(fornecedor.getCpf()));
-        ie.setValue(String.valueOf(fornecedor.getRg()));
+        nomeVendedor.setValue(fornecedor.getNomeVendedor());
+        cnpj.setValue(String.valueOf(fornecedor.getCnpj()));
+        ie.setValue(String.valueOf(fornecedor.getIe()));
         telefone.setValue(String.valueOf(fornecedor.getTelefone()));
         email.setValue(String.valueOf(fornecedor.getEmail()));
-        produto.setValue(String.valueOf(fornecedor.getDescriProdu()));
+        produto.setValue(String.valueOf(fornecedor.getDescriProdutos()));
     }
 
     private void clearForm(){
         fornecedorId = null;
         nome.clear();
+        nomeVendedor.clear();
         cnpj.clear();
         ie.clear();
         telefone.clear();
@@ -320,17 +325,22 @@ public class FornecedorView extends Composite<VerticalLayout> {
             detailsLayout.addClassName("details-layout");
     
             TextField cpfField = new TextField("CNPJ");
-            cpfField.setValue(fornecedor.getCpf());
+            cpfField.setValue(fornecedor.getCnpj());
             cpfField.setReadOnly(true);
             cpfField.addClassName("rounded-text-field");
     
             TextField rgField = new TextField("IE");
-            rgField.setValue(fornecedor.getRg());
+            rgField.setValue(fornecedor.getIe());
             rgField.setReadOnly(true);
             rgField.addClassName("rounded-text-field");
+
+            TextField emailField = new TextField("Email");
+            emailField.setValue(fornecedor.getEmail());
+            emailField.setReadOnly(true);
+            emailField.addClassName("rounded-text-field");
     
             TextArea produtoArea = new TextArea("Produtos");
-            produtoArea.setValue(fornecedor.getDescriProdu().toString());
+            produtoArea.setValue(fornecedor.getDescriProdutos().toString());
             produtoArea.setReadOnly(true);
             produtoArea.addClassName("rounded-text-field");
     

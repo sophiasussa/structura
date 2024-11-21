@@ -12,14 +12,15 @@ public class DaoFornecedor {
     public boolean inserir(Fornecedor fornecedor){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO fornecedor (nome, cnpj, ie, telefone, email, descriProdutos) VALUE (?,?,?,?,?,?)";
+            String insert = "INSERT INTO fornecedor (nome, nomeVendedor, cnpj, ie, telefone, email, descriProdutos) VALUES (?,?,?,?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
             prepareStatement.setString(1, fornecedor.getNome());
-            prepareStatement.setString(2, fornecedor.getCpf());
-            prepareStatement.setString(3, fornecedor.getRg());
-            prepareStatement.setString(4, fornecedor.getTelefone());
-            prepareStatement.setString(5, fornecedor.getEmail());
-            prepareStatement.setString(6, fornecedor.getDescriProdu());
+            prepareStatement.setString(2, fornecedor.getNomeVendedor());
+            prepareStatement.setString(3, fornecedor.getCnpj());
+            prepareStatement.setString(4, fornecedor.getIe());
+            prepareStatement.setString(5, fornecedor.getTelefone());
+            prepareStatement.setString(6, fornecedor.getEmail());
+            prepareStatement.setString(7, fornecedor.getDescriProdutos());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e) {
@@ -31,15 +32,16 @@ public class DaoFornecedor {
     public boolean alterar(Fornecedor fornecedor){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE fornecedor SET nome = ?, cnpj = ?, ie = ?, telefone = ?, email = ?, descriProdutos = ? WHERE id = ?";
+            String update = "UPDATE fornecedor SET nome = ?, nomeVendedor = ?, cnpj = ?, ie = ?, telefone = ?, email = ?, descriProdutos = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, fornecedor.getNome());
-            prepareStatement.setString(2, fornecedor.getCpf());
-            prepareStatement.setString(3, fornecedor.getRg());
-            prepareStatement.setString(4, fornecedor.getTelefone());
-            prepareStatement.setString(5, fornecedor.getEmail());
-            prepareStatement.setString(6, fornecedor.getDescriProdu());
-            prepareStatement.setLong(7, fornecedor.getId());
+            prepareStatement.setString(2, fornecedor.getNomeVendedor());
+            prepareStatement.setString(3, fornecedor.getCnpj());
+            prepareStatement.setString(4, fornecedor.getIe());
+            prepareStatement.setString(5, fornecedor.getTelefone());
+            prepareStatement.setString(6, fornecedor.getEmail());
+            prepareStatement.setString(7, fornecedor.getDescriProdutos());
+            prepareStatement.setLong(8, fornecedor.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -74,11 +76,12 @@ public class DaoFornecedor {
                 fornecedor = new Fornecedor();
                 fornecedor.setId(resultSet.getLong("id"));
                 fornecedor.setNome(resultSet.getString("nome"));
-                fornecedor.setCpf(resultSet.getString("cnpj"));
-                fornecedor.setRg(resultSet.getString("ie"));
+                fornecedor.setNomeVendedor(resultSet.getString("nomeVendedor"));
+                fornecedor.setCnpj(resultSet.getString("cnpj"));
+                fornecedor.setIe(resultSet.getString("ie"));
                 fornecedor.setTelefone(resultSet.getString("telefone"));
                 fornecedor.setEmail(resultSet.getString("email"));
-                fornecedor.setDescriProdu(resultSet.getString("descriProdutos"));
+                fornecedor.setDescriProdutos(resultSet.getString("descriProdutos"));
                 lista.add(fornecedor);
             }
             return lista;
@@ -90,7 +93,7 @@ public class DaoFornecedor {
     
     public List<Fornecedor> pesquisarFornecedor(String pesquisa) {
         List<Fornecedor> lista = new ArrayList<>();
-        String consulta = "SELECT * FROM fornecedor WHERE nome LIKE ? OR CAST(cnpj AS CHAR) LIKE ? OR CAST(ie AS CHAR) LIKE ?";
+        String consulta = "SELECT * FROM fornecedor WHERE nome LIKE ? OR nomeVendedor LIKE ? OR CAST(cnpj AS CHAR) LIKE ? OR CAST(ie AS CHAR) LIKE ?";
         
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(consulta)) {
@@ -99,6 +102,7 @@ public class DaoFornecedor {
             prepareStatement.setString(1, busca);
             prepareStatement.setString(2, busca);
             prepareStatement.setString(3, busca);
+            prepareStatement.setString(4, busca);
     
             ResultSet resultSet = prepareStatement.executeQuery();
             
@@ -106,11 +110,12 @@ public class DaoFornecedor {
                 Fornecedor fornecedor = new Fornecedor();
                 fornecedor.setId(resultSet.getLong("id"));
                 fornecedor.setNome(resultSet.getString("nome"));
-                fornecedor.setCpf(resultSet.getString("cnpj"));
-                fornecedor.setRg(resultSet.getString("ie"));
+                fornecedor.setNomeVendedor(resultSet.getString("nomeVendedor"));
+                fornecedor.setCnpj(resultSet.getString("cnpj"));
+                fornecedor.setIe(resultSet.getString("ie"));
                 fornecedor.setTelefone(resultSet.getString("telefone"));
                 fornecedor.setEmail(resultSet.getString("email"));
-                fornecedor.setDescriProdu(resultSet.getString("descriProdutos"));
+                fornecedor.setDescriProdutos(resultSet.getString("descriProdutos"));
                 lista.add(fornecedor);
             }
         } catch (Exception e) {
