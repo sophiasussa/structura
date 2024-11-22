@@ -30,6 +30,7 @@ public class DaoUnidMedida {
             String update = "UPDATE unidMedida SET nome = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, unidMedida.getNome());
+            prepareStatement.setInt(2, unidMedida.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){

@@ -255,6 +255,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
 
         // Estilos e classes de CSS
         nome.addClassName("rounded-text-field");
+        nomeVendedor.addClassName("rounded-text-field");
         cnpj.addClassName("rounded-text-field");
         ie.addClassName("rounded-text-field");
         telefone.addClassName("rounded-text-field");
@@ -344,7 +345,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
             produtoArea.setReadOnly(true);
             produtoArea.addClassName("rounded-text-field");
     
-            detailsLayout.add(cpfField, rgField, produtoArea);
+            detailsLayout.add(cpfField, rgField, emailField ,produtoArea);
     
             return detailsLayout;
         });

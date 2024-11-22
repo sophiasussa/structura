@@ -29,6 +29,7 @@ public class DaoMaterial {
             String update = "UPDATE material SET nome = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, material.getNome());
+            prepareStatement.setInt(2, material.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){

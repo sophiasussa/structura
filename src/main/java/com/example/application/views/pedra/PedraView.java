@@ -1,7 +1,9 @@
 package com.example.application.views.pedra;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import com.example.application.model.Cliente;
 import com.example.application.model.Cor;
@@ -20,8 +22,10 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -59,7 +63,7 @@ public class PedraView extends VerticalLayout{
     ComboBox<Cor> cor = new ComboBox<>("Cor");
     ComboBox<Material> material = new ComboBox<>("Material");
     ComboBox<UnidMedida> unidMedida = new ComboBox<>("Unidade de Medida");
-    private Integer pedraId;
+    private Long pedraId;
     private TabSheet tabSheet;
 
     public PedraView() {
@@ -118,16 +122,153 @@ public class PedraView extends VerticalLayout{
         buttonPrimary.getStyle().set("border-radius", "50%");
         textField.addClassName("rounded-text-field");
         layoutRow.add(textField, buttonPrimary);
-        grid.setAllRowsVisible(true);
-        grid.addClassName("borderless-grid");
 
         buttonPrimary.addClickListener(pedra -> {
             Notification.show("Pesquisar por: " + textField.getValue());
         });
 
-        grid.addColumn(Pedra::getNome).setHeader("Nome");
-        grid.addColumn(Pedra::getCor).setHeader("Cor");
- 
+        grid = createGrid();
+
+        layout.add(layoutRow, space, grid);
+        pedrasContentDiv.add(layout);
+
+        return pedrasContentDiv;
+    }
+
+   //This method creates the content for the "Adicionar Pedra" tab, which consists of a form to add a new Pedra.
+    private Div createAddPedrasContent(){
+        Div addPedrasContentDiv = new Div();
+        Div space = new Div();
+        space.setHeight("10px");
+        Div space1 = new Div();
+        space1.setHeight("10px");
+
+        VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout2 = new VerticalLayout();
+        VerticalLayout layout3 = new VerticalLayout();
+        FormLayout formLayout2Col = new FormLayout();
+        FormLayout formLayout3Col = new FormLayout();
+        nome = new TextField("Nome");
+        modelo = new TextField("Modelo");
+        quantidadeAtual = new TextField("Quantidade Atual");
+        quantidadeMinima = new TextField("Quantidade Mínima");
+        custoUnitario = new TextField("Custo Unitário");
+        setComboBoxCorData(cor);
+        cor.setWidth("min-content");
+        buttonTertiary.setText("+ Cor");
+        buttonTertiary.setWidth("min-content");
+        buttonTertiary.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonTertiary.addClickListener(event -> openDialog1());
+        setComboBoxMaterialData(material);
+        material.setWidth("min-content");
+        buttonTertiary2.setText("+ Material");
+        buttonTertiary2.setWidth("min-content");
+        buttonTertiary2.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonTertiary2.addClickListener(event -> openDialog2());
+        setComboBoxUnidMedidaData(unidMedida);
+        unidMedida.setWidth("min-content");
+        buttonTertiary3.setText("+ Unidade de Medida");
+        buttonTertiary3.setWidth("min-content");
+        buttonTertiary3.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonTertiary3.addClickListener(event -> openDialog3());
+
+        Button saveButton = new Button("Salvar", event -> {
+            if (nome.isEmpty()) {
+                Notification.show("Preencha o campo obrigatório: Nome", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+            String nomePedra = nome.getValue();
+            String modeloPedra = modelo.isEmpty() ? "" : modelo.getValue();
+            int quantidadeAtualPedra = quantidadeAtual.isEmpty() ? 0 : Integer.parseInt(quantidadeAtual.getValue());
+            int quantidadeMinimaPedra = quantidadeMinima.isEmpty() ? 0 : Integer.parseInt(quantidadeMinima.getValue());
+            BigDecimal custoUnitarioPedra = custoUnitario.isEmpty() ? BigDecimal.ZERO : new BigDecimal(custoUnitario.getValue());
+            Cor corPedra = cor.isEmpty() ? null : cor.getValue();
+            Material materialPedra = material.isEmpty() ? null : material.getValue();
+            UnidMedida unidMedidaPedra = unidMedida.isEmpty() ? null : unidMedida.getValue();
+        
+            Pedra pedra = new Pedra(nomePedra, modeloPedra, quantidadeAtualPedra, quantidadeMinimaPedra, custoUnitarioPedra, corPedra, materialPedra, unidMedidaPedra);
+            pedra.setId(pedraId);
+
+            boolean sucesso;
+            if (pedraId != null && pedraId > 0) {
+                sucesso = pedraRepository.alterar(pedra);
+                if (sucesso) {
+                    Notification.show("Pedra atualizado com sucesso!");
+                } else {
+                    Notification.show("Erro ao atualizar o pedra", 3000, Notification.Position.MIDDLE);
+                }
+            } else {
+                sucesso = pedraRepository.inserir(pedra);
+                if (sucesso) {
+                    Notification.show("Pedra salva com sucesso!");
+                } else {
+                    Notification.show("Erro ao salvar o pedra", 3000, Notification.Position.MIDDLE);
+                }
+            }
+
+            if (sucesso) {
+                clearForm();
+                tabSheet.setSelectedIndex(0);
+                refreshGrid();
+            }
+        });
+
+        //For a better interface
+        nome.addClassName("rounded-text-field");
+        modelo.addClassName("rounded-text-field");
+        quantidadeAtual.addClassName("rounded-text-field");
+        quantidadeMinima.addClassName("rounded-text-field");
+        custoUnitario.addClassName("rounded-text-field");
+        cor.addClassName("rounded-text-field");
+        material.addClassName("rounded-text-field");
+        unidMedida.addClassName("rounded-text-field");
+        nome.setRequiredIndicatorVisible(true);
+        layout3.setAlignItems(FlexComponent.Alignment.END);
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.getStyle().set("border-radius", "25px");
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
+
+        formLayout3Col.setResponsiveSteps(
+            new FormLayout.ResponsiveStep("0", 1),
+            new FormLayout.ResponsiveStep("500px", 3)
+        );
+        
+        formLayout2Col.add(nome,modelo);
+        formLayout3Col.add(custoUnitario,quantidadeAtual,quantidadeMinima,cor, material ,unidMedida, buttonTertiary, buttonTertiary2, buttonTertiary3);
+        layout2.add(formLayout2Col, formLayout3Col, space);
+        layout3.add(saveButton);
+        layout.add(layout2, layout3);
+        addPedrasContentDiv.add(space1, layout);
+
+        return addPedrasContentDiv;
+    }
+
+
+    private Grid<Pedra> createGrid() {
+        grid = new Grid<>(Pedra.class, false);
+        grid.addClassName("borderless-grid");
+        grid.setAllRowsVisible(true);
+
+        grid.addColumn(Pedra::getNome).setHeader("Nome").setSortable(true);
+        grid.addColumn(pedra -> 
+            pedra.getMaterial() != null && pedra.getMaterial().getNome() != null ? 
+            pedra.getMaterial().getNome() : "Sem Material"
+        ).setHeader("Material").setSortable(true);
+        
+        grid.addColumn(pedra -> 
+            pedra.getCor() != null && pedra.getCor().getNome() != null ? 
+            pedra.getCor().getNome() : "Sem Cor"
+        ).setHeader("Cor").setSortable(true);
+
+        grid.addColumn(pedra -> 
+            pedra.getUnidMedida() != null && pedra.getUnidMedida().getNome() != null ? 
+            pedra.getUnidMedida().getNome() : "Sem Unidade de Medida"
+        ).setHeader("Unidade de Medida").setSortable(true);
+
         grid.addComponentColumn(pedra -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -164,121 +305,27 @@ public class PedraView extends VerticalLayout{
             tabSheet.setSelectedIndex(1);
         });
 
-        List<Pedra> listaDePedras = pedraRepository.pesquisarTodos();
-        grid.setItems(listaDePedras);
+        grid.setItems(pedraRepository.pesquisarTodos());
 
-        layout.add(layoutRow, space, grid);
-        pedrasContentDiv.add(layout);
-
-        return pedrasContentDiv;
+        return grid;
     }
 
-   //This method creates the content for the "Adicionar Pedra" tab, which consists of a form to add a new Pedra.
-    private Div createAddPedrasContent(){
-        Div addPedrasContentDiv = new Div();
-        Div space = new Div();
-        space.setHeight("10px");
-        Div space1 = new Div();
-        space1.setHeight("10px");
+    private void setComboBoxCorData(ComboBox<Cor> comboBox) {
+        List<Cor> cores = corRepository.pesquisarTodos();
+        comboBox.setItems(cores);
+        comboBox.setItemLabelGenerator(cor -> cor.getNome());
+    }
 
-        VerticalLayout layout = new VerticalLayout();
-        VerticalLayout layout2 = new VerticalLayout();
-        VerticalLayout layout3 = new VerticalLayout();
-        FormLayout formLayout2Col = new FormLayout();
-        nome = new TextField("Nome");
-        modelo = new TextField("Modelo");
-        quantidadeAtual = new TextField("Quantidade Atual");
-        quantidadeMinima = new TextField("Quantidade Mínima");
-        custoUnitario = new TextField("Custo Unitário");
-        cor = new ComboBox<>("Cor");
-        cor.setItems(corRepository.pesquisarTodos());
-        cor.setItemLabelGenerator(Cor::getNome);
-        buttonTertiary.setText("+ Cor");
-        buttonTertiary.setWidth("min-content");
-        buttonTertiary.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        buttonTertiary.addClickListener(event -> openDialog1());
-        material = new ComboBox<>("Material");
-        material.setItems(materialRepository.pesquisarTodos());
-        material.setItemLabelGenerator(Material::getNome);
-        buttonTertiary2.setText("+ Material");
-        buttonTertiary2.setWidth("min-content");
-        buttonTertiary2.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        buttonTertiary2.addClickListener(event -> openDialog2());
-        unidMedida = new ComboBox<>("Unidade de Medida");
-        unidMedida.setItems(unidMedidaRepository.pesquisarTodos());
-        unidMedida.setItemLabelGenerator(UnidMedida::getNome);
-        buttonTertiary3.setText("+ Unidade de Medida");
-        buttonTertiary3.setWidth("min-content");
-        buttonTertiary3.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        buttonTertiary3.addClickListener(event -> openDialog3());
+    private void setComboBoxMaterialData(ComboBox<Material> comboBox) {
+        List<Material> materiais = materialRepository.pesquisarTodos();
+        comboBox.setItems(materiais);
+        comboBox.setItemLabelGenerator(material -> material.getNome());
+    }
 
-        Button saveButton = new Button("Salvar", event -> {
-            if (nome.isEmpty()) {
-                Notification.show("Preencha o campo obrigatório: Nome", 3000, Notification.Position.MIDDLE);
-                return;
-            }
-            String nomePedra = nome.getValue();
-            String modeloPedra = modelo.isEmpty() ? "" : modelo.getValue();
-            int quantidadeAtualPedra = quantidadeAtual.isEmpty() ? 0 : Integer.parseInt(quantidadeAtual.getValue());
-            int quantidadeMinimaPedra = quantidadeMinima.isEmpty() ? 0 : Integer.parseInt(quantidadeMinima.getValue());
-            BigDecimal custoUnitarioPedra = custoUnitario.isEmpty() ? BigDecimal.ZERO : new BigDecimal(custoUnitario.getValue());
-            Cor corPedra = cor.getValue();
-            Material materialPedra = material.getValue();
-            UnidMedida unidMedidaPedra = unidMedida.getValue();
-        
-            Pedra pedra = new Pedra(nomePedra, modeloPedra, quantidadeAtualPedra, quantidadeMinimaPedra, custoUnitarioPedra, corPedra, materialPedra, unidMedidaPedra);
-            pedra.setId(pedraId);
-        
-            boolean sucesso;
-            if (pedraId != null && pedraId > 0) {
-                sucesso = pedraRepository.alterar(pedra);
-                if (sucesso) {
-                    Notification.show("Pedra atualizado com sucesso!");
-                } else {
-                    Notification.show("Erro ao atualizar o pedra", 3000, Notification.Position.MIDDLE);
-                }
-            } else {
-                sucesso = pedraRepository.inserir(pedra);
-                if (sucesso) {
-                    Notification.show("Pedra salvo com sucesso!");
-                } else {
-                    Notification.show("Erro ao salvar o pedra", 3000, Notification.Position.MIDDLE);
-                }
-            }
-        
-            if (sucesso) {
-                clearForm();
-                tabSheet.setSelectedIndex(0);
-                refreshGrid();
-            }
-        });
-
-        //For a better interface
-        nome.addClassName("rounded-text-field");
-        modelo.addClassName("rounded-text-field");
-        quantidadeAtual.addClassName("rounded-text-field");
-        quantidadeMinima.addClassName("rounded-text-field");
-        custoUnitario.addClassName("rounded-text-field");
-        cor.addClassName("rounded-text-field");
-        material.addClassName("rounded-text-field");
-        unidMedida.addClassName("rounded-text-field");
-        nome.setRequiredIndicatorVisible(true);
-        layout3.setAlignItems(FlexComponent.Alignment.END);
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.getStyle().set("border-radius", "25px");
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
-        layout2.setWidth("1100px");
-        layout2.getStyle().set("margin", "0 auto");
-        
-        formLayout2Col.add( nome,modelo,quantidadeAtual,quantidadeMinima,custoUnitario,cor, buttonTertiary,material, buttonTertiary2,unidMedida, buttonTertiary3);
-        layout2.add(formLayout2Col, space);
-        layout3.add(saveButton);
-        layout.add(layout2, layout3);
-        addPedrasContentDiv.add(space1, layout);
-
-        return addPedrasContentDiv;
+    private void setComboBoxUnidMedidaData(ComboBox<UnidMedida> comboBox) {
+        List<UnidMedida> medidas = unidMedidaRepository.pesquisarTodos();
+        comboBox.setItems(medidas);
+        comboBox.setItemLabelGenerator(unidMedida -> unidMedida.getNome());
     }
 
     private void refreshGrid(){

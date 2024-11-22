@@ -30,6 +30,7 @@ public class DaoCor {
             String update = "UPDATE cor SET nome = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, cor.getNome());
+            prepareStatement.setInt(2, cor.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){
