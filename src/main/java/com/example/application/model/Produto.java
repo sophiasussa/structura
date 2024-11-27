@@ -2,14 +2,14 @@ package com.example.application.model;
 
 import java.math.BigDecimal;
 
-public class Pedra extends Estoque{
+public class Produto extends Estoque{
     private Long id;
     private String modelo;
     private Cor cor;
     private Material material;
     private UnidMedida unidMedida;
 
-    public Pedra(String nome, String modelo, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario, Cor cor, Material material, UnidMedida unidMedida) {
+    public Produto(String nome, String modelo, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario, Cor cor, Material material, UnidMedida unidMedida) {
         super(nome, quantidadeAtual, quantidadeMinima, custoUnitario);
         this.modelo = modelo;
         this.cor = cor;
@@ -17,7 +17,7 @@ public class Pedra extends Estoque{
         this.unidMedida = unidMedida;
     }
 
-    public Pedra(){
+    public Produto(){
         super();
     }
 

@@ -3,7 +3,6 @@ package com.example.application.controller;
 import java.util.List;
 
 import com.example.application.model.Cliente;
-import com.example.application.model.Funcionario;
 import com.example.application.repository.DaoCliente;
 
 public class ControllerCliente {

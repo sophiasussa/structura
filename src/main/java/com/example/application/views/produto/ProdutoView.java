@@ -1,4 +1,4 @@
-package com.example.application.views.pedra;
+package com.example.application.views.produto;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
@@ -7,11 +7,11 @@ import java.util.Locale;
 
 import com.example.application.model.Cliente;
 import com.example.application.model.Cor;
-import com.example.application.model.Pedra;
+import com.example.application.model.Produto;
 import com.example.application.model.Material;
 import com.example.application.model.UnidMedida;
 import com.example.application.repository.DaoMaterial;
-import com.example.application.repository.DaoPedra;
+import com.example.application.repository.DaoProduto;
 import com.example.application.repository.DaoUnidMedida;
 import com.example.application.views.MainLayout;
 import com.example.application.repository.DaoCor;
@@ -43,15 +43,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
-@PageTitle("Pedras")
+@PageTitle("Produtos")
 @Route(value = "my-view4", layout = MainLayout.class)
-public class PedraView extends VerticalLayout{
+public class ProdutoView extends VerticalLayout{
 
-    DaoPedra pedraRepository = new DaoPedra();
+    DaoProduto produtoRepository = new DaoProduto();
     DaoCor corRepository = new DaoCor();
     DaoMaterial materialRepository = new DaoMaterial();
     DaoUnidMedida unidMedidaRepository = new DaoUnidMedida();
-    Grid<Pedra> grid = new Grid(Pedra.class, false);
+    Grid<Produto> grid = new Grid(Produto.class, false);
     TextField nome = new TextField("Nome");
     TextField modelo = new TextField("Modelo");
     TextField quantidadeAtual = new TextField("Quantidade Atual");
@@ -63,10 +63,10 @@ public class PedraView extends VerticalLayout{
     ComboBox<Cor> cor = new ComboBox<>("Cor");
     ComboBox<Material> material = new ComboBox<>("Material");
     ComboBox<UnidMedida> unidMedida = new ComboBox<>("Unidade de Medida");
-    private Long pedraId;
+    private Long produtoId;
     private TabSheet tabSheet;
 
-    public PedraView() {
+    public ProdutoView() {
         tabSheet = new TabSheet();
         this.setWidth("100%");
         this.getStyle().set("flex-grow", "1");
@@ -77,16 +77,16 @@ public class PedraView extends VerticalLayout{
 
     //This method sets up two tabs
     private void setTabSheetSampleData(TabSheet tabSheet) {
-        Div pedrasContent = createPedrasContent();
-        tabSheet.add("Pedras", pedrasContent);
+        Div produtosContent = createProdutosContent();
+        tabSheet.add("Produtos", produtosContent);
 
-        Div addPedrasContent = createAddPedrasContent();
-        tabSheet.add("Adicionar Pedra", addPedrasContent);
+        Div addProdutosContent = createAddProdutosContent();
+        tabSheet.add("Adicionar Produto", addProdutosContent);
     }
 
-    //This method creates the content for the "Pedras" tab, which consists of a form to see all the pedras and search for a specific pedra
-    private Div createPedrasContent(){
-        Div pedrasContentDiv = new Div();
+    //This method creates the content for the "Produtos" tab, which consists of a form to see all the Produtos and search for a specific produto
+    private Div createProdutosContent(){
+        Div produtosContentDiv = new Div();
         Div space = new Div();
         space.setHeight("15px");
 
@@ -97,12 +97,12 @@ public class PedraView extends VerticalLayout{
 
         buttonPrimary.addClickListener(event -> {
             String pesquisa = textField.getValue().trim();
-            List<Pedra> resultados;
+            List<Produto> resultados;
 
             if(pesquisa.isEmpty()){
-                resultados = pedraRepository.pesquisarTodos();
+                resultados = produtoRepository.pesquisarTodos();
             }else{
-                resultados = pedraRepository.pesquisarPedra(pesquisa);
+                resultados = produtoRepository.pesquisarProduto(pesquisa);
             }
 
             grid.setItems(resultados);
@@ -123,21 +123,21 @@ public class PedraView extends VerticalLayout{
         textField.addClassName("rounded-text-field");
         layoutRow.add(textField, buttonPrimary);
 
-        buttonPrimary.addClickListener(pedra -> {
+        buttonPrimary.addClickListener(produto -> {
             Notification.show("Pesquisar por: " + textField.getValue());
         });
 
         grid = createGrid();
 
         layout.add(layoutRow, space, grid);
-        pedrasContentDiv.add(layout);
+        produtosContentDiv.add(layout);
 
-        return pedrasContentDiv;
+        return produtosContentDiv;
     }
 
-   //This method creates the content for the "Adicionar Pedra" tab, which consists of a form to add a new Pedra.
-    private Div createAddPedrasContent(){
-        Div addPedrasContentDiv = new Div();
+   //This method creates the content for the "Adicionar Produto" tab, which consists of a form to add a new Produto.
+    private Div createAddProdutosContent(){
+        Div addProdutosContentDiv = new Div();
         Div space = new Div();
         space.setHeight("10px");
         Div space1 = new Div();
@@ -177,32 +177,32 @@ public class PedraView extends VerticalLayout{
                 Notification.show("Preencha o campo obrigatório: Nome", 3000, Notification.Position.MIDDLE);
                 return;
             }
-            String nomePedra = nome.getValue();
-            String modeloPedra = modelo.isEmpty() ? "" : modelo.getValue();
-            int quantidadeAtualPedra = quantidadeAtual.isEmpty() ? 0 : Integer.parseInt(quantidadeAtual.getValue());
-            int quantidadeMinimaPedra = quantidadeMinima.isEmpty() ? 0 : Integer.parseInt(quantidadeMinima.getValue());
-            BigDecimal custoUnitarioPedra = custoUnitario.isEmpty() ? BigDecimal.ZERO : new BigDecimal(custoUnitario.getValue());
-            Cor corPedra = cor.isEmpty() ? null : cor.getValue();
-            Material materialPedra = material.isEmpty() ? null : material.getValue();
-            UnidMedida unidMedidaPedra = unidMedida.isEmpty() ? null : unidMedida.getValue();
+            String nomeProduto = nome.getValue();
+            String modeloProduto = modelo.isEmpty() ? "" : modelo.getValue();
+            int quantidadeAtualProduto = quantidadeAtual.isEmpty() ? 0 : Integer.parseInt(quantidadeAtual.getValue());
+            int quantidadeMinimaProduto = quantidadeMinima.isEmpty() ? 0 : Integer.parseInt(quantidadeMinima.getValue());
+            BigDecimal custoUnitarioProduto = custoUnitario.isEmpty() ? BigDecimal.ZERO : new BigDecimal(custoUnitario.getValue());
+            Cor corProduto = cor.isEmpty() ? null : cor.getValue();
+            Material materialProduto = material.isEmpty() ? null : material.getValue();
+            UnidMedida unidMedidaProduto = unidMedida.isEmpty() ? null : unidMedida.getValue();
         
-            Pedra pedra = new Pedra(nomePedra, modeloPedra, quantidadeAtualPedra, quantidadeMinimaPedra, custoUnitarioPedra, corPedra, materialPedra, unidMedidaPedra);
-            pedra.setId(pedraId);
+            Produto produto = new Produto(nomeProduto, modeloProduto, quantidadeAtualProduto, quantidadeMinimaProduto, custoUnitarioProduto, corProduto, materialProduto, unidMedidaProduto);
+            produto.setId(produtoId);
 
             boolean sucesso;
-            if (pedraId != null && pedraId > 0) {
-                sucesso = pedraRepository.alterar(pedra);
+            if (produtoId != null && produtoId > 0) {
+                sucesso = produtoRepository.alterar(produto);
                 if (sucesso) {
-                    Notification.show("Pedra atualizado com sucesso!");
+                    Notification.show("Produto atualizado com sucesso!");
                 } else {
-                    Notification.show("Erro ao atualizar o pedra", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Erro ao atualizar o produto", 3000, Notification.Position.MIDDLE);
                 }
             } else {
-                sucesso = pedraRepository.inserir(pedra);
+                sucesso = produtoRepository.inserir(produto);
                 if (sucesso) {
-                    Notification.show("Pedra salva com sucesso!");
+                    Notification.show("Produto salva com sucesso!");
                 } else {
-                    Notification.show("Erro ao salvar o pedra", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Erro ao salvar o produto", 3000, Notification.Position.MIDDLE);
                 }
             }
 
@@ -242,42 +242,42 @@ public class PedraView extends VerticalLayout{
         layout2.add(formLayout2Col, formLayout3Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
-        addPedrasContentDiv.add(space1, layout);
+        addProdutosContentDiv.add(space1, layout);
 
-        return addPedrasContentDiv;
+        return addProdutosContentDiv;
     }
 
 
-    private Grid<Pedra> createGrid() {
-        grid = new Grid<>(Pedra.class, false);
+    private Grid<Produto> createGrid() {
+        grid = new Grid<>(Produto.class, false);
         grid.addClassName("borderless-grid");
         grid.setAllRowsVisible(true);
 
-        grid.addColumn(Pedra::getNome).setHeader("Nome").setSortable(true);
-        grid.addColumn(pedra -> 
-            pedra.getMaterial() != null && pedra.getMaterial().getNome() != null ? 
-            pedra.getMaterial().getNome() : "Sem Material"
+        grid.addColumn(Produto::getNome).setHeader("Nome").setSortable(true);
+        grid.addColumn(produto -> 
+            produto.getMaterial() != null && produto.getMaterial().getNome() != null ? 
+            produto.getMaterial().getNome() : "Sem Material"
         ).setHeader("Material").setSortable(true);
         
-        grid.addColumn(pedra -> 
-            pedra.getCor() != null && pedra.getCor().getNome() != null ? 
-            pedra.getCor().getNome() : "Sem Cor"
+        grid.addColumn(produto -> 
+            produto.getCor() != null && produto.getCor().getNome() != null ? 
+            produto.getCor().getNome() : "Sem Cor"
         ).setHeader("Cor").setSortable(true);
 
-        grid.addColumn(pedra -> 
-            pedra.getUnidMedida() != null && pedra.getUnidMedida().getNome() != null ? 
-            pedra.getUnidMedida().getNome() : "Sem Unidade de Medida"
+        grid.addColumn(produto -> 
+            produto.getUnidMedida() != null && produto.getUnidMedida().getNome() != null ? 
+            produto.getUnidMedida().getNome() : "Sem Unidade de Medida"
         ).setHeader("Unidade de Medida").setSortable(true);
 
-        grid.addComponentColumn(pedra -> {
+        grid.addComponentColumn(produto -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
                 confirm.setHeaderTitle("Confirmar Exclusão");
                 VerticalLayout content = new VerticalLayout();
-                content.add(new Text("Você tem certeza que deseja excluir essa pedra " + pedra.getNome() + "?"));
+                content.add(new Text("Você tem certeza que deseja excluir essa produto " + produto.getNome() + "?"));
 
                 Button confirmButton = new Button("Confirmar", event -> {
-                    deletePedra(pedra);
+                    deleteProduto(produto);
                     confirm.close();
                 });
 
@@ -292,20 +292,20 @@ public class PedraView extends VerticalLayout{
         }).setHeader("Ações");
 
         grid.setDetailsVisibleOnClick(false);
-        grid.setItemDetailsRenderer(createPedraDetailsRenderer());
+        grid.setItemDetailsRenderer(createProdutoDetailsRenderer());
 
         grid.addItemClickListener(event -> {
-            Pedra pedra = event.getItem();
-            grid.setDetailsVisible(pedra, !grid.isDetailsVisible(pedra));
+            Produto produto = event.getItem();
+            grid.setDetailsVisible(produto, !grid.isDetailsVisible(produto));
         });
 
         grid.addItemDoubleClickListener(event -> {
-            Pedra pedra = event.getItem();
-            editPedra(pedra);
+            Produto produto = event.getItem();
+            editProduto(produto);
             tabSheet.setSelectedIndex(1);
         });
 
-        grid.setItems(pedraRepository.pesquisarTodos());
+        grid.setItems(produtoRepository.pesquisarTodos());
 
         return grid;
     }
@@ -329,33 +329,33 @@ public class PedraView extends VerticalLayout{
     }
 
     private void refreshGrid(){
-        List<Pedra> pedras = pedraRepository.pesquisarTodos();
-        grid.setItems(pedras);
+        List<Produto> produtos = produtoRepository.pesquisarTodos();
+        grid.setItems(produtos);
     }
 
-    private void deletePedra(Pedra pedra){
-        boolean success = pedraRepository.excluir(pedra);
+    private void deleteProduto(Produto produto){
+        boolean success = produtoRepository.excluir(produto);
         if(success){
             refreshGrid();
         }else{
-            System.out.println("Erro ao excluir pedra");
+            System.out.println("Erro ao excluir produto");
         }
     }
 
-    private void editPedra(Pedra pedra) {
-        pedraId = pedra.getId();
-        nome.setValue(pedra.getNome());
-        modelo.setValue(pedra.getModelo() != null ? pedra.getModelo() : "");
-        quantidadeAtual.setValue(String.valueOf(pedra.getQuantidadeAtual()));
-        quantidadeMinima.setValue(String.valueOf(pedra.getQuantidadeMinima()));
-        custoUnitario.setValue(pedra.getCustoUnitario() != null ? pedra.getCustoUnitario().toString() : "");
-        cor.setValue(pedra.getCor());
-        material.setValue(pedra.getMaterial());
-        unidMedida.setValue(pedra.getUnidMedida());
+    private void editProduto(Produto produto) {
+        produtoId = produto.getId();
+        nome.setValue(produto.getNome());
+        modelo.setValue(produto.getModelo() != null ? produto.getModelo() : "");
+        quantidadeAtual.setValue(String.valueOf(produto.getQuantidadeAtual()));
+        quantidadeMinima.setValue(String.valueOf(produto.getQuantidadeMinima()));
+        custoUnitario.setValue(produto.getCustoUnitario() != null ? produto.getCustoUnitario().toString() : "");
+        cor.setValue(produto.getCor());
+        material.setValue(produto.getMaterial());
+        unidMedida.setValue(produto.getUnidMedida());
     }
 
     private void clearForm() {
-        pedraId = null;
+        produtoId = null;
         nome.clear();
         modelo.clear();
         quantidadeAtual.clear();
@@ -366,30 +366,30 @@ public class PedraView extends VerticalLayout{
         unidMedida.clear();
     }
 
-    private static ComponentRenderer<HorizontalLayout, Pedra> createPedraDetailsRenderer() {
-        return new ComponentRenderer<>(pedra -> {
+    private static ComponentRenderer<HorizontalLayout, Produto> createProdutoDetailsRenderer() {
+        return new ComponentRenderer<>(produto -> {
             HorizontalLayout detailsLayout = new HorizontalLayout();
             detailsLayout.setSpacing(true);
             detailsLayout.setPadding(true);
             detailsLayout.addClassName("details-layout");
 
             TextField modeloField = new TextField("Modelo");
-            modeloField.setValue(pedra.getModelo() != null ? pedra.getModelo() : "");
+            modeloField.setValue(produto.getModelo() != null ? produto.getModelo() : "");
             modeloField.setReadOnly(true);
             modeloField.addClassName("rounded-text-field");
 
             TextField quantidadeAtualField = new TextField("Quantidade Atual");
-            quantidadeAtualField.setValue(String.valueOf(pedra.getQuantidadeAtual()));
+            quantidadeAtualField.setValue(String.valueOf(produto.getQuantidadeAtual()));
             quantidadeAtualField.setReadOnly(true);
             quantidadeAtualField.addClassName("rounded-text-field");
 
             TextField quantidadeMinimaField = new TextField("Quantidade Mínima");
-            quantidadeMinimaField.setValue(String.valueOf(pedra.getQuantidadeMinima()));
+            quantidadeMinimaField.setValue(String.valueOf(produto.getQuantidadeMinima()));
             quantidadeMinimaField.setReadOnly(true);
             quantidadeMinimaField.addClassName("rounded-text-field");
 
             TextField custoUnitarioField = new TextField("Custo Unitário");
-            custoUnitarioField.setValue(pedra.getCustoUnitario() != null ? pedra.getCustoUnitario().toString() : "");
+            custoUnitarioField.setValue(produto.getCustoUnitario() != null ? produto.getCustoUnitario().toString() : "");
             custoUnitarioField.setReadOnly(true);
             custoUnitarioField.addClassName("rounded-text-field");
 
