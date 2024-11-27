@@ -2,8 +2,8 @@ package com.example.application.model;
 
 public class Fornecedor {
     private Long id;
-    private String nome;
-    private String nomeVendedor;
+    private String empresa;
+    private String vendedor;
     private String cnpj;
     private String ie;
     private String telefone;
@@ -11,9 +11,9 @@ public class Fornecedor {
     private String descriProdutos;
 
     // Construtor com parâmetros
-    public Fornecedor(String nome, String nomeVendedor, String cnpj, String ie, String telefone, String email, String descriProdutos) {
-        this.nome = nome;
-        this.nomeVendedor = nomeVendedor;
+    public Fornecedor(String empresa, String vendedor, String cnpj, String ie, String telefone, String email, String descriProdutos) {
+        this.empresa = empresa;
+        this.vendedor = vendedor;
         this.cnpj = cnpj;
         this.ie = ie;
         this.telefone = telefone;
@@ -32,20 +32,20 @@ public class Fornecedor {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getEmpresa() {
+        return empresa;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
     }
 
-    public String getNomeVendedor() {
-        return nomeVendedor;
+    public String getVendedor() {
+        return vendedor;
     }
 
-    public void setNomeVendedor(String nomeVendedor) {
-        this.nomeVendedor = nomeVendedor;
+    public void setVendedor(String vendedor) {
+        this.vendedor = vendedor;
     }
 
     public String getCnpj() {

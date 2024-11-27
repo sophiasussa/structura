@@ -26,6 +26,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
 import com.example.application.model.Funcionario;
@@ -148,6 +149,9 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         });
 
         List<Funcionario> listaDeFuncionarios = funcionarioRepository.pesquisarTodos();
+        if (listaDeFuncionarios == null) {
+            listaDeFuncionarios = Collections.emptyList();
+        }
         grid.setItems(listaDeFuncionarios);
 
         layout.add(layoutRow, space, grid);
@@ -230,6 +234,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
                 sucesso = funcionarioRepository.alterar(funcionario);
                 if(sucesso) {
                     Notification.show("Funcionario atualizado com sucesso!");
+                    clearForm();
                 }else{
                     Notification.show("Erro ao atualizar o funcionario");
                 }
@@ -237,13 +242,13 @@ public class FuncionarioView extends Composite<VerticalLayout> {
                 sucesso = funcionarioRepository.inserir(funcionario);
                 if(sucesso) {
                     Notification.show("Funcionario salvo com sucesso!");
+                    clearForm();
                 } else {
                     Notification.show("Erro ao salvar funcionario", 3000, Notification.Position.MIDDLE);
                 }
             }
 
             if(sucesso) {
-                clearForm();
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
             }

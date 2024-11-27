@@ -1,5 +1,6 @@
 package com.example.application.views.cliente;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.example.application.model.Cliente;
@@ -144,6 +145,9 @@ public class ClienteView extends Composite<VerticalLayout> {
         });
 
         List<Cliente> listaDeClientes = clienteRepository.pesquisarTodos();
+        if (listaDeClientes == null) {
+            listaDeClientes = Collections.emptyList();
+        }
         grid.setItems(listaDeClientes);
 
         layout.add(layoutRow, space, grid);
@@ -218,6 +222,7 @@ public class ClienteView extends Composite<VerticalLayout> {
                 sucesso = clienteRepository.alterar(cliente);
                 if (sucesso) {
                     Notification.show("Cliente atualizado com sucesso!");
+                    clearForm();
                 } else {
                     Notification.show("Erro ao atualizar o cliente", 3000, Notification.Position.MIDDLE);
                 }
@@ -225,13 +230,13 @@ public class ClienteView extends Composite<VerticalLayout> {
                 sucesso = clienteRepository.inserir(cliente);
                 if (sucesso) {
                     Notification.show("Cliente salvo com sucesso!");
+                    clearForm();
                 } else {
                     Notification.show("Erro ao salvar o cliente", 3000, Notification.Position.MIDDLE);
                 }
             }
         
             if (sucesso) {
-                clearForm();
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
             }

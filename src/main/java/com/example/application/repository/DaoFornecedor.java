@@ -12,10 +12,10 @@ public class DaoFornecedor {
     public boolean inserir(Fornecedor fornecedor){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO fornecedor (nome, nomeVendedor, cnpj, ie, telefone, email, descriProdutos) VALUES (?,?,?,?,?,?,?)";
+            String insert = "INSERT INTO fornecedor (empresa, vendedor, cnpj, ie, telefone, email, descriProdutos) VALUES (?,?,?,?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
-            prepareStatement.setString(1, fornecedor.getNome());
-            prepareStatement.setString(2, fornecedor.getNomeVendedor());
+            prepareStatement.setString(1, fornecedor.getEmpresa());
+            prepareStatement.setString(2, fornecedor.getVendedor());
             prepareStatement.setString(3, fornecedor.getCnpj());
             prepareStatement.setString(4, fornecedor.getIe());
             prepareStatement.setString(5, fornecedor.getTelefone());
@@ -32,10 +32,10 @@ public class DaoFornecedor {
     public boolean alterar(Fornecedor fornecedor){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE fornecedor SET nome = ?, nomeVendedor = ?, cnpj = ?, ie = ?, telefone = ?, email = ?, descriProdutos = ? WHERE id = ?";
+            String update = "UPDATE fornecedor SET empresa = ?, vendedor = ?, cnpj = ?, ie = ?, telefone = ?, email = ?, descriProdutos = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
-            prepareStatement.setString(1, fornecedor.getNome());
-            prepareStatement.setString(2, fornecedor.getNomeVendedor());
+            prepareStatement.setString(1, fornecedor.getEmpresa());
+            prepareStatement.setString(2, fornecedor.getVendedor());
             prepareStatement.setString(3, fornecedor.getCnpj());
             prepareStatement.setString(4, fornecedor.getIe());
             prepareStatement.setString(5, fornecedor.getTelefone());
@@ -75,8 +75,8 @@ public class DaoFornecedor {
             while (resultSet.next()){
                 fornecedor = new Fornecedor();
                 fornecedor.setId(resultSet.getLong("id"));
-                fornecedor.setNome(resultSet.getString("nome"));
-                fornecedor.setNomeVendedor(resultSet.getString("nomeVendedor"));
+                fornecedor.setEmpresa(resultSet.getString("empresa"));
+                fornecedor.setVendedor(resultSet.getString("vendedor"));
                 fornecedor.setCnpj(resultSet.getString("cnpj"));
                 fornecedor.setIe(resultSet.getString("ie"));
                 fornecedor.setTelefone(resultSet.getString("telefone"));
@@ -93,7 +93,7 @@ public class DaoFornecedor {
     
     public List<Fornecedor> pesquisarFornecedor(String pesquisa) {
         List<Fornecedor> lista = new ArrayList<>();
-        String consulta = "SELECT * FROM fornecedor WHERE nome LIKE ? OR nomeVendedor LIKE ? OR CAST(cnpj AS CHAR) LIKE ? OR CAST(ie AS CHAR) LIKE ?";
+        String consulta = "SELECT * FROM fornecedor WHERE empresa LIKE ? OR vendedor LIKE ? OR CAST(cnpj AS CHAR) LIKE ? OR CAST(ie AS CHAR) LIKE ?";
         
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(consulta)) {
@@ -109,8 +109,8 @@ public class DaoFornecedor {
             while (resultSet.next()) {
                 Fornecedor fornecedor = new Fornecedor();
                 fornecedor.setId(resultSet.getLong("id"));
-                fornecedor.setNome(resultSet.getString("nome"));
-                fornecedor.setNomeVendedor(resultSet.getString("nomeVendedor"));
+                fornecedor.setEmpresa(resultSet.getString("empresa"));
+                fornecedor.setVendedor(resultSet.getString("vendedor"));
                 fornecedor.setCnpj(resultSet.getString("cnpj"));
                 fornecedor.setIe(resultSet.getString("ie"));
                 fornecedor.setTelefone(resultSet.getString("telefone"));

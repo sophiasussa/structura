@@ -24,6 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.example.application.model.Fornecedor;
@@ -37,8 +38,8 @@ public class FornecedorView extends Composite<VerticalLayout> {
 
     DaoFornecedor fornecedorRepository = new DaoFornecedor();
     Grid<Fornecedor> grid = new Grid<>();
-    TextField nome = new TextField();
-    TextField nomeVendedor = new TextField();
+    TextField empresa = new TextField();
+    TextField vendedor = new TextField();
     TextField cnpj = new TextField();
     TextField ie = new TextField();
     TextField telefone = new TextField();
@@ -90,7 +91,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         });
 
         //For a better interface
-        textField.setPlaceholder("Nome, CNPJ ou IE");
+        textField.setPlaceholder("Empresa, CNPJ ou IE");
         textField.setWidth("250px");
         layoutRow.setWidthFull();
         layoutRow.addClassName(Gap.MEDIUM);
@@ -106,15 +107,15 @@ public class FornecedorView extends Composite<VerticalLayout> {
         grid.setAllRowsVisible(true);
         grid.addClassName("borderless-grid");
 
-        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getNome).setHeader("Nome");
-        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getNomeVendedor).setHeader("Nome Vendedor");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getEmpresa).setHeader("Empresa");
+        grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getVendedor).setHeader("Vendedor");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getTelefone).setHeader("Telefone");
         grid.addComponentColumn(fornecedor -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
                 confirm.setHeaderTitle("Confirmar Exclusão");
                 VerticalLayout content = new VerticalLayout();
-                content.add(new Text("Você tem certeza que deseja excluir o fornecedor" + fornecedor.getNome() + "?"));
+                content.add(new Text("Você tem certeza que deseja excluir o fornecedor" + fornecedor.getEmpresa() + "?"));
 
                 Button confirmButton = new Button("Confirmar", event -> {
                     deleteFornecedor(fornecedor);
@@ -146,6 +147,9 @@ public class FornecedorView extends Composite<VerticalLayout> {
         });
 
         List<Fornecedor> listaDeFornecedores = fornecedorRepository.pesquisarTodos();
+        if (listaDeFornecedores == null) {
+            listaDeFornecedores = Collections.emptyList();
+        }
         grid.setItems(listaDeFornecedores);
 
         layout.add(layoutRow, space, grid);
@@ -167,8 +171,8 @@ public class FornecedorView extends Composite<VerticalLayout> {
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
         
-        nome = new TextField("Nome");
-        nomeVendedor = new TextField("Nome do Vendedor");
+        empresa = new TextField("Empresa");
+        vendedor = new TextField("Vendedor");
         cnpj = new TextField("CNPJ");
         ie = new TextField("Inscrição Estadual");
         telefone = new TextField("Telefone");
@@ -213,20 +217,20 @@ public class FornecedorView extends Composite<VerticalLayout> {
         telefone.setMaxLength(15);
 
         Button saveButton = new Button("Salvar", event -> {
-            if (nome.isEmpty() || telefone.isEmpty()) {
-                Notification.show("Preencha os campos obrigatórios: Nome e Telefone", 3000, Notification.Position.MIDDLE);
+            if (empresa.isEmpty() || telefone.isEmpty()) {
+                Notification.show("Preencha os campos obrigatórios: Empresa e Telefone", 3000, Notification.Position.MIDDLE);
                 return;
             }
 
-            String nomeFornecedor = nome.getValue();
-            String nomeVendedorFornecedor = nomeVendedor.getValue();
+            String nomeFornecedor = empresa.getValue();
+            String vendedorFornecedor = vendedor.getValue();
             String cnpjFornecedor = cnpj.isEmpty() ? "" : cnpj.getValue();
             String ieFornecedor = ie.isEmpty() ? "" : ie.getValue();
             String telefoneFornecedor = telefone.getValue();
             String emailFornecedor = email.getValue();
             String descriFornecedor = produto.getValue();
 
-            Fornecedor fornecedor = new Fornecedor(nomeFornecedor, nomeVendedorFornecedor, cnpjFornecedor, ieFornecedor, telefoneFornecedor, emailFornecedor, descriFornecedor);
+            Fornecedor fornecedor = new Fornecedor(nomeFornecedor, vendedorFornecedor, cnpjFornecedor, ieFornecedor, telefoneFornecedor, emailFornecedor, descriFornecedor);
             fornecedor.setId(fornecedorId);
 
             boolean sucesso;
@@ -234,6 +238,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
                 sucesso = fornecedorRepository.alterar(fornecedor);
                 if (sucesso) {
                     Notification.show("Fornecedor atualizado com sucesso!");
+                    clearForm();
                 } else {
                     Notification.show("Erro ao atualizar o fornecedor", 3000, Notification.Position.MIDDLE);
                 }
@@ -241,27 +246,27 @@ public class FornecedorView extends Composite<VerticalLayout> {
                 sucesso = fornecedorRepository.inserir(fornecedor);
                 if (sucesso) {
                     Notification.show("Fornecedor salvo com sucesso!");
+                    clearForm();
                 } else {
                     Notification.show("Erro ao salvar fornecedor", 3000, Notification.Position.MIDDLE);
                 }
             }
 
             if (sucesso) {
-                clearForm();
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
             }
         });
 
         // Estilos e classes de CSS
-        nome.addClassName("rounded-text-field");
-        nomeVendedor.addClassName("rounded-text-field");
+        empresa.addClassName("rounded-text-field");
+        vendedor.addClassName("rounded-text-field");
         cnpj.addClassName("rounded-text-field");
         ie.addClassName("rounded-text-field");
         telefone.addClassName("rounded-text-field");
         email.addClassName("rounded-text-field");
         produto.addClassName("rounded-text-field");
-        nome.setRequiredIndicatorVisible(true);
+        empresa.setRequiredIndicatorVisible(true);
         telefone.setRequiredIndicatorVisible(true);
         layout2.getStyle().set("border-radius", "15px");
         layout2.getStyle().set("border", "1px solid #ccc");
@@ -273,7 +278,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         saveButton.getStyle().set("border-radius", "25px");
 
         // Adiciona componentes ao layout
-        formLayout2Col.add(nome, nomeVendedor, cnpj, ie, produto, email, telefone);
+        formLayout2Col.add(empresa, vendedor, cnpj, ie, produto, email, telefone);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
@@ -298,8 +303,8 @@ public class FornecedorView extends Composite<VerticalLayout> {
 
     private void editFornecedor(Fornecedor fornecedor){
         fornecedorId = fornecedor.getId();
-        nome.setValue(fornecedor.getNome());
-        nomeVendedor.setValue(fornecedor.getNomeVendedor());
+        empresa.setValue(fornecedor.getEmpresa());
+        vendedor.setValue(fornecedor.getVendedor());
         cnpj.setValue(String.valueOf(fornecedor.getCnpj()));
         ie.setValue(String.valueOf(fornecedor.getIe()));
         telefone.setValue(String.valueOf(fornecedor.getTelefone()));
@@ -309,8 +314,8 @@ public class FornecedorView extends Composite<VerticalLayout> {
 
     private void clearForm(){
         fornecedorId = null;
-        nome.clear();
-        nomeVendedor.clear();
+        empresa.clear();
+        vendedor.clear();
         cnpj.clear();
         ie.clear();
         telefone.clear();
