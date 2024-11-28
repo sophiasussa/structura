@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.example.application.model.Cor;
 import com.example.application.model.Produto;
 import com.example.application.model.UnidMedida;
 import com.example.application.model.Material;
@@ -17,16 +16,15 @@ public class DaoProduto {
     public boolean inserir(Produto produto){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO produto (nome, modelo, quantidadeAtual, quantidadeMinima, custoUnitario, cor_id, material_id, unid_medida_id) VALUE (?,?,?,?,?,?,?,?)";
+            String insert = "INSERT INTO produto (nome, modelo, quantidadeAtual, quantidadeMinima, custoUnitario, material_id, unid_medida_id) VALUE (?,?,?,?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
             prepareStatement.setString(1, produto.getNome());
             prepareStatement.setString(2, produto.getModelo());
             prepareStatement.setInt(3, produto.getQuantidadeAtual());
             prepareStatement.setInt(4, produto.getQuantidadeMinima());
             prepareStatement.setBigDecimal(5, produto.getCustoUnitario());
-            prepareStatement.setObject(6, produto.getCor() != null ? produto.getCor().getId() : null, java.sql.Types.INTEGER);
-            prepareStatement.setObject(7, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
-            prepareStatement.setObject(8, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(6, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(7, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -39,7 +37,7 @@ public class DaoProduto {
         try{
 
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE produto SET nome = ?, modelo = ?, quantidadeAtual = ?, quantidadeMinima = ?, custoUnitario = ?, cor_id = ?, material_id = ?, unid_medida_id = ? WHERE id = ?";
+            String update = "UPDATE produto SET nome = ?, modelo = ?, quantidadeAtual = ?, quantidadeMinima = ?, custoUnitario = ?, material_id = ?, unid_medida_id = ? WHERE id = ?";
             
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, produto.getNome());
@@ -47,10 +45,9 @@ public class DaoProduto {
             prepareStatement.setInt(3, produto.getQuantidadeAtual());
             prepareStatement.setInt(4, produto.getQuantidadeMinima());
             prepareStatement.setBigDecimal(5, produto.getCustoUnitario());
-            prepareStatement.setInt(6, produto.getCor().getId());
-            prepareStatement.setInt(7, produto.getMaterial().getId());
-            prepareStatement.setInt(8, produto.getUnidMedida().getId());
-            prepareStatement.setLong(9, produto.getId());
+            prepareStatement.setObject(6, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(7, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setLong(8, produto.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){
@@ -77,7 +74,7 @@ public class DaoProduto {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             String consulta = """
-                SELECT p.*, c.nome AS cor_nome, m.nome AS material_nome, um.nome AS unid_medida_nome
+                SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome
                 FROM produto p
                 LEFT JOIN material m ON p.material_id = m.id
                 LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
@@ -116,14 +113,21 @@ public class DaoProduto {
 
     public List<Produto> pesquisarProduto(String pesquisa) {
         List<Produto> lista = new ArrayList<>();
-        String consulta = "SELECT * FROM produto WHERE nome LIKE ?";
+        String consulta = """
+            SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome
+            FROM produto p
+            LEFT JOIN material m ON p.material_id = m.id
+            LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
+            WHERE p.nome LIKE ? OR m.nome LIKE ?
+        """;
     
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(consulta)) {
-    
+
             String busca = "%" + pesquisa + "%";
             prepareStatement.setString(1, busca);
-    
+            prepareStatement.setString(2, busca);
+
             ResultSet resultSet = prepareStatement.executeQuery();
     
             while (resultSet.next()) {
@@ -136,11 +140,13 @@ public class DaoProduto {
                 produto.setCustoUnitario(resultSet.getBigDecimal("custoUnitario"));
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
-                produto.setMaterial(material);
+                material.setNome(resultSet.getString("material_nome"));
+                produto.setMaterial(material.getId() != 0 ? material : null);
     
                 UnidMedida unidMedida = new UnidMedida();
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
-                produto.setUnidMedida(unidMedida);
+                unidMedida.setNome(resultSet.getString("unid_medida_nome"));
+                produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
     
                 lista.add(produto);
             }

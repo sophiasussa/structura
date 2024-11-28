@@ -93,16 +93,20 @@ public class ProdutoView extends VerticalLayout{
         buttonPrimary.addClickListener(event -> {
             String pesquisa = textField.getValue().trim();
             List<Produto> resultados;
-
-            if(pesquisa.isEmpty()){
+        
+            if (pesquisa.isEmpty()) {
                 resultados = produtoRepository.pesquisarTodos();
-            }else{
+            } else {
                 resultados = produtoRepository.pesquisarProduto(pesquisa);
             }
-
+        
+            if (resultados.isEmpty()) {
+                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
+            }
+        
             grid.setItems(resultados);
         });
-
+        
         //For a better interface
         textField.setPlaceholder("Nome");
         textField.setWidth("250px");
@@ -117,10 +121,6 @@ public class ProdutoView extends VerticalLayout{
         buttonPrimary.getStyle().set("border-radius", "50%");
         textField.addClassName("rounded-text-field");
         layoutRow.add(textField, buttonPrimary);
-
-        buttonPrimary.addClickListener(produto -> {
-            Notification.show("Pesquisar por: " + textField.getValue());
-        });
 
         grid = createGrid();
 
@@ -142,6 +142,7 @@ public class ProdutoView extends VerticalLayout{
         VerticalLayout layout2 = new VerticalLayout();
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
+        FormLayout formLayout2Col1 = new FormLayout();
         FormLayout formLayout3Col = new FormLayout();
         nome = new TextField("Nome");
         modelo = new TextField("Modelo");
@@ -174,7 +175,7 @@ public class ProdutoView extends VerticalLayout{
             Material materialProduto = material.isEmpty() ? null : material.getValue();
             UnidMedida unidMedidaProduto = unidMedida.isEmpty() ? null : unidMedida.getValue();
         
-            Produto produto = new Produto(nomeProduto, modeloProduto, quantidadeAtualProduto, quantidadeMinimaProduto, custoUnitarioProduto, corProduto, materialProduto, unidMedidaProduto);
+            Produto produto = new Produto(nomeProduto, modeloProduto, quantidadeAtualProduto, quantidadeMinimaProduto, custoUnitarioProduto, materialProduto, unidMedidaProduto);
             produto.setId(produtoId);
 
             boolean sucesso;
@@ -225,8 +226,9 @@ public class ProdutoView extends VerticalLayout{
         );
         
         formLayout2Col.add(nome,modelo);
-        formLayout3Col.add(custoUnitario,quantidadeAtual,quantidadeMinima,cor, material ,unidMedida, buttonTertiary, buttonTertiary2, buttonTertiary3);
-        layout2.add(formLayout2Col, formLayout3Col, space);
+        formLayout3Col.add(custoUnitario,quantidadeAtual,quantidadeMinima);
+        formLayout2Col1.add(material ,unidMedida, buttonTertiary2, buttonTertiary3);
+        layout2.add(formLayout2Col, formLayout3Col, formLayout2Col1, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addProdutosContentDiv.add(space1, layout);

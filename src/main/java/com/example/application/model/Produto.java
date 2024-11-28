@@ -5,14 +5,12 @@ import java.math.BigDecimal;
 public class Produto extends Estoque{
     private Long id;
     private String modelo;
-    private Cor cor;
     private Material material;
     private UnidMedida unidMedida;
 
-    public Produto(String nome, String modelo, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario, Cor cor, Material material, UnidMedida unidMedida) {
+    public Produto(String nome, String modelo, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario, Material material, UnidMedida unidMedida) {
         super(nome, quantidadeAtual, quantidadeMinima, custoUnitario);
         this.modelo = modelo;
-        this.cor = cor;
         this.material = material;
         this.unidMedida = unidMedida;
     }
@@ -35,14 +33,6 @@ public class Produto extends Estoque{
 
     public void setModelo(String modelo) {
         this.modelo = modelo;
-    }
-
-    public Cor getCor() {
-        return cor;
-    }
-
-    public void setCor(Cor cor) {
-        this.cor = cor;
     }
 
     public Material getMaterial() {
