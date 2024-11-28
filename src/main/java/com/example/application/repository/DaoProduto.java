@@ -79,7 +79,6 @@ public class DaoProduto {
             String consulta = """
                 SELECT p.*, c.nome AS cor_nome, m.nome AS material_nome, um.nome AS unid_medida_nome
                 FROM produto p
-                LEFT JOIN cor c ON p.cor_id = c.id
                 LEFT JOIN material m ON p.material_id = m.id
                 LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
             """;
@@ -95,11 +94,6 @@ public class DaoProduto {
                 produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
                 produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
                 produto.setCustoUnitario(resultSet.getBigDecimal("custoUnitario"));
-                Cor cor = new Cor();
-                cor.setId(resultSet.getInt("cor_id"));
-                cor.setNome(resultSet.getString("cor_nome"));
-                produto.setCor(cor.getId() != 0 ? cor : null);
-    
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
                 material.setNome(resultSet.getString("material_nome"));
@@ -140,11 +134,6 @@ public class DaoProduto {
                 produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
                 produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
                 produto.setCustoUnitario(resultSet.getBigDecimal("custoUnitario"));
-                Cor cor = new Cor();
-                cor.setId(resultSet.getInt("cor_id"));
-                cor.setNome(resultSet.getString("cor_nome"));
-                produto.setCor(cor);
-    
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
                 produto.setMaterial(material);
