@@ -20,7 +20,7 @@ public class DaoFuncionario {
             prepareStatement.setString(3, funcionario.getRg());
             prepareStatement.setString(4, funcionario.getTelefone());
             prepareStatement.setDate(5, java.sql.Date.valueOf(funcionario.getDataAdmissao()));
-            prepareStatement.setBigDecimal(6, funcionario.getSalario());
+            prepareStatement.setDouble(6, funcionario.getSalario());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class DaoFuncionario {
             prepareStatement.setString(3, funcionario.getRg());
             prepareStatement.setString(4, funcionario.getTelefone());
             prepareStatement.setDate(5, java.sql.Date.valueOf(funcionario.getDataAdmissao()));
-            prepareStatement.setBigDecimal(6, funcionario.getSalario());
+            prepareStatement.setDouble(6, funcionario.getSalario());
             prepareStatement.setLong(7, funcionario.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
@@ -79,7 +79,7 @@ public class DaoFuncionario {
                 funcionario.setRg(resultSet.getString("rg"));
                 funcionario.setTelefone(resultSet.getString("telefone"));
                 funcionario.setDataAdmissao(resultSet.getDate("dataAdmissao").toLocalDate());
-                funcionario.setSalario(resultSet.getBigDecimal("salario"));
+                funcionario.setSalario(resultSet.getDouble("salario"));
                 lista.add(funcionario);
             }
             return lista;
@@ -111,7 +111,7 @@ public class DaoFuncionario {
                 funcionario.setRg(resultSet.getString("rg"));
                 funcionario.setTelefone(resultSet.getString("telefone"));
                 funcionario.setDataAdmissao(resultSet.getDate("dataAdmissao").toLocalDate());
-                funcionario.setSalario(resultSet.getBigDecimal("salario"));
+                funcionario.setSalario(resultSet.getDouble("salario"));
                 lista.add(funcionario);
             }
         } catch (Exception e) {

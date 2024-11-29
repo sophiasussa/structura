@@ -10,21 +10,22 @@ import java.util.List;
 import com.example.application.model.Produto;
 import com.example.application.model.UnidMedida;
 import com.example.application.model.Material;
+import com.example.application.model.Modelo;
 
 public class DaoProduto {
 
     public boolean inserir(Produto produto){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO produto (nome, modelo, quantidadeAtual, quantidadeMinima, custoUnitario, material_id, unid_medida_id) VALUE (?,?,?,?,?,?,?)";
+            String insert = "INSERT INTO produto (nome, quantidadeAtual, quantidadeMinima, custoUnitario, material_id, unid_medida_id, modelo_id) VALUE (?,?,?,?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
             prepareStatement.setString(1, produto.getNome());
-            prepareStatement.setString(2, produto.getModelo());
-            prepareStatement.setInt(3, produto.getQuantidadeAtual());
-            prepareStatement.setInt(4, produto.getQuantidadeMinima());
-            prepareStatement.setBigDecimal(5, produto.getCustoUnitario());
-            prepareStatement.setObject(6, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
-            prepareStatement.setObject(7, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setInt(2, produto.getQuantidadeAtual());
+            prepareStatement.setInt(3, produto.getQuantidadeMinima());
+            prepareStatement.setDouble(4, produto.getCustoUnitario());
+            prepareStatement.setObject(5, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(7, produto.getModelo() != null ? produto.getModelo().getId() : null, java.sql.Types.INTEGER);
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -37,16 +38,16 @@ public class DaoProduto {
         try{
 
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE produto SET nome = ?, modelo = ?, quantidadeAtual = ?, quantidadeMinima = ?, custoUnitario = ?, material_id = ?, unid_medida_id = ? WHERE id = ?";
+            String update = "UPDATE produto SET nome = ?, quantidadeAtual = ?, quantidadeMinima = ?, custoUnitario = ?, material_id = ?, unid_medida_id = ?, modelo_id = ? WHERE id = ?";
             
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, produto.getNome());
-            prepareStatement.setString(2, produto.getModelo());
-            prepareStatement.setInt(3, produto.getQuantidadeAtual());
-            prepareStatement.setInt(4, produto.getQuantidadeMinima());
-            prepareStatement.setBigDecimal(5, produto.getCustoUnitario());
-            prepareStatement.setObject(6, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
-            prepareStatement.setObject(7, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setInt(2, produto.getQuantidadeAtual());
+            prepareStatement.setInt(3, produto.getQuantidadeMinima());
+            prepareStatement.setDouble(4, produto.getCustoUnitario());
+            prepareStatement.setObject(5, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
+            prepareStatement.setObject(7, produto.getModelo() != null ? produto.getModelo().getId() : null, java.sql.Types.INTEGER);
             prepareStatement.setLong(8, produto.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
@@ -74,10 +75,11 @@ public class DaoProduto {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             String consulta = """
-                SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome
+                SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome, mo.nome AS modelo_nome
                 FROM produto p
                 LEFT JOIN material m ON p.material_id = m.id
                 LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
+                LEFT JOIN modelo mo ON p.modelo_id = mo.id
             """;
             List<Produto> lista = new ArrayList<>();
             PreparedStatement prepareStatement = connection.prepareStatement(consulta);
@@ -87,10 +89,9 @@ public class DaoProduto {
                 Produto produto = new Produto();
                 produto.setId(resultSet.getLong("id"));
                 produto.setNome(resultSet.getString("nome"));
-                produto.setModelo(resultSet.getString("modelo"));
                 produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
                 produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
-                produto.setCustoUnitario(resultSet.getBigDecimal("custoUnitario"));
+                produto.setCustoUnitario(resultSet.getDouble("custoUnitario"));
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
                 material.setNome(resultSet.getString("material_nome"));
@@ -100,6 +101,11 @@ public class DaoProduto {
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
                 unidMedida.setNome(resultSet.getString("unid_medida_nome"));
                 produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
+
+                Modelo modelo = new Modelo();
+                modelo.setId(resultSet.getInt("modelo_id"));
+                modelo.setNome(resultSet.getString("modelo_nome"));
+                produto.setModelo(modelo.getId() != 0 ? modelo : null);
     
                 lista.add(produto);
             }
@@ -114,10 +120,11 @@ public class DaoProduto {
     public List<Produto> pesquisarProduto(String pesquisa) {
         List<Produto> lista = new ArrayList<>();
         String consulta = """
-            SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome
+            SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome, mo.nome AS modelo_nome
             FROM produto p
             LEFT JOIN material m ON p.material_id = m.id
             LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
+            LEFT JOIN modelo mo ON p.modelo_id = mo.id
             WHERE p.nome LIKE ? OR m.nome LIKE ?
         """;
     
@@ -134,10 +141,9 @@ public class DaoProduto {
                 Produto produto = new Produto();
                 produto.setId(resultSet.getLong("id"));
                 produto.setNome(resultSet.getString("nome"));
-                produto.setModelo(resultSet.getString("modelo"));
                 produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
                 produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
-                produto.setCustoUnitario(resultSet.getBigDecimal("custoUnitario"));
+                produto.setCustoUnitario(resultSet.getDouble("custoUnitario"));
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
                 material.setNome(resultSet.getString("material_nome"));
@@ -147,6 +153,11 @@ public class DaoProduto {
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
                 unidMedida.setNome(resultSet.getString("unid_medida_nome"));
                 produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
+
+                Modelo modelo = new Modelo();
+                modelo.setId(resultSet.getInt("modelo_id"));
+                modelo.setNome(resultSet.getString("modelo_nome"));
+                produto.setModelo(modelo.getId() != 0 ? modelo : null);
     
                 lista.add(produto);
             }

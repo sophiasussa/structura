@@ -23,11 +23,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
-import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import com.example.application.model.Funcionario;
 import com.example.application.repository.DaoFuncionario;
@@ -224,7 +225,14 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             String rgFuncionario = rg.isEmpty() ? "" : rg.getValue();
             String telefoneFuncionario = telefone.getValue();
             LocalDate dataFuncionario = data.getValue();
-            BigDecimal salarioValue = new BigDecimal(salario.getValue());
+            Double salarioValue;
+
+            try {
+                salarioValue = Double.parseDouble(salario.getValue());
+            } catch (NumberFormatException e) {
+                Notification.show("Valor inválido.");
+                return;
+            }
 
             Funcionario funcionario = new Funcionario(nomeFuncionario, cpfFucionario, rgFuncionario, telefoneFuncionario, dataFuncionario, salarioValue);
             funcionario.setId(funcionarioId);
@@ -301,7 +309,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         cpf.setValue(String.valueOf(funcionario.getCpf()));
         rg.setValue(String.valueOf(funcionario.getRg()));
         telefone.setValue(String.valueOf(funcionario.getTelefone()));
-        salario.setValue(funcionario.getSalario().toString());
+        salario.setValue(String.valueOf(funcionario.getSalario()));
         data.setValue(funcionario.getDataAdmissao());
     }
 
@@ -331,9 +339,12 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             rgField.setValue(funcionario.getRg());
             rgField.setReadOnly(true);
             rgField.addClassName("rounded-text-field");
+
+            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+            String salarioFormatado = currencyFormat.format(funcionario.getSalario());
     
             TextField salarioField = new TextField("Salário");
-            salarioField.setValue(funcionario.getSalario().toString());
+            salarioField.setValue(salarioFormatado);
             salarioField.setReadOnly(true);
             salarioField.addClassName("rounded-text-field");
     

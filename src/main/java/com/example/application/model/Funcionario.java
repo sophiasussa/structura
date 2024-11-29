@@ -5,9 +5,9 @@ import java.time.LocalDate;
 public class Funcionario extends Pessoa  {
     private Long id;
     private LocalDate dataAdmissao;
-    private BigDecimal salario;
+    private Double salario;
 
-    public Funcionario(String nome, String cpf, String rg, String telefone, LocalDate dataAdmissao, BigDecimal salario) {
+    public Funcionario(String nome, String cpf, String rg, String telefone, LocalDate dataAdmissao, Double salario) {
         super(nome, cpf, rg, telefone);
         this.dataAdmissao = dataAdmissao;
         this.salario = salario;
@@ -33,11 +33,11 @@ public class Funcionario extends Pessoa  {
         this.dataAdmissao = dataAdmissao;
     }
 
-    public BigDecimal getSalario(){
+    public Double getSalario(){
         return salario;
     }
 
-    public void setSalario(BigDecimal salario){
+    public void setSalario(Double salario){
         this.salario = salario;
     }
 

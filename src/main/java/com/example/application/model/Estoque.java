@@ -1,14 +1,12 @@
 package com.example.application.model;
 
-import java.math.BigDecimal;
-
 public class Estoque {
     private String nome;
     private int quantidadeAtual;
     private int quantidadeMinima;
-    private BigDecimal custoUnitario;
+    private Double custoUnitario;
 
-    public Estoque(String nome, int quantidadeAtual, int quantidadeMinima, BigDecimal custoUnitario) {
+    public Estoque(String nome, int quantidadeAtual, int quantidadeMinima, Double custoUnitario) {
         this.nome = nome;
         this.quantidadeAtual = quantidadeAtual;
         this.quantidadeMinima = quantidadeMinima;
@@ -43,11 +41,11 @@ public class Estoque {
         this.quantidadeMinima = quantidadeMinima;
     }
 
-    public BigDecimal getCustoUnitario() {
+    public Double getCustoUnitario() {
         return custoUnitario;
     }
 
-    public void setCustoUnitario(BigDecimal custoUnitario) {
+    public void setCustoUnitario(Double custoUnitario) {
         this.custoUnitario = custoUnitario;
     }
 }
