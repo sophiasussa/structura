@@ -19,7 +19,7 @@ public class DaoFuncionario {
             prepareStatement.setString(2, funcionario.getCpf());
             prepareStatement.setString(3, funcionario.getRg());
             prepareStatement.setString(4, funcionario.getTelefone());
-            prepareStatement.setDate(5, java.sql.Date.valueOf(funcionario.getDataAdmissao()));
+            prepareStatement.setObject(5, funcionario.getDataAdmissao() != null ? java.sql.Date.valueOf(funcionario.getDataAdmissao()) : null, java.sql.Types.DATE);
             prepareStatement.setDouble(6, funcionario.getSalario());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
@@ -38,7 +38,7 @@ public class DaoFuncionario {
             prepareStatement.setString(2, funcionario.getCpf());
             prepareStatement.setString(3, funcionario.getRg());
             prepareStatement.setString(4, funcionario.getTelefone());
-            prepareStatement.setDate(5, java.sql.Date.valueOf(funcionario.getDataAdmissao()));
+            prepareStatement.setObject(5, funcionario.getDataAdmissao() != null ? java.sql.Date.valueOf(funcionario.getDataAdmissao()) : null, java.sql.Types.DATE);
             prepareStatement.setDouble(6, funcionario.getSalario());
             prepareStatement.setLong(7, funcionario.getId());
             int resultado = prepareStatement.executeUpdate();
@@ -78,7 +78,8 @@ public class DaoFuncionario {
                 funcionario.setCpf(resultSet.getString("cpf"));
                 funcionario.setRg(resultSet.getString("rg"));
                 funcionario.setTelefone(resultSet.getString("telefone"));
-                funcionario.setDataAdmissao(resultSet.getDate("dataAdmissao").toLocalDate());
+                java.sql.Date dataSql = resultSet.getDate("dataAdmissao");
+                funcionario.setDataAdmissao(dataSql != null ? dataSql.toLocalDate() : null);
                 funcionario.setSalario(resultSet.getDouble("salario"));
                 lista.add(funcionario);
             }
@@ -110,7 +111,8 @@ public class DaoFuncionario {
                 funcionario.setCpf(resultSet.getString("cpf"));
                 funcionario.setRg(resultSet.getString("rg"));
                 funcionario.setTelefone(resultSet.getString("telefone"));
-                funcionario.setDataAdmissao(resultSet.getDate("dataAdmissao").toLocalDate());
+                java.sql.Date dataSql = resultSet.getDate("dataAdmissao");
+                funcionario.setDataAdmissao(dataSql != null ? dataSql.toLocalDate() : null);
                 funcionario.setSalario(resultSet.getDouble("salario"));
                 lista.add(funcionario);
             }

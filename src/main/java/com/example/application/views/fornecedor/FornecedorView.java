@@ -201,7 +201,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
             }
             ie.setValue(value);
         });
-        ie.setMaxLength(12);
+        ie.setMaxLength(15);
 
         telefone.addBlurListener(event -> {
             String value = telefone.getValue().replaceAll("[^\\d]", "");

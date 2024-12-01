@@ -15,6 +15,7 @@ import com.example.application.repository.DaoProduto;
 import com.example.application.repository.DaoUnidMedida;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -180,14 +181,7 @@ public class ProdutoView extends VerticalLayout {
             Material materialProduto = material.isEmpty() ? null : material.getValue();
             UnidMedida unidMedidaProduto = unidMedida.isEmpty() ? null : unidMedida.getValue();
             Modelo modeloProduto = modelo.isEmpty() ? null : modelo.getValue();
-            Double custoUnitarioProduto;
-
-            try {
-                custoUnitarioProduto = Double.parseDouble(custoUnitario.getValue());
-            } catch (NumberFormatException e) {
-                Notification.show("Valor inválido.");
-                return;
-            }
+            Double custoUnitarioProduto = custoUnitario.isEmpty() ? 0.0 : Double.parseDouble(custoUnitario.getValue());
 
             Produto produto = new Produto(nomeProduto, quantidadeAtualProduto, quantidadeMinimaProduto,
                     custoUnitarioProduto, materialProduto, unidMedidaProduto, modeloProduto);
@@ -222,6 +216,7 @@ public class ProdutoView extends VerticalLayout {
         quantidadeAtual.addClassName("rounded-text-field");
         quantidadeMinima.addClassName("rounded-text-field");
         custoUnitario.addClassName("rounded-text-field");
+        custoUnitario.setPlaceholder("Exemplo: 1000.00 ou 1000");
         material.addClassName("rounded-text-field");
         unidMedida.addClassName("rounded-text-field");
         modelo.addClassName("rounded-text-field");
@@ -424,9 +419,13 @@ public class ProdutoView extends VerticalLayout {
 
         grid.addComponentColumn(modelo -> {
             Button alterarButton = new Button("Alterar", new Icon(VaadinIcon.COG));
+            editor.addOpenListener(event -> {
+                if (event.getItem() == modelo) {
+                    alterarButton.setText("Salvar Alteração");
+                }
+            });
             alterarButton.addClickListener(e -> {
                 if (editor.isOpen()) {
-                    alterarButton.setText("Salvar");
                     editor.save();
                     Modelo editedModelo = editor.getItem();
                     if (modeloRepository.alterar(editedModelo)) {
@@ -512,7 +511,10 @@ public class ProdutoView extends VerticalLayout {
                 }
             }
         });
-        Button cancelarButton = new Button("Fechar", event -> dialog.close());
+        Button cancelarButton = new Button("Fechar", event -> {
+            dialog.close();
+            UI.getCurrent().getPage().reload();
+        });
 
         cancelarButton.getStyle()
                 .set("background-color", "#FF0000")
@@ -568,6 +570,11 @@ public class ProdutoView extends VerticalLayout {
 
         grid.addComponentColumn(material -> {
             Button alterarButton = new Button("Alterar", new Icon(VaadinIcon.COG));
+            editor.addOpenListener(event -> {
+                if (event.getItem() == material) {
+                    alterarButton.setText("Salvar Alteração");
+                }
+            });
             alterarButton.addClickListener(e -> {
                 if (editor.isOpen()) {
                     alterarButton.setText("Salvar");
@@ -656,7 +663,10 @@ public class ProdutoView extends VerticalLayout {
                 }
             }
         });
-        Button cancelarButton = new Button("Fechar", event -> dialog.close());
+        Button cancelarButton = new Button("Fechar", event -> {
+            dialog.close();
+            UI.getCurrent().getPage().reload();
+        });
 
         cancelarButton.getStyle()
                 .set("background-color", "#FF0000")
@@ -712,6 +722,11 @@ public class ProdutoView extends VerticalLayout {
 
         grid.addComponentColumn(unidMedida -> {
             Button alterarButton = new Button("Alterar", new Icon(VaadinIcon.COG));
+            editor.addOpenListener(event -> {
+                if (event.getItem() == unidMedida) {
+                    alterarButton.setText("Salvar Alteração");
+                }
+            });
             alterarButton.addClickListener(e -> {
                 if (editor.isOpen()) {
                     alterarButton.setText("Salvar");
@@ -800,7 +815,10 @@ public class ProdutoView extends VerticalLayout {
                 }
             }
         });
-        Button cancelarButton = new Button("Fechar", event -> dialog.close());
+        Button cancelarButton = new Button("Fechar", event -> {
+            dialog.close();
+            UI.getCurrent().getPage().reload();
+        });
 
         cancelarButton.getStyle()
                 .set("background-color", "#FF0000")

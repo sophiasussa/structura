@@ -180,6 +180,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         telefone = new TextField("Telefone");
         salario = new TextField("Salário");
         data = new DatePicker("Data Admissão");
+        salario.setPlaceholder("Exemplo: 2000.00 ou 2000");
 
         cpf.addBlurListener(event -> {
             String value = cpf.getValue().replaceAll("[^\\d]", "");
@@ -224,15 +225,8 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             String cpfFucionario = cpf.isEmpty() ? "" : cpf.getValue();
             String rgFuncionario = rg.isEmpty() ? "" : rg.getValue();
             String telefoneFuncionario = telefone.getValue();
-            LocalDate dataFuncionario = data.getValue();
-            Double salarioValue;
-
-            try {
-                salarioValue = Double.parseDouble(salario.getValue());
-            } catch (NumberFormatException e) {
-                Notification.show("Valor inválido.");
-                return;
-            }
+            LocalDate dataFuncionario = data.isEmpty() ? null : data.getValue();
+            Double salarioValue = salario.isEmpty() ? 0.0 : Double.parseDouble(salario.getValue());
 
             Funcionario funcionario = new Funcionario(nomeFuncionario, cpfFucionario, rgFuncionario, telefoneFuncionario, dataFuncionario, salarioValue);
             funcionario.setId(funcionarioId);
