@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-@Theme(value = "strutura")
+@Theme(value = "structura")
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
