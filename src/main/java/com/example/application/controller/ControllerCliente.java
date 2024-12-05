@@ -27,4 +27,8 @@ public class ControllerCliente {
     public List<Cliente> pesquisarCliente(String pesquisa){
         return dao.pesquisarCliente(pesquisa);
     }
+
+    public Cliente getClienteById(int id) {
+        return dao.getClienteById(id);
+    }
 }

@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
 
 public class DaoFuncionario {
@@ -120,6 +122,32 @@ public class DaoFuncionario {
             e.printStackTrace();
         }
         return lista;
+    }
+
+    public Funcionario getFuncionarioById(int id) {
+        String sql = "SELECT * FROM funcionario WHERE id = ?";
+        try (Connection connection = DBConnection.getInstance().getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(sql)) {
+            prepareStatement.setInt(1, id);
+            ResultSet resultSet = prepareStatement.executeQuery();
+            if (resultSet.next()) {
+                Funcionario funcionario = new Funcionario();
+                funcionario.setId(resultSet.getLong("id"));
+                funcionario.setNome(resultSet.getString("nome"));
+                funcionario.setCpf(resultSet.getString("cpf"));
+                funcionario.setRg(resultSet.getString("rg"));
+                funcionario.setTelefone(resultSet.getString("telefone"));
+                java.sql.Date dataSql = resultSet.getDate("dataAdmissao");
+                funcionario.setDataAdmissao(dataSql != null ? dataSql.toLocalDate() : null);
+                funcionario.setSalario(resultSet.getDouble("salario"));
+                return funcionario;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

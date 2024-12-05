@@ -2,6 +2,7 @@ package com.example.application.controller;
 
 import java.util.List;
 
+import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
 import com.example.application.repository.DaoFuncionario;
 
@@ -26,5 +27,9 @@ public class ControllerFuncionario {
 
     public List<Funcionario> pesquisarFuncionario(String pesquisa){
         return dao.pesquisarFuncionario(pesquisa);
+    }
+
+    public Funcionario getFuncionarioById(int id) {
+        return dao.getFuncionarioById(id);
     }
 }

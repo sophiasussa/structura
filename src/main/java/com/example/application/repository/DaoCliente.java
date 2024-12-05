@@ -114,4 +114,27 @@ public class DaoCliente {
         }
         return lista;
     }
+
+    public Cliente getClienteById(int id) {
+        String sql = "SELECT * FROM cliente WHERE id = ?";
+        try (Connection connection = DBConnection.getInstance().getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(sql)) {
+
+            prepareStatement.setInt(1, id);
+            ResultSet result = prepareStatement.executeQuery();
+            if (result.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setId(result.getLong("id"));
+                cliente.setNome(result.getString("nome"));
+                cliente.setCpf(result.getString("cpf"));
+                cliente.setTelefone(result.getString("telefone"));
+                return cliente;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
