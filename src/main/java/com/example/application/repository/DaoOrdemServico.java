@@ -110,7 +110,7 @@ public class DaoOrdemServico {
             stmtDeleteProdutos.setLong(1, idOs);
             stmtDeleteProdutos.executeUpdate();
 
-            stmtDeleteOS.setLong(2, idOs);
+            stmtDeleteOS.setLong(1, idOs);
             int rowsDeleted = stmtDeleteOS.executeUpdate();
 
             return rowsDeleted > 0;
@@ -180,9 +180,9 @@ public class DaoOrdemServico {
 
             while (rsOS.next()) {
                 OrdemServico os = new OrdemServico();
-                os.setStatusOS(rsOS.getString("status_os"));
+                os.setStatusOS(StatusOS.valueOf(rsOS.getString("status_os")));
                 os.setEndereco(rsOS.getString("endereco"));
-                os.setImagens(rsOS.getDate("os.data_encerramento_os").toLocalDate());
+                os.setImagens(Arrays.asList(rsOS.getString("imagens").split(",")));
                 java.sql.Date dataSql = rsOS.getDate("dataa");
                 os.setData(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacao"));
@@ -211,9 +211,9 @@ public class DaoOrdemServico {
 
             if (result.next()) {
                 OrdemServico os = new OrdemServico();
-                os.setStatusOS(result.getString("status_os"));
+                os.setStatusOS(StatusOS.valueOf(result.getString("status_os")));
                 os.setEndereco(result.getString("endereco"));
-                os.setImagens(result.getDate("os.data_encerramento_os").toLocalDate());
+                os.setImagens(Arrays.asList(result.getString("imagens").split(",")));
                 java.sql.Date dataSql = result.getDate("dataa");
                 os.setData(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(result.getString("observacao"));

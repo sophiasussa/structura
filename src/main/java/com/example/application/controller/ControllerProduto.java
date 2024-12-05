@@ -2,6 +2,7 @@ package com.example.application.controller;
 
 import java.util.List;
 
+import com.example.application.model.Cliente;
 import com.example.application.model.Produto;
 import com.example.application.repository.DaoProduto;
 
@@ -26,5 +27,9 @@ public class ControllerProduto {
 
     public List<Produto> pesquisarProduto(String pesquisa){
         return dao.pesquisarProduto(pesquisa);
+    }
+
+    public Produto getProdutoById(int id) {
+        return dao.getProdutoById(id);
     }
 }

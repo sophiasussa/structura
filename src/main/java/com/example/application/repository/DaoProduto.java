@@ -3,12 +3,14 @@ package com.example.application.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.example.application.model.Produto;
 import com.example.application.model.UnidMedida;
+import com.example.application.model.Funcionario;
 import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 
@@ -165,5 +167,42 @@ public class DaoProduto {
             e.printStackTrace();
         }
         return lista;
+    }
+
+    public Produto getProdutoById(int id) {
+        String sql = "SELECT * FROM produto WHERE id = ?";
+        try (Connection connection = DBConnection.getInstance().getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(sql)) {
+            prepareStatement.setInt(1, id);
+            ResultSet resultSet = prepareStatement.executeQuery();
+            if (resultSet.next()) {
+                Produto produto = new Produto();
+                produto.setId(resultSet.getLong("id"));
+                produto.setNome(resultSet.getString("nome"));
+                produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
+                produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
+                produto.setCustoUnitario(resultSet.getDouble("custoUnitario"));
+                Material material = new Material();
+                material.setId(resultSet.getInt("material_id"));
+                material.setNome(resultSet.getString("material_nome"));
+                produto.setMaterial(material.getId() != 0 ? material : null);
+    
+                UnidMedida unidMedida = new UnidMedida();
+                unidMedida.setId(resultSet.getInt("unid_medida_id"));
+                unidMedida.setNome(resultSet.getString("unid_medida_nome"));
+                produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
+
+                Modelo modelo = new Modelo();
+                modelo.setId(resultSet.getInt("modelo_id"));
+                modelo.setNome(resultSet.getString("modelo_nome"));
+                produto.setModelo(modelo.getId() != 0 ? modelo : null);
+                return produto;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

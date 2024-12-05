@@ -3,6 +3,7 @@ package com.example.application.views;
 import com.example.application.views.cliente.ClienteView;
 import com.example.application.views.fornecedor.FornecedorView;
 import com.example.application.views.funcionario.FuncionarioView;
+import com.example.application.views.ordemServico.OrdemServicoView;
 import com.example.application.views.home.HomeView;
 import com.example.application.views.produto.ProdutoView;
 import com.vaadin.flow.component.UI;
@@ -80,6 +81,7 @@ public class MainLayout extends AppLayout{
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Home", HomeView.class, VaadinIcon.HOME.create()));
+        nav.addItem(new SideNavItem("Ordem de Serviço", OrdemServicoView.class, VaadinIcon.CLIPBOARD_TEXT.create()));
 
         return nav;
     }
