@@ -13,9 +13,8 @@ public class Agenda {
     public Agenda() {
     }
     
-    public Agenda(Long id, String titulo, String descricao, LocalDate dataHora, StatusAgenda status,
+    public Agenda(StatusAgenda status, String titulo, String descricao, LocalDate dataHora,
             Funcionario funcionario) {
-        this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
         this.dataHora = dataHora;

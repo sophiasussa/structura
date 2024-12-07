@@ -115,7 +115,7 @@ public class DaoAgenda {
             SELECT a.*, f.nome AS funcionario_nome
             FROM agenda a
             LEFT JOIN funcionario f ON a.funcionario_id = f.id
-            WHERE f.nome LIKE ? OR a.dataa = ?
+            WHERE f.nome LIKE ? OR a.titulo LIKE ? OR a.dataa = ?
         """;
     
         try (Connection connection = DBConnection.getInstance().getConnection();
@@ -124,12 +124,13 @@ public class DaoAgenda {
             String buscaTexto = "%" + pesquisa + "%";
     
             prepareStatement.setString(1, buscaTexto);
+            prepareStatement.setString(2, buscaTexto);
     
             try {
                 java.sql.Date data = java.sql.Date.valueOf(pesquisa);
-                prepareStatement.setDate(2, data);
+                prepareStatement.setDate(3, data);
             } catch (IllegalArgumentException e) {
-                prepareStatement.setNull(2, java.sql.Types.DATE);
+                prepareStatement.setNull(3, java.sql.Types.DATE);
             }
     
             ResultSet resultSet = prepareStatement.executeQuery();

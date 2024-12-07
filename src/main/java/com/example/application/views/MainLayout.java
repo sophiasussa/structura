@@ -5,6 +5,7 @@ import com.example.application.views.fornecedor.FornecedorView;
 import com.example.application.views.funcionario.FuncionarioView;
 import com.example.application.views.ordemServico.OrdemServicoView;
 import com.example.application.views.home.HomeView;
+import com.example.application.views.agenda.AgendaView;
 import com.example.application.views.produto.ProdutoView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -60,6 +61,7 @@ public class MainLayout extends AppLayout{
         SideNav mainNavigation = createNavigation();
         SideNav secondaryNavigation = createNavigation2();
         SideNav terceiroNavigation = createNavigation3();
+        SideNav quartoNavigation = createNavigation4();
     
         VerticalLayout navLayout = new VerticalLayout(mainNavigation, secondaryNavigation);
         navLayout.setSpacing(false);
@@ -67,7 +69,7 @@ public class MainLayout extends AppLayout{
         
         Scroller scroller = new Scroller(navLayout);
 
-        VerticalLayout drawerContent = new VerticalLayout(header, mainNavigation, secondaryNavigation, terceiroNavigation);
+        VerticalLayout drawerContent = new VerticalLayout(header, mainNavigation, secondaryNavigation, terceiroNavigation, quartoNavigation);
         drawerContent.setSpacing(true);
         drawerContent.setPadding(true);
         drawerContent.setSizeFull();
@@ -110,6 +112,15 @@ public class MainLayout extends AppLayout{
 
         return nav;
     }
+
+    private SideNav createNavigation4() {
+        SideNav nav = new SideNav();
+
+        nav.addItem(new SideNavItem("Agenda", AgendaView.class, VaadinIcon.BOOK.create()));
+
+        return nav;
+    }
+
 
 
     private Footer createFooter() {
