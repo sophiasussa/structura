@@ -59,6 +59,7 @@ public class MainLayout extends AppLayout{
 
         SideNav mainNavigation = createNavigation();
         SideNav secondaryNavigation = createNavigation2();
+        SideNav terceiroNavigation = createNavigation3();
     
         VerticalLayout navLayout = new VerticalLayout(mainNavigation, secondaryNavigation);
         navLayout.setSpacing(false);
@@ -66,7 +67,7 @@ public class MainLayout extends AppLayout{
         
         Scroller scroller = new Scroller(navLayout);
 
-        VerticalLayout drawerContent = new VerticalLayout(header, mainNavigation, secondaryNavigation);
+        VerticalLayout drawerContent = new VerticalLayout(header, mainNavigation, secondaryNavigation, terceiroNavigation);
         drawerContent.setSpacing(true);
         drawerContent.setPadding(true);
         drawerContent.setSizeFull();
@@ -81,7 +82,6 @@ public class MainLayout extends AppLayout{
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Home", HomeView.class, VaadinIcon.HOME.create()));
-        nav.addItem(new SideNavItem("Ordem de Serviço", OrdemServicoView.class, VaadinIcon.CLIPBOARD_TEXT.create()));
 
         return nav;
     }
@@ -99,6 +99,18 @@ public class MainLayout extends AppLayout{
 
         return nav;
     }
+
+    private SideNav createNavigation3() {
+        SideNav nav = new SideNav();
+
+        nav.setLabel("Serviços");
+        nav.setCollapsible(true);
+        nav.setExpanded(false);
+        nav.addItem(new SideNavItem("Ordem de Serviço", OrdemServicoView.class, VaadinIcon.CLIPBOARD_TEXT.create()));
+
+        return nav;
+    }
+
 
     private Footer createFooter() {
         Footer layout = new Footer();
