@@ -11,6 +11,7 @@ import java.util.List;
 import com.example.application.model.Material;
 import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
+import com.example.application.model.StatusAgenda;
 import com.example.application.model.StatusOS;
 
 public class DaoOrdemServico {
@@ -133,11 +134,13 @@ public class DaoOrdemServico {
             while (rsOS.next()) {
                 OrdemServico os = new OrdemServico();
                 os.setId(rsOS.getLong("id"));
-                os.setStatusOS(StatusOS.valueOf(rsOS.getString("status_os")));
+                String status = rsOS.getString("status_os");
+                os.setStatusOS(status != null ? StatusOS.valueOf(status) : null);
                 os.setEndereco(rsOS.getString("endereco"));
                 String imagens = rsOS.getString("imagens");
                 os.setImagens(imagens != null ? Arrays.asList(imagens.split(",")) : new ArrayList<>());
-                os.setData(rsOS.getDate("dataa").toLocalDate());
+                java.sql.Date dataSql = rsOS.getDate("dataa");
+                os.setData(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacoes"));
                 os.setCliente(new DaoCliente().getClienteById(rsOS.getInt("cliente_id")));
                 os.setFuncionario(new DaoFuncionario().getFuncionarioById(rsOS.getInt("funcionario_id")));
@@ -180,7 +183,8 @@ public class DaoOrdemServico {
 
             while (rsOS.next()) {
                 OrdemServico os = new OrdemServico();
-                os.setStatusOS(StatusOS.valueOf(rsOS.getString("status_os")));
+                String status = rsOS.getString("status_os");
+                os.setStatusOS(status != null ? StatusOS.valueOf(status) : null);
                 os.setEndereco(rsOS.getString("endereco"));
                 os.setImagens(Arrays.asList(rsOS.getString("imagens").split(",")));
                 java.sql.Date dataSql = rsOS.getDate("dataa");

@@ -233,7 +233,7 @@ public class OrdemServicoView extends VerticalLayout {
             StatusOS statusOrdemServico = status.isEmpty() ? null : status.getValue();
             String enderecoOrdemServico = endereco.isEmpty() ? null : endereco.getValue();
             String observacaoOrdemServico = observacao.isEmpty() ? null : observacao.getValue();
-            LocalDate dataFuncionario = /*data.isEmpty() null ?  :*/ data.getValue();
+            LocalDate dataFuncionario = data.isEmpty() ? null : data.getValue();
             Cliente clienteOrdemServico = cliente.isEmpty() ? null : cliente.getValue();
             Funcionario funcionarioOrdemServico = funcionario.isEmpty() ? null : funcionario.getValue();
             Set<Produto> produtosSelecionados = produto.getValue();
@@ -293,7 +293,7 @@ public class OrdemServicoView extends VerticalLayout {
                 new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("500px", 3));
 
-        formLayout2Col.add(status, produto, endereco, observacao, imagemPathField, upload);
+        formLayout2Col.add(status, produto, endereco, observacao, upload);
         formLayout3Col.add(data, cliente, funcionario);
         layout2.add(formLayout3Col, formLayout2Col, space);
         layout3.add(saveButton);
@@ -327,8 +327,13 @@ public class OrdemServicoView extends VerticalLayout {
         grid.setAllRowsVisible(true);
 
         grid.addColumn(ordemServico -> ordemServico.getId()).setHeader("ID").setSortable(true);
-        grid.addColumn(OrdemServico::getStatusOS).setHeader("Status").setSortable(true);
-        grid.addColumn(ordemServico -> ordemServico.getCliente().getNome()).setHeader("Cliente").setSortable(true);
+        grid.addColumn(ordemServico -> 
+        ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().name() : "N/A"
+    ).setHeader("Status").setSortable(true);
+        grid.addColumn(ordemServico -> 
+        ordemServico.getCliente() != null ? ordemServico.getCliente().getNome() : "N/A"
+    ).setHeader("Cliente").setSortable(true);
+
         grid.addColumn(OrdemServico::getData).setHeader("Data");
 
         grid.addComponentColumn(ordemServico -> {

@@ -25,7 +25,7 @@ public class DaoAgenda {
             prepareStatement.setString(1, agenda.getTitulo());
             prepareStatement.setString(2, agenda.getDescricao());
             prepareStatement.setObject(3, agenda.getDataHora() != null ? java.sql.Date.valueOf(agenda.getDataHora()) : null, java.sql.Types.DATE);
-            prepareStatement.setString(4, agenda.getStatus().name());
+            prepareStatement.setObject(4, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
             prepareStatement.setObject(5, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
@@ -44,7 +44,7 @@ public class DaoAgenda {
             prepareStatement.setString(1, agenda.getTitulo());
             prepareStatement.setString(2, agenda.getDescricao());
             prepareStatement.setObject(3, agenda.getDataHora() != null ? java.sql.Date.valueOf(agenda.getDataHora()) : null, java.sql.Types.DATE);
-            prepareStatement.setString(4, agenda.getStatus().name());
+            prepareStatement.setObject(4, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
             prepareStatement.setObject(5, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             prepareStatement.setLong(6, agenda.getId());
             
@@ -93,7 +93,8 @@ public class DaoAgenda {
                 agenda.setDataHora(resultSet.getDate("dataa") != null
                     ? resultSet.getDate("dataa").toLocalDate()
                     : null);
-                agenda.setStatus(StatusAgenda.valueOf(resultSet.getString("statuss")));
+                String status = resultSet.getString("statuss");
+                agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
 
                 Funcionario funcionario = new Funcionario();
                 funcionario.setId(resultSet.getLong("funcionario_id"));
@@ -143,7 +144,8 @@ public class DaoAgenda {
                 agenda.setDataHora(resultSet.getDate("dataa") != null
                     ? resultSet.getDate("dataa").toLocalDate()
                     : null);
-                agenda.setStatus(StatusAgenda.valueOf(resultSet.getString("statuss")));
+                String status = resultSet.getString("statuss");
+                agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
     
                 Funcionario funcionario = new Funcionario();
                 funcionario.setId(resultSet.getLong("funcionario_id"));

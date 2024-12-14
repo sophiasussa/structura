@@ -96,7 +96,7 @@ public class MainLayout extends AppLayout{
         nav.setExpanded(false);
         nav.addItem(new SideNavItem("Cliente", ClienteView.class, VaadinIcon.GROUP.create()));
         nav.addItem(new SideNavItem("Fornecedor", FornecedorView.class, VaadinIcon.HANDSHAKE.create()));
-        nav.addItem(new SideNavItem("Funcinário", FuncionarioView.class, VaadinIcon.MALE.create()));
+        nav.addItem(new SideNavItem("Funcionário", FuncionarioView.class, VaadinIcon.MALE.create()));
         nav.addItem(new SideNavItem("Produto", ProdutoView.class, VaadinIcon.PACKAGE.create()));
 
         return nav;

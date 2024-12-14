@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -63,10 +64,10 @@ public class AgendaView extends VerticalLayout {
     // This method sets up two tabs
     private void setTabSheetSampleData(TabSheet tabSheet) {
         Div agendaContent = createAgendaContent();
-        tabSheet.add("Ordens de Serviço", agendaContent);
+        tabSheet.add("Agenda", agendaContent);
 
         Div addAgendaContent = createAddAgendaContent();
-        tabSheet.add("Adicionar Ordem de Serviço", addAgendaContent);
+        tabSheet.add("Adicionar agendamento", addAgendaContent);
     }
 
     private Div createAgendaContent() {
@@ -148,7 +149,7 @@ public class AgendaView extends VerticalLayout {
             }
             StatusAgenda statusAgenda = status.isEmpty() ? null : status.getValue();
             String tituloAgenda = titulo.getValue();
-            String descricaoAgenda = descricao.isEmpty() ? null : descricao.getValue();
+            String descricaoAgenda = descricao.isEmpty() ? "" : descricao.getValue();
             LocalDate dataFuncionario = data.isEmpty() ? null  : data.getValue();
             Funcionario funcionarioAgenda = funcionario.isEmpty() ? null : funcionario.getValue();
 
@@ -160,16 +161,16 @@ public class AgendaView extends VerticalLayout {
             if (agendaId != null && agendaId > 0) {
                 sucesso = agendaRepository.alterar(agenda);
                 if (sucesso) {
-                    Notification.show("Agenda atualizada com sucesso!");
+                    Notification.show("Agendamento atualizado com sucesso!");
                 } else {
-                    Notification.show("Erro ao atualizar a Agenda", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Erro ao atualizar a agendamento", 3000, Notification.Position.MIDDLE);
                 }
             } else {
                 sucesso = agendaRepository.inserir(agenda);
                 if (sucesso) {
-                    Notification.show("Agenda salvo com sucesso!");
+                    Notification.show("Agendamento salvo com sucesso!");
                 } else {
-                    Notification.show("Erro ao salvar o Agenda", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Erro ao salvar agendamento", 3000, Notification.Position.MIDDLE);
                 }
             }
 
@@ -219,12 +220,32 @@ public class AgendaView extends VerticalLayout {
         grid.addColumn(Agenda::getTitulo).setHeader("Titulo").setSortable(true);
         grid.addColumn(Agenda::getDataHora).setHeader("Data").setSortable(true);
 
+        grid.addColumn(new ComponentRenderer<>(agenda -> {
+        Span statusBadge = new Span(agenda.getStatus() != null ? agenda.getStatus().getDescricao() : "Indefinido");
+        statusBadge.addClassName("status-badge");
+        if (agenda.getStatus() != null) {
+            switch (agenda.getStatus()) {
+                case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
+                case EM_ANDAMENTO -> statusBadge.getStyle().set("background-color", "lightgoldenrodyellow");
+                case CONCLUIDA -> statusBadge.getStyle().set("background-color", "lightgreen");
+                case CANCELADA -> statusBadge.getStyle().set("background-color", "lightcoral");
+                default -> statusBadge.getStyle().set("background-color", "lightgray");
+            }
+        }
+        statusBadge.getStyle()
+                .set("color", "black")
+                .set("padding", "5px 10px")
+                .set("border-radius", "12px")
+                .set("font-weight", "bold");
+        return statusBadge;
+        })).setHeader("Status").setSortable(true);
+
         grid.addComponentColumn(agenda -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
                 confirm.setHeaderTitle("Confirmar Exclusão");
                 VerticalLayout content = new VerticalLayout();
-                content.add(new Text("Você tem certeza que deseja excluir essa agenda " + agenda.getTitulo() + "?"));
+                content.add(new Text("Você tem certeza que deseja excluir esse agendamento " + agenda.getTitulo() + "?"));
 
                 Button confirmButton = new Button("Confirmar", event -> {
                     deleteAgenda(agenda);
@@ -270,7 +291,7 @@ public class AgendaView extends VerticalLayout {
         if(sucess){
             refreshGrid();
         }else{
-            System.out.println("Erro ao excluir agenda");
+            System.out.println("Erro ao excluir agendamento");
         }
     }
 
