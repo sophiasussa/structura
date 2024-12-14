@@ -6,6 +6,7 @@ public class Agenda {
     private Long id;
     private String titulo;
     private String descricao;
+    private String endereco;
     private LocalDate dataHora;
     private StatusAgenda status;
     private Funcionario funcionario;
@@ -13,10 +14,11 @@ public class Agenda {
     public Agenda() {
     }
     
-    public Agenda(StatusAgenda status, String titulo, String descricao, LocalDate dataHora,
+    public Agenda(StatusAgenda status, String titulo, String descricao, String endereco, LocalDate dataHora,
             Funcionario funcionario) {
         this.titulo = titulo;
         this.descricao = descricao;
+        this.endereco = endereco;
         this.dataHora = dataHora;
         this.status = status;
         this.funcionario = funcionario;
@@ -38,6 +40,12 @@ public class Agenda {
     }
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+    public String getEndereco() {
+        return endereco;
+    }
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
     public LocalDate getDataHora() {
         return dataHora;

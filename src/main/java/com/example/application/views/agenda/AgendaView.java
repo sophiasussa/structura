@@ -42,6 +42,7 @@ public class AgendaView extends VerticalLayout {
     private ComboBox<StatusAgenda> status = new ComboBox<>("Status");
     private TextField titulo = new TextField("Título");
     private TextArea descricao = new TextArea("Descrição");
+    private TextArea endereco = new TextArea("Endereço");
     private DatePicker data = new DatePicker("Data");
     private ComboBox<Funcionario> funcionario = new ComboBox<>("Funcionario");
     private Button buttonTertiary = new Button();
@@ -98,8 +99,8 @@ public class AgendaView extends VerticalLayout {
         });
 
         // For a better interface
-        textField.setPlaceholder("Título, Data ou Funcionario");
-        textField.setWidth("250px");
+        textField.setPlaceholder("Título, Data, Status ou Funcionario");
+        textField.setWidth("290px");
         layoutRow.setWidthFull();
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setAlignItems(Alignment.END);
@@ -139,6 +140,7 @@ public class AgendaView extends VerticalLayout {
         descricao = new TextArea("Descrição");
         data = new DatePicker("Data");
         funcionario = new ComboBox<>("Funcionario");
+        endereco = new TextArea("Endereço");
         status.setItems(StatusAgenda.values());
         setComboBoxFuncionarioData(funcionario);
 
@@ -150,11 +152,12 @@ public class AgendaView extends VerticalLayout {
             StatusAgenda statusAgenda = status.isEmpty() ? null : status.getValue();
             String tituloAgenda = titulo.getValue();
             String descricaoAgenda = descricao.isEmpty() ? "" : descricao.getValue();
+            String enderecoAgenda = endereco.isEmpty() ? "" : endereco.getValue();
             LocalDate dataFuncionario = data.isEmpty() ? null  : data.getValue();
             Funcionario funcionarioAgenda = funcionario.isEmpty() ? null : funcionario.getValue();
 
             Agenda agenda = new Agenda(statusAgenda, tituloAgenda,
-            descricaoAgenda, dataFuncionario, funcionarioAgenda);
+            descricaoAgenda, enderecoAgenda, dataFuncionario, funcionarioAgenda);
             agenda.setId(agendaId);
 
             boolean sucesso;
@@ -185,6 +188,7 @@ public class AgendaView extends VerticalLayout {
         status.addClassName("rounded-text-field");
         titulo.addClassName("rounded-text-field");
         descricao.addClassName("rounded-text-field");
+        endereco.addClassName("rounded-text-field");
         data.addClassName("rounded-text-field");
         funcionario.addClassName("rounded-text-field");
         titulo.setRequiredIndicatorVisible(true);
@@ -197,7 +201,7 @@ public class AgendaView extends VerticalLayout {
         layout2.setWidth("1100px");
         layout2.getStyle().set("margin", "0 auto");
 
-        formLayout2Col.add(titulo, data, status, funcionario, descricao);
+        formLayout2Col.add(titulo, data, status, funcionario, descricao, endereco);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
@@ -300,6 +304,7 @@ public class AgendaView extends VerticalLayout {
         status.setValue(agenda.getStatus());
         titulo.setValue(agenda.getTitulo());
         descricao.setValue(agenda.getDescricao());
+        endereco.setValue(agenda.getEndereco());
         data.setValue(agenda.getDataHora());
         funcionario.setValue(agenda.getFuncionario());
     }
@@ -309,6 +314,7 @@ public class AgendaView extends VerticalLayout {
         status.clear();
         titulo.clear();
         descricao.clear();
+        endereco.clear();
         data.clear();
         funcionario.clear();
     }
@@ -329,13 +335,18 @@ public class AgendaView extends VerticalLayout {
             descricaoArea.setValue(agenda.getDescricao());
             descricaoArea.setReadOnly(true);
             descricaoArea.addClassName("rounded-text-field");
+
+            TextArea enderecoArea = new TextArea("Endereço");
+            enderecoArea.setValue(agenda.getEndereco());
+            enderecoArea.setReadOnly(true);
+            enderecoArea.addClassName("rounded-text-field");
     
             TextField funcionarioField = new TextField("Funcionario");
             funcionarioField.setValue(agenda.getFuncionario().getNome());
             funcionarioField.setReadOnly(true);
             funcionarioField.addClassName("rounded-text-field");
     
-            detailsLayout.add(statusField, funcionarioField, descricaoArea);
+            detailsLayout.add(statusField, funcionarioField, descricaoArea, enderecoArea);
     
             return detailsLayout;
         });
