@@ -33,12 +33,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 @Route(value = "my-view", layout = MainLayout.class)
 public class ClienteView extends Composite<VerticalLayout> {
 
-    DaoCliente clienteRepository = new DaoCliente();
-    Grid<Cliente> grid = new Grid(Cliente.class, false);
-    TextField nome = new TextField("Nome");
-    TextField cpf = new TextField("CNPJ/CPF");
-    TextField rg = new TextField("IE/RG");
-    TextField telefone = new TextField("Telefone");
+    private DaoCliente clienteRepository = new DaoCliente();
+    private Grid<Cliente> grid = new Grid(Cliente.class, false);
+    private TextField nome = new TextField("Nome");
+    private TextField cpf = new TextField("CNPJ/CPF");
+    private TextField rg = new TextField("IE/RG");
+    private TextField telefone = new TextField("Telefone");
     private Long clienteId;
     private TabSheet tabSheet;
 

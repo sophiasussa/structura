@@ -303,24 +303,7 @@ public class OrdemServicoView extends VerticalLayout {
         return addOSContentDiv;
     }
 
-    private void setComboBoxProdutoData(MultiSelectComboBox<Produto> comboBox) {
-        List<Produto> produtos = produtoRepository.pesquisarTodos();
-        comboBox.setItems(produtos);
-        comboBox.setItemLabelGenerator(produto -> produto.getNome());
-    }
-
-    private void setComboBoxClienteData(ComboBox<Cliente> comboBox) {
-        List<Cliente> clientes = clienteRepository.pesquisarTodos();
-        comboBox.setItems(clientes);
-        comboBox.setItemLabelGenerator(cliente -> cliente.getNome());
-    }
-
-    private void setComboBoxFuncionarioData(ComboBox<Funcionario> comboBox) {
-        List<Funcionario> funcionarios = funcionarioRepository.pesquisarTodos();
-        comboBox.setItems(funcionarios);
-        comboBox.setItemLabelGenerator(funcionario -> funcionario.getNome());
-    }
-
+    //Grid content
     private Grid<OrdemServico> createGrid() {
         grid = new Grid<>(OrdemServico.class, false);
         grid.addClassName("borderless-grid");
@@ -412,6 +395,24 @@ public class OrdemServicoView extends VerticalLayout {
         grid.setItems(osRepository.getAllOrdensServico());
 
         return grid;
+    }
+
+    private void setComboBoxProdutoData(MultiSelectComboBox<Produto> comboBox) {
+        List<Produto> produtos = produtoRepository.pesquisarTodos();
+        comboBox.setItems(produtos);
+        comboBox.setItemLabelGenerator(produto -> produto.getNome());
+    }
+
+    private void setComboBoxClienteData(ComboBox<Cliente> comboBox) {
+        List<Cliente> clientes = clienteRepository.pesquisarTodos();
+        comboBox.setItems(clientes);
+        comboBox.setItemLabelGenerator(cliente -> cliente.getNome());
+    }
+
+    private void setComboBoxFuncionarioData(ComboBox<Funcionario> comboBox) {
+        List<Funcionario> funcionarios = funcionarioRepository.pesquisarTodos();
+        comboBox.setItems(funcionarios);
+        comboBox.setItemLabelGenerator(funcionario -> funcionario.getNome());
     }
 
     private void refreshGrid() {

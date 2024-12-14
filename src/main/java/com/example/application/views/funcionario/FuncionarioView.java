@@ -41,14 +41,14 @@ import com.example.application.views.MainLayout;
 @Route(value = "my-view2", layout = MainLayout.class)
 public class FuncionarioView extends Composite<VerticalLayout> {
 
-    DaoFuncionario funcionarioRepository = new DaoFuncionario();
-    Grid<Funcionario> grid = new Grid<>();
-    TextField nome = new TextField();
-    TextField cpf = new TextField();
-    TextField rg = new TextField();
-    TextField telefone = new TextField();
-    DatePicker data = new DatePicker();
-    TextField salario = new TextField();
+    private DaoFuncionario funcionarioRepository = new DaoFuncionario();
+    private Grid<Funcionario> grid = new Grid<>();
+    private TextField nome = new TextField();
+    private TextField cpf = new TextField();
+    private TextField rg = new TextField();
+    private TextField telefone = new TextField();
+    private DatePicker data = new DatePicker();
+    private TextField salario = new TextField();
     private Long funcionarioId;
     private TabSheet tabSheet;
 

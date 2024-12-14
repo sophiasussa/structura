@@ -43,21 +43,21 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 @Route(value = "my-view4", layout = MainLayout.class)
 public class ProdutoView extends VerticalLayout {
 
-    DaoProduto produtoRepository = new DaoProduto();
-    DaoMaterial materialRepository = new DaoMaterial();
-    DaoUnidMedida unidMedidaRepository = new DaoUnidMedida();
-    DaoModelo modeloRepository = new DaoModelo();
-    Grid<Produto> grid = new Grid(Produto.class, false);
-    TextField nome = new TextField("Nome");
-    TextField quantidadeAtual = new TextField("Quantidade Atual");
-    TextField quantidadeMinima = new TextField("Quantidade Mínima");
-    TextField custoUnitario = new TextField("Custo Unitário");
-    Button buttonTertiary = new Button();
-    Button buttonTertiary2 = new Button();
-    Button buttonTertiary3 = new Button();
-    ComboBox<Material> material = new ComboBox<>("Material");
-    ComboBox<UnidMedida> unidMedida = new ComboBox<>("Unidade de Medida");
-    ComboBox<Modelo> modelo = new ComboBox<>("Modelo");
+    private DaoProduto produtoRepository = new DaoProduto();
+    private DaoMaterial materialRepository = new DaoMaterial();
+    private DaoUnidMedida unidMedidaRepository = new DaoUnidMedida();
+    private DaoModelo modeloRepository = new DaoModelo();
+    private Grid<Produto> grid = new Grid<>(Produto.class, false);
+    private TextField nome = new TextField("Nome");
+    private TextField quantidadeAtual = new TextField("Quantidade Atual");
+    private TextField quantidadeMinima = new TextField("Quantidade Mínima");
+    private TextField custoUnitario = new TextField("Custo Unitário");
+    private Button buttonTertiary = new Button();
+    private Button buttonTertiary2 = new Button();
+    private Button buttonTertiary3 = new Button();
+    private ComboBox<Material> material = new ComboBox<>("Material");
+    private ComboBox<UnidMedida> unidMedida = new ComboBox<>("Unidade de Medida");
+    private ComboBox<Modelo> modelo = new ComboBox<>("Modelo");
     private Long produtoId;
     private TabSheet tabSheet;
 

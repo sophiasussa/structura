@@ -36,15 +36,15 @@ import com.example.application.views.MainLayout;
 @Route(value = "my-view3", layout = MainLayout.class)
 public class FornecedorView extends Composite<VerticalLayout> {
 
-    DaoFornecedor fornecedorRepository = new DaoFornecedor();
-    Grid<Fornecedor> grid = new Grid<>();
-    TextField empresa = new TextField();
-    TextField vendedor = new TextField();
-    TextField cnpj = new TextField();
-    TextField ie = new TextField();
-    TextField telefone = new TextField();
-    TextField email = new TextField();
-    TextArea produto = new TextArea();
+    private DaoFornecedor fornecedorRepository = new DaoFornecedor();
+    private Grid<Fornecedor> grid = new Grid<>();
+    private TextField empresa = new TextField();
+    private TextField vendedor = new TextField();
+    private TextField cnpj = new TextField();
+    private TextField ie = new TextField();
+    private TextField telefone = new TextField();
+    private TextField email = new TextField();
+    private TextArea produto = new TextArea();
     private Long fornecedorId;
     private TabSheet tabSheet;
 
