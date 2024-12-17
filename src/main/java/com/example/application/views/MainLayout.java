@@ -1,6 +1,7 @@
 package com.example.application.views;
 
 import com.example.application.views.cliente.ClienteView;
+import com.example.application.model.User;
 import com.example.application.views.fornecedor.FornecedorView;
 import com.example.application.views.funcionario.FuncionarioView;
 import com.example.application.views.ordemServico.OrdemServicoView;
@@ -29,7 +30,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-public class MainLayout extends AppLayout{
+public class MainLayout extends AppLayout implements BeforeEnterObserver{
 
     private H1 viewTitle;
 
@@ -38,6 +39,15 @@ public class MainLayout extends AppLayout{
         addDrawerContent();
         addHeaderContent();
     }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        User currentUser = (User) UI.getCurrent().getSession().getAttribute(User.class);
+        if (currentUser == null) {
+            event.forwardTo("login");
+        }
+    }
+
     private void addHeaderContent() {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
@@ -57,7 +67,7 @@ public class MainLayout extends AppLayout{
         Span appName = new Span("Menu");
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
         Header header = new Header(appName);
-
+    
         SideNav mainNavigation = createNavigation();
         SideNav secondaryNavigation = createNavigation2();
         SideNav terceiroNavigation = createNavigation3();
@@ -66,19 +76,36 @@ public class MainLayout extends AppLayout{
         VerticalLayout navLayout = new VerticalLayout(mainNavigation, secondaryNavigation);
         navLayout.setSpacing(false);
         navLayout.setPadding(false);
-        
+    
         Scroller scroller = new Scroller(navLayout);
-
-        VerticalLayout drawerContent = new VerticalLayout(header, mainNavigation, secondaryNavigation, terceiroNavigation, quartoNavigation);
+    
+        Button logoutButton = new Button("Logout", VaadinIcon.EXIT.create(), event -> {
+            UI.getCurrent().getSession().setAttribute(User.class, null);
+            UI.getCurrent().navigate("login");
+        });
+        logoutButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        logoutButton.getStyle().set("width", "100%");
+    
+        VerticalLayout footer = new VerticalLayout(logoutButton);
+        footer.setPadding(false);
+        footer.setSpacing(false);
+        footer.setWidthFull();
+        footer.setAlignItems(FlexComponent.Alignment.CENTER);
+        footer.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        footer.setHeight("100%");
+        footer.setFlexGrow(1);
+    
+        VerticalLayout drawerContent = new VerticalLayout(header, mainNavigation, secondaryNavigation, terceiroNavigation, quartoNavigation, footer);
         drawerContent.setSpacing(true);
         drawerContent.setPadding(true);
         drawerContent.setSizeFull();
         drawerContent.setAlignItems(FlexComponent.Alignment.STRETCH);
-
+    
         drawerContent.setFlexGrow(1, scroller);
     
         addToDrawer(drawerContent);
     }
+    
     
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
@@ -127,5 +154,16 @@ public class MainLayout extends AppLayout{
         Footer layout = new Footer();
 
         return layout;
+    }
+
+    @Override
+    protected void afterNavigation() {
+        super.afterNavigation();
+        viewTitle.setText(getCurrentPageTitle());
+    }
+
+    private String getCurrentPageTitle() {
+        PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
+        return title == null ? "" : title.value();
     }
 }
