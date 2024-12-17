@@ -1,19 +1,19 @@
 package com.example.application.model;
 
-public class Estoque {
+public abstract class Estoque {
     private String nome;
-    private int quantidadeAtual;
-    private int quantidadeMinima;
+    private Integer quantidadeAtual;
+    private Integer quantidadeMinima;
     private Double custoUnitario;
 
-    public Estoque(String nome, int quantidadeAtual, int quantidadeMinima, Double custoUnitario) {
+    protected Estoque(String nome, Integer quantidadeAtual, Integer quantidadeMinima, Double custoUnitario) {
         this.nome = nome;
         this.quantidadeAtual = quantidadeAtual;
         this.quantidadeMinima = quantidadeMinima;
         this.custoUnitario = custoUnitario;
     }
 
-    public Estoque(){
+    protected Estoque(){
         
     }
 
@@ -25,19 +25,19 @@ public class Estoque {
         this.nome = nome;
     }
 
-    public int getQuantidadeAtual() {
+    public Integer getQuantidadeAtual() {
         return quantidadeAtual;
     }
 
-    public void setQuantidadeAtual(int quantidadeAtual) {
+    public void setQuantidadeAtual(Integer quantidadeAtual) {
         this.quantidadeAtual = quantidadeAtual;
     }
 
-    public int getQuantidadeMinima() {
+    public Integer getQuantidadeMinima() {
         return quantidadeMinima;
     }
 
-    public void setQuantidadeMinima(int quantidadeMinima) {
+    public void setQuantidadeMinima(Integer quantidadeMinima) {
         this.quantidadeMinima = quantidadeMinima;
     }
 

@@ -22,8 +22,8 @@ public class DaoProduto {
             String insert = "INSERT INTO produto (nome, quantidadeAtual, quantidadeMinima, custoUnitario, material_id, unid_medida_id, modelo_id) VALUE (?,?,?,?,?,?,?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
             prepareStatement.setString(1, produto.getNome());
-            prepareStatement.setInt(2, produto.getQuantidadeAtual());
-            prepareStatement.setInt(3, produto.getQuantidadeMinima());
+            prepareStatement.setObject(2, produto.getQuantidadeAtual());
+            prepareStatement.setObject(3, produto.getQuantidadeMinima());
             prepareStatement.setDouble(4, produto.getCustoUnitario());
             prepareStatement.setObject(5, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
             prepareStatement.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
@@ -44,8 +44,8 @@ public class DaoProduto {
             
             PreparedStatement prepareStatement = connection.prepareStatement(update);
             prepareStatement.setString(1, produto.getNome());
-            prepareStatement.setInt(2, produto.getQuantidadeAtual());
-            prepareStatement.setInt(3, produto.getQuantidadeMinima());
+            prepareStatement.setObject(2, produto.getQuantidadeAtual());
+            prepareStatement.setObject(3, produto.getQuantidadeMinima());
             prepareStatement.setDouble(4, produto.getCustoUnitario());
             prepareStatement.setObject(5, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
             prepareStatement.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);

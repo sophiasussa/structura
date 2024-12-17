@@ -175,9 +175,8 @@ public class ProdutoView extends VerticalLayout {
                 return;
             }
             String nomeProduto = nome.getValue();
-            int quantidadeAtualProduto = quantidadeAtual.isEmpty() ? 0 : Integer.parseInt(quantidadeAtual.getValue());
-            int quantidadeMinimaProduto = quantidadeMinima.isEmpty() ? 0
-                    : Integer.parseInt(quantidadeMinima.getValue());
+            Integer quantidadeAtualProduto = quantidadeAtual.isEmpty() ? null : Integer.valueOf(quantidadeAtual.getValue());
+            Integer quantidadeMinimaProduto = quantidadeMinima.isEmpty() ? null : Integer.valueOf(quantidadeMinima.getValue());
             Material materialProduto = material.isEmpty() ? null : material.getValue();
             UnidMedida unidMedidaProduto = unidMedida.isEmpty() ? null : unidMedida.getValue();
             Modelo modeloProduto = modelo.isEmpty() ? null : modelo.getValue();
@@ -334,8 +333,8 @@ public class ProdutoView extends VerticalLayout {
     private void editProduto(Produto produto) {
         produtoId = produto.getId();
         nome.setValue(produto.getNome());
-        quantidadeAtual.setValue(String.valueOf(produto.getQuantidadeAtual()));
-        quantidadeMinima.setValue(String.valueOf(produto.getQuantidadeMinima()));
+        quantidadeAtual.setValue(produto.getQuantidadeAtual() != null ? String.valueOf(produto.getQuantidadeAtual()) : "");
+        quantidadeMinima.setValue(produto.getQuantidadeMinima() != null ? String.valueOf(produto.getQuantidadeMinima()) : "");
         custoUnitario.setValue(produto.getCustoUnitario() != null ? produto.getCustoUnitario().toString() : "");
         material.setValue(produto.getMaterial());
         unidMedida.setValue(produto.getUnidMedida());

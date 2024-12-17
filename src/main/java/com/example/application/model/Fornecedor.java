@@ -10,7 +10,6 @@ public class Fornecedor {
     private String email;
     private String descriProdutos;
 
-    // Construtor com parâmetros
     public Fornecedor(String empresa, String vendedor, String cnpj, String ie, String telefone, String email, String descriProdutos) {
         this.empresa = empresa;
         this.vendedor = vendedor;

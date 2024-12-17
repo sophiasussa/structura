@@ -7,16 +7,9 @@ import jakarta.validation.constraints.Size;
 
 public class Agenda {
     private Long id;
-
-    @Size(min = 1, max = 255)
     private String titulo;
-
-    @Size(min = 1, max = 255)
     private String descricao;
-
-    @Size(min = 1, max = 255)
     private String endereco;
-
     private LocalDateTime dataHora;
     private StatusAgenda status;
     private Funcionario funcionario;

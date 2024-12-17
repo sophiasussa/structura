@@ -8,7 +8,7 @@ public class Produto extends Estoque{
     private UnidMedida unidMedida;
     private Modelo modelo;
 
-    public Produto(String nome, int quantidadeAtual, int quantidadeMinima, Double custoUnitario, Material material, UnidMedida unidMedida, Modelo modelo) {
+    public Produto(String nome, Integer quantidadeAtual, Integer quantidadeMinima, Double custoUnitario, Material material, UnidMedida unidMedida, Modelo modelo) {
         super(nome, quantidadeAtual, quantidadeMinima, custoUnitario);
         this.material = material;
         this.unidMedida = unidMedida;
@@ -50,5 +50,4 @@ public class Produto extends Estoque{
     public void setModelo(Modelo modelo) {
         this.modelo = modelo;
     }
-
 }

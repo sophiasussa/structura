@@ -1,19 +1,19 @@
 package com.example.application.model;
 
-public class Pessoa {
+public abstract class Pessoa {
     private String nome;
     private String cpf;
     private String rg;
     private String telefone;
 
-    public Pessoa(String nome, String cpf, String rg, String telefone) {
+    protected Pessoa(String nome, String cpf, String rg, String telefone) {
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
         this.telefone = telefone;
     }
 
-    public Pessoa() {
+    protected Pessoa() {
 
     }
 
@@ -42,5 +42,4 @@ public class Pessoa {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
-
 }
