@@ -11,6 +11,7 @@ public class OrdemServico {
     private String endereco;
     private Funcionario funcionario;
     private LocalDate data;
+ //   private LocalDate dataPrevFinakiza;
     private String observacao;
     private String imagem;
 

@@ -32,4 +32,8 @@ public class ControllerProduto {
     public Produto getProdutoById(int id) {
         return dao.getProdutoById(id);
     }
+
+    public List<Produto> pesquisarProdutoComQuantidadeMinimaIgual() {
+        return dao.pesquisarProdutoComQuantidadeMinimaIgual();
+    }
 }

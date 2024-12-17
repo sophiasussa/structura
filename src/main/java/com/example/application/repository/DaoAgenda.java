@@ -168,6 +168,46 @@ public class DaoAgenda {
         }
         return lista;
     }
-    
-    
+
+    public List<Agenda> pesquisarTarefasDeHoje() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            
+            String consulta = """
+                SELECT a.*, f.nome AS funcionario_nome
+                FROM agenda a
+                LEFT JOIN funcionario f ON a.funcionario_id = f.id
+                WHERE DATE(a.dataa) = CURRENT_DATE
+            """;
+            
+            List<Agenda> lista = new ArrayList<>();
+            PreparedStatement prepareStatement = connection.prepareStatement(consulta);
+            ResultSet resultSet = prepareStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Agenda agenda = new Agenda();
+                agenda.setId(resultSet.getLong("id"));
+                agenda.setTitulo(resultSet.getString("titulo"));
+                agenda.setDescricao(resultSet.getString("descricao"));
+                agenda.setEndereco(resultSet.getString("endereco"));
+                agenda.setDataHora(resultSet.getTimestamp("dataa") != null
+                    ? resultSet.getTimestamp("dataa").toLocalDateTime()
+                    : null);
+                String status = resultSet.getString("statuss");
+                agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
+
+                Funcionario funcionario = new Funcionario();
+                funcionario.setId(resultSet.getLong("funcionario_id"));
+                funcionario.setNome(resultSet.getString("funcionario_nome"));
+                agenda.setFuncionario(funcionario.getId() != 0 ? funcionario : null);
+
+                lista.add(agenda);
+            }
+
+            return lista;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 }

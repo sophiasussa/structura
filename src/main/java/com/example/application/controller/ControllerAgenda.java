@@ -27,4 +27,8 @@ public class ControllerAgenda {
     public List<Agenda> pesquisarAgenda(String pesquisa){
         return dao.pesquisarAgenda(pesquisa);
     }
+
+    public List<Agenda> pesquisarTarefasDeHoje(){
+        return dao.pesquisarTarefasDeHoje();
+    }
 }
