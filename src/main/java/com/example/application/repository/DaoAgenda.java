@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +28,7 @@ public class DaoAgenda {
             prepareStatement.setString(1, agenda.getTitulo());
             prepareStatement.setString(2, agenda.getDescricao());
             prepareStatement.setString(3, agenda.getEndereco());
-            prepareStatement.setObject(4, agenda.getDataHora() != null ? java.sql.Date.valueOf(agenda.getDataHora()) : null, java.sql.Types.DATE);
+            prepareStatement.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
             prepareStatement.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
             prepareStatement.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             int resultado = prepareStatement.executeUpdate();
@@ -45,7 +48,7 @@ public class DaoAgenda {
             prepareStatement.setString(1, agenda.getTitulo());
             prepareStatement.setString(2, agenda.getDescricao());
             prepareStatement.setString(3, agenda.getEndereco());
-            prepareStatement.setObject(4, agenda.getDataHora() != null ? java.sql.Date.valueOf(agenda.getDataHora()) : null, java.sql.Types.DATE);
+            prepareStatement.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
             prepareStatement.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
             prepareStatement.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             prepareStatement.setLong(7, agenda.getId());
@@ -94,7 +97,7 @@ public class DaoAgenda {
                 agenda.setDescricao(resultSet.getString("descricao"));
                 agenda.setEndereco(resultSet.getString("endereco"));
                 agenda.setDataHora(resultSet.getDate("dataa") != null
-                    ? resultSet.getDate("dataa").toLocalDate()
+                    ? resultSet.getTimestamp("dataa").toLocalDateTime()
                     : null);
                 String status = resultSet.getString("statuss");
                 agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
@@ -119,7 +122,7 @@ public class DaoAgenda {
             SELECT a.*, f.nome AS funcionario_nome
             FROM agenda a
             LEFT JOIN funcionario f ON a.funcionario_id = f.id
-            WHERE f.nome LIKE ? OR a.titulo LIKE ? OR a.dataa = ? OR a.statuss LIKE ?
+            WHERE f.nome LIKE ? OR a.titulo LIKE ? OR DATE(a.dataa) = ? OR a.statuss LIKE ?
         """;
     
         try (Connection connection = DBConnection.getInstance().getConnection();
@@ -132,9 +135,10 @@ public class DaoAgenda {
             prepareStatement.setString(4, buscaTexto);
     
             try {
-                java.sql.Date data = java.sql.Date.valueOf(pesquisa);
-                prepareStatement.setDate(3, data);
-            } catch (IllegalArgumentException e) {
+                DateTimeFormatter entradaFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                LocalDate dataFormatada = LocalDate.parse(pesquisa, entradaFormatter);
+                prepareStatement.setDate(3, java.sql.Date.valueOf(dataFormatada));
+            } catch (DateTimeParseException e) {
                 prepareStatement.setNull(3, java.sql.Types.DATE);
             }
     
@@ -146,8 +150,8 @@ public class DaoAgenda {
                 agenda.setTitulo(resultSet.getString("titulo"));
                 agenda.setDescricao(resultSet.getString("descricao"));
                 agenda.setEndereco(resultSet.getString("endereco"));
-                agenda.setDataHora(resultSet.getDate("dataa") != null
-                    ? resultSet.getDate("dataa").toLocalDate()
+                agenda.setDataHora(resultSet.getTimestamp("dataa") != null
+                    ? resultSet.getTimestamp("dataa").toLocalDateTime()
                     : null);
                 String status = resultSet.getString("statuss");
                 agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
@@ -164,5 +168,6 @@ public class DaoAgenda {
         }
         return lista;
     }
+    
     
 }

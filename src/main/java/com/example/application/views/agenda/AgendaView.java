@@ -5,6 +5,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -21,8 +22,13 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.example.application.model.Agenda;
@@ -43,7 +49,7 @@ public class AgendaView extends VerticalLayout {
     private TextField titulo = new TextField("Título");
     private TextArea descricao = new TextArea("Descrição");
     private TextArea endereco = new TextArea("Endereço");
-    private DatePicker data = new DatePicker("Data");
+    private DateTimePicker data = new DateTimePicker();
     private ComboBox<Funcionario> funcionario = new ComboBox<>("Funcionario");
     private Button buttonTertiary = new Button();
     private Button buttonTertiary2 = new Button();
@@ -138,7 +144,8 @@ public class AgendaView extends VerticalLayout {
         status = new ComboBox<>("Status");
         titulo = new TextField("Título");
         descricao = new TextArea("Descrição");
-        data = new DatePicker("Data");
+        data = new DateTimePicker("Data");
+        data.setStep(Duration.ofMinutes(1));
         funcionario = new ComboBox<>("Funcionario");
         endereco = new TextArea("Endereço");
         status.setItems(StatusAgenda.values());
@@ -149,11 +156,11 @@ public class AgendaView extends VerticalLayout {
                 Notification.show("Preencha o campo obrigatório: título", 3000, Notification.Position.MIDDLE);
                 return;
             }
-            StatusAgenda statusAgenda = status.isEmpty() ? null : status.getValue();
+            StatusAgenda statusAgenda = status.getValue();
             String tituloAgenda = titulo.getValue();
             String descricaoAgenda = descricao.isEmpty() ? "" : descricao.getValue();
             String enderecoAgenda = endereco.isEmpty() ? "" : endereco.getValue();
-            LocalDate dataFuncionario = data.isEmpty() ? null  : data.getValue();
+            LocalDateTime dataFuncionario = data.isEmpty() ? null  : data.getValue();
             Funcionario funcionarioAgenda = funcionario.isEmpty() ? null : funcionario.getValue();
 
             Agenda agenda = new Agenda(statusAgenda, tituloAgenda,
@@ -189,7 +196,6 @@ public class AgendaView extends VerticalLayout {
         titulo.addClassName("rounded-text-field");
         descricao.addClassName("rounded-text-field");
         endereco.addClassName("rounded-text-field");
-        data.addClassName("rounded-text-field");
         funcionario.addClassName("rounded-text-field");
         titulo.setRequiredIndicatorVisible(true);
         layout3.setAlignItems(FlexComponent.Alignment.END);
@@ -222,7 +228,11 @@ public class AgendaView extends VerticalLayout {
         grid.setAllRowsVisible(true);
 
         grid.addColumn(Agenda::getTitulo).setHeader("Titulo").setSortable(true);
-        grid.addColumn(Agenda::getDataHora).setHeader("Data").setSortable(true);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        grid.addColumn(agenda -> agenda.getDataHora() != null ? agenda.getDataHora().format(formatter) : "")
+            .setHeader("Data")
+            .setSortable(true);
 
         grid.addColumn(new ComponentRenderer<>(agenda -> {
         Span statusBadge = new Span(agenda.getStatus() != null ? agenda.getStatus().getDescricao() : "Indefinido");
@@ -326,11 +336,6 @@ public class AgendaView extends VerticalLayout {
             detailsLayout.setPadding(true);
             detailsLayout.addClassName("details-layout");
     
-            TextField statusField = new TextField("Status");
-            statusField.setValue(agenda.getStatus().name());
-            statusField.setReadOnly(true);
-            statusField.addClassName("rounded-text-field");
-    
             TextArea descricaoArea = new TextArea("Descrição");
             descricaoArea.setValue(agenda.getDescricao());
             descricaoArea.setReadOnly(true);
@@ -342,11 +347,11 @@ public class AgendaView extends VerticalLayout {
             enderecoArea.addClassName("rounded-text-field");
     
             TextField funcionarioField = new TextField("Funcionario");
-            funcionarioField.setValue(agenda.getFuncionario().getNome());
+            funcionarioField.setValue(agenda.getFuncionario() != null ? agenda.getFuncionario().getNome() : "Indefinido");
             funcionarioField.setReadOnly(true);
             funcionarioField.addClassName("rounded-text-field");
     
-            detailsLayout.add(statusField, funcionarioField, descricaoArea, enderecoArea);
+            detailsLayout.add(funcionarioField, descricaoArea, enderecoArea);
     
             return detailsLayout;
         });

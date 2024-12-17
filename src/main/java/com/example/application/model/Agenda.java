@@ -1,20 +1,30 @@
 package com.example.application.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.Size;
 
 public class Agenda {
     private Long id;
+
+    @Size(min = 1, max = 255)
     private String titulo;
+
+    @Size(min = 1, max = 255)
     private String descricao;
+
+    @Size(min = 1, max = 255)
     private String endereco;
-    private LocalDate dataHora;
+
+    private LocalDateTime dataHora;
     private StatusAgenda status;
     private Funcionario funcionario;
 
     public Agenda() {
     }
     
-    public Agenda(StatusAgenda status, String titulo, String descricao, String endereco, LocalDate dataHora,
+    public Agenda(StatusAgenda status, String titulo, String descricao, String endereco, LocalDateTime dataHora,
             Funcionario funcionario) {
         this.titulo = titulo;
         this.descricao = descricao;
@@ -27,6 +37,9 @@ public class Agenda {
         return id;
     }
     public void setId(Long id) {
+        if (this.id != null) {
+            throw new UnsupportedOperationException("ID não pode ser alterado");
+        }
         this.id = id;
     }
     public String getTitulo() {
@@ -47,10 +60,10 @@ public class Agenda {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
-    public LocalDate getDataHora() {
+    public LocalDateTime getDataHora() {
         return dataHora;
     }
-    public void setDataHora(LocalDate dataHora) {
+    public void setDataHora(LocalDateTime dataHora) {
         this.dataHora = dataHora;
     }
     public StatusAgenda getStatus() {
