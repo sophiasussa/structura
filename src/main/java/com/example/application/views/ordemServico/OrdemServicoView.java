@@ -38,6 +38,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
@@ -45,9 +46,12 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import com.vaadin.flow.component.Component;
+
 
 @PageTitle("Ordem de Servico")
 @Route(value = "my-view5", layout = MainLayout.class)
@@ -62,7 +66,8 @@ public class OrdemServicoView extends VerticalLayout {
     private ComboBox<StatusOS> status = new ComboBox<>("Status");
     private TextArea endereco = new TextArea("Endereço");
     private TextArea observacao = new TextArea("Observação");
-    private DatePicker data = new DatePicker("Data");
+    private DatePicker data = new DatePicker("Data Abertura");
+    private DatePicker datap = new DatePicker("Data de Previsão");
     private ComboBox<Cliente> cliente = new ComboBox<>("Cliente");
     private ComboBox<Funcionario> funcionario = new ComboBox<>("Funcionario");
     private MultiSelectComboBox<Produto> produto = new MultiSelectComboBox<>("Produto");
@@ -73,6 +78,8 @@ public class OrdemServicoView extends VerticalLayout {
     private Long osId;
     private TabSheet tabSheet;
     private String image;
+    private List<String> imagePaths;
+    private FlexLayout imageLayout;
 
     public OrdemServicoView() {
         try {
@@ -176,7 +183,8 @@ public class OrdemServicoView extends VerticalLayout {
         status = new ComboBox<>("Status");
         endereco = new TextArea("Endereço");
         observacao = new TextArea("Observação");
-        data = new DatePicker("Data");
+        data = new DatePicker("Data Abertura");
+        datap = new DatePicker("Data de Previsão");
         cliente = new ComboBox<>("Cliente");
         funcionario = new ComboBox<>("Funcionario");
         produto = new MultiSelectComboBox<>("Produto");
@@ -198,26 +206,30 @@ public class OrdemServicoView extends VerticalLayout {
         upload.setDropAllowed(true);
 
         List<String> imagePaths = new ArrayList<>();
+        FlexLayout imageGallery = new FlexLayout();
+        imageGallery.setFlexWrap(FlexWrap.WRAP);
+        imageGallery.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
 
         upload.addSucceededListener(event -> {
             if (imagePaths.size() >= 4) {
                 Notification.show("Limite de 4 imagens atingido!", 3000, Notification.Position.MIDDLE);
                 return;
             }
-        
+
             try {
                 String fileName = event.getFileName();
                 String uploadDir = "C:/Users/sophi/Documents/";
                 File targetFile = new File(uploadDir + fileName);
-        
+
                 try (InputStream inputStream = buffer.getInputStream()) {
                     Files.copy(inputStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
                 imagePaths.add(targetFile.getAbsolutePath());
-        
-                // Atualiza o campo de texto com os caminhos das imagens
+
                 imagemPathField.setValue(String.join(", ", imagePaths));
-                
+
+                addImageToGallery(imageGallery, targetFile.getAbsolutePath(), imagePaths);
+
                 Notification.show("Imagem carregada com sucesso: " + fileName, 3000, Notification.Position.MIDDLE);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -233,13 +245,14 @@ public class OrdemServicoView extends VerticalLayout {
             StatusOS statusOrdemServico = status.isEmpty() ? null : status.getValue();
             String enderecoOrdemServico = endereco.isEmpty() ? null : endereco.getValue();
             String observacaoOrdemServico = observacao.isEmpty() ? null : observacao.getValue();
-            LocalDate dataFuncionario = data.isEmpty() ? null : data.getValue();
+            LocalDate dataAOrdemServico = data.isEmpty() ? null : data.getValue();
+            LocalDate dataPOrdemServico = datap.isEmpty() ? null : datap.getValue();
             Cliente clienteOrdemServico = cliente.isEmpty() ? null : cliente.getValue();
             Funcionario funcionarioOrdemServico = funcionario.isEmpty() ? null : funcionario.getValue();
             Set<Produto> produtosSelecionados = produto.getValue();
 
             OrdemServico os = new OrdemServico(statusOrdemServico, clienteOrdemServico, enderecoOrdemServico,
-                    funcionarioOrdemServico, dataFuncionario, observacaoOrdemServico);
+                    funcionarioOrdemServico, dataAOrdemServico, dataPOrdemServico, observacaoOrdemServico);
             os.setId(osId);
 
             os.setImagens(imagePaths);
@@ -247,55 +260,62 @@ public class OrdemServicoView extends VerticalLayout {
             List<Produto> produtosSelecionadosList = new ArrayList<>(produtosSelecionados);
 
             boolean sucesso;
-            if (osId != null && osId > 0) {
-                sucesso = osRepository.updateOrdemServico(os, produtosSelecionadosList);
-                if (sucesso) {
-                    Notification.show("OS atualizada com sucesso!");
+            try {
+                if (osId != null && osId > 0) {
+                    sucesso = osRepository.updateOrdemServico(os, produtosSelecionadosList);
+                    if (sucesso) {
+                        Notification.show("OS atualizada com sucesso!");
+                    } else {
+                        Notification.show("Erro ao atualizar a OS", 3000, Notification.Position.MIDDLE);
+                    }
                 } else {
-                    Notification.show("Erro ao atualizar o OS", 3000, Notification.Position.MIDDLE);
+                    long idOs = osRepository.saveOrdemServico(os);
+                    sucesso = idOs > 0;
+                    if (sucesso) {
+                        Notification.show("OS salva com sucesso!");
+                    } else {
+                        Notification.show("Erro ao salvar a OS", 3000, Notification.Position.MIDDLE);
+                    }
                 }
-            } else {
-                sucesso = osRepository.saveOrdemServico(os, produtosSelecionadosList);
+        
                 if (sucesso) {
-                    Notification.show("OS salvo com sucesso!");
-                } else {
-                    Notification.show("Erro ao salvar o OS", 3000, Notification.Position.MIDDLE);
+                    clearForm();
+                    tabSheet.setSelectedIndex(0);
+                    refreshGrid();
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Notification.show("Erro ao processar a operação", 3000, Notification.Position.MIDDLE);
             }
-
-            if (sucesso) {
-                clearForm();
-                tabSheet.setSelectedIndex(0);
-                refreshGrid();
-            }
+            
         });
 
-        // For a better interface
+        // Configurações de estilo e layout
         status.addClassName("rounded-text-field");
         endereco.addClassName("rounded-text-field");
         observacao.addClassName("rounded-text-field");
         data.addClassName("rounded-text-field");
+        datap.addClassName("rounded-text-field");
+        cliente.addClassName("rounded-text-field");
+        cliente.setRequiredIndicatorVisible(true);
         funcionario.addClassName("rounded-text-field");
         produto.addClassName("rounded-text-field");
-        cliente.addClassName("rounded-text-field");
-        imagemPathField.addClassName("rounded-text-field");
-        cliente.setRequiredIndicatorVisible(true);
-        layout3.setAlignItems(FlexComponent.Alignment.END);
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.getStyle().set("border-radius", "25px");
         layout2.getStyle().set("border-radius", "15px");
         layout2.getStyle().set("border", "1px solid #ccc");
         layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
         layout2.setWidth("1100px");
         layout2.getStyle().set("margin", "0 auto");
+        layout3.setAlignItems(FlexComponent.Alignment.END);
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.getStyle().set("border-radius", "25px");
 
         formLayout3Col.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("500px", 3));
 
-        formLayout2Col.add(status, produto, endereco, observacao, upload);
-        formLayout3Col.add(data, cliente, funcionario);
-        layout2.add(formLayout3Col, formLayout2Col, space);
+        formLayout2Col.add(produto, status, endereco, observacao, funcionario, upload);
+        formLayout3Col.add(cliente, data, datap);
+        layout2.add(formLayout3Col, formLayout2Col, imageGallery, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addOSContentDiv.add(space1, layout);
@@ -309,15 +329,11 @@ public class OrdemServicoView extends VerticalLayout {
         grid.addClassName("borderless-grid");
         grid.setAllRowsVisible(true);
 
-        grid.addColumn(ordemServico -> ordemServico.getId()).setHeader("ID").setSortable(true);
-        grid.addColumn(ordemServico -> 
-        ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().name() : "N/A"
-    ).setHeader("Status").setSortable(true);
-        grid.addColumn(ordemServico -> 
-        ordemServico.getCliente() != null ? ordemServico.getCliente().getNome() : "N/A"
-    ).setHeader("Cliente").setSortable(true);
+        grid.addColumn(ordemServico -> ordemServico.getCliente() != null ? ordemServico.getCliente().getNome() : "N/A").setHeader("Cliente").setSortable(true);
+        grid.addColumn(ordemServico -> ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().name() : "N/A").setHeader("Status").setSortable(true);
 
-        grid.addColumn(OrdemServico::getData).setHeader("Data");
+        grid.addColumn(OrdemServico::getDataAbertura).setHeader("Data Abertura");
+        grid.addColumn(OrdemServico::getDataPrevFinaliza).setHeader("Data de Previsão");
 
         grid.addComponentColumn(ordemServico -> {
             Button detalhes = new Button("Ver Detalhes", e -> {
@@ -327,17 +343,6 @@ public class OrdemServicoView extends VerticalLayout {
                 VerticalLayout content = new VerticalLayout();
                 content.setPadding(true);
                 content.setSpacing(true);
-
-                content.add(new Text(
-                        "Status: " + (ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().name() : "N/A")));
-                content.add(new Text("Cliente: "
-                        + (ordemServico.getCliente() != null ? ordemServico.getCliente().getNome() : "N/A")));
-                content.add(new Text(
-                        "Data: " + (ordemServico.getData() != null ? ordemServico.getData().toString() : "N/A")));
-                content.add(new Text(
-                        "Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "N/A")));
-                content.add(new Text("Observação: "
-                        + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "N/A")));
 
                 if (ordemServico.getImagens() != null && !ordemServico.getImagens().isEmpty()) {
                     HorizontalLayout imageLayout = new HorizontalLayout();
@@ -352,6 +357,22 @@ public class OrdemServicoView extends VerticalLayout {
                 } else {
                     content.add(new Text("Nenhuma imagem disponível."));
                 }
+
+                // Adicionar a lista de produtos
+                List<ProdutoOS> produtosOS = osProdutoRepository.getProdutoOSsByOrdemServicoId(ordemServico.getId());
+                if (produtosOS != null && !produtosOS.isEmpty()) {
+                    content.add(new Text("Produtos:"));
+                    produtosOS.forEach(produtoOS -> {
+                        Produto produto = produtoOS.getProduto();
+                        content.add(new Text("- " + produto.getNome()));
+                    });
+                } else {
+                    content.add(new Text("Nenhum produto associado a esta OS."));
+                }
+        
+                content.add(new Text("Funcionário: " + (ordemServico.getFuncionario() != null ? ordemServico.getFuncionario() : "N/A")));
+                content.add(new Text("Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "N/A")));
+                content.add(new Text("Observação: " + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "N/A")));
 
                 Button closeButton = new Button("Fechar", event -> dialog.close());
                 content.add(closeButton);
@@ -397,6 +418,89 @@ public class OrdemServicoView extends VerticalLayout {
         return grid;
     }
 
+    private void addImageToGallery(FlexLayout imageGallery, String imagePath, List<String> imagePaths) {
+        VerticalLayout imageContainer = new VerticalLayout();
+        imageContainer.setSpacing(false);
+        imageContainer.setPadding(false);
+        imageContainer.setAlignItems(FlexComponent.Alignment.CENTER);
+    
+        Image image = new Image("file:///" + imagePath, "Uploaded Image");
+        image.setWidth("150px");
+        image.setHeight("150px");
+        image.getStyle().set("object-fit", "cover");
+
+        Button deleteButton = new Button("Excluir", VaadinIcon.TRASH.create(), event -> {
+            imagePaths.remove(imagePath);
+            imageGallery.remove(imageContainer);
+            imagemPathField.setValue(String.join(", ", imagePaths));
+            Notification.show("Imagem removida com sucesso!", 3000, Notification.Position.MIDDLE);
+        });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
+    
+        imageContainer.add(image, deleteButton);
+        imageGallery.add(imageContainer);
+    }
+
+    private void editOrdemServico(OrdemServico os) {
+        osId = os.getId();
+        status.setValue(os.getStatusOS());
+        endereco.setValue(String.valueOf(os.getEndereco()));
+        observacao.setValue(String.valueOf(os.getObservacao()));
+        funcionario.setValue(os.getFuncionario());
+        cliente.setValue(os.getCliente());
+        data.setValue(os.getDataAbertura());
+        datap.setValue(os.getDataPrevFinaliza());
+    
+
+        List<ProdutoOS> produtosSelecionados = osProdutoRepository.getProdutoOSsByOrdemServicoId(osId);
+        Set<Produto> produtos = produtosSelecionados.stream()
+                .map(ProdutoOS::getProduto)
+                .collect(Collectors.toSet());
+        produto.setValue(produtos);
+    
+        imagePaths.clear();
+        imageLayout.removeAll();
+    
+        List<String> imagens = os.getImagens();
+        if (imagens != null && !imagens.isEmpty()) {
+            for (String imagePath : imagens) {
+                imagePaths.add(imagePath);
+                imageLayout.add(createImageComponent(imagePath));
+            }
+            imagemPathField.setValue(String.join(", ", imagens));
+            Notification.show("Imagens carregadas", 3000, Notification.Position.MIDDLE);
+        } else {
+            imagemPathField.clear();
+            Notification.show("Nenhuma imagem associada.", 3000, Notification.Position.MIDDLE);
+        }
+    }
+
+    private Component createImageComponent(String imagePath) {
+        VerticalLayout imageContainer = new VerticalLayout();
+        imageContainer.setSpacing(false);
+        imageContainer.setPadding(false);
+        imageContainer.setAlignItems(FlexComponent.Alignment.CENTER);
+    
+        // Exibe a imagem
+        Image image = new Image("file:///" + imagePath, "Uploaded Image");
+        image.setWidth("150px");
+        image.setHeight("150px");
+        image.getStyle().set("object-fit", "cover");
+    
+        // Botão para excluir a imagem
+        Button deleteButton = new Button("Excluir", VaadinIcon.TRASH.create(), event -> {
+            imagePaths.remove(imagePath); // Remove da lista global
+            imageLayout.remove(imageContainer); // Remove do layout visual
+            imagemPathField.setValue(String.join(", ", imagePaths)); // Atualiza o campo com os caminhos
+            Notification.show("Imagem removida com sucesso!", 3000, Notification.Position.MIDDLE);
+        });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
+    
+        // Adiciona imagem e botão ao container
+        imageContainer.add(image, deleteButton);
+        return imageContainer;
+    }
+    
     private void setComboBoxProdutoData(MultiSelectComboBox<Produto> comboBox) {
         List<Produto> produtos = produtoRepository.pesquisarTodos();
         comboBox.setItems(produtos);
@@ -429,51 +533,6 @@ public class OrdemServicoView extends VerticalLayout {
         }
     }
 
-    private void editOrdemServico(OrdemServico os) {
-        osId = os.getId();
-        status.setValue(os.getStatusOS());
-        endereco.setValue(String.valueOf(os.getEndereco()));
-        observacao.setValue(String.valueOf(os.getObservacao()));
-        funcionario.setValue(os.getFuncionario());
-        cliente.setValue(os.getCliente());
-        data.setValue(os.getData());
-        List<ProdutoOS> produtosSelecionados = osProdutoRepository.getProdutoOSsByOrdemServicoId(osId);
-        Set<Produto> produtos = produtosSelecionados.stream()
-                .map(ProdutoOS::getProduto)
-                .collect(Collectors.toSet());
-        produto.setValue(produtos);
-
-        List<String> imagens = os.getImagens();
-        if (imagens != null && !imagens.isEmpty()) {
-            /*
-             * for (String imagePath : imagens) {
-             * imagePaths.add(imagePath);
-             * imageLayout.add(createImageComponent(imagePath));
-             * }
-             */
-            imagemPathField.setValue(String.join(", ", imagens));
-            Notification.show("Imagens carregadas", 3000, Notification.Position.MIDDLE);
-        } else {
-            imagemPathField.clear();
-            Notification.show("Nenhuma imagem associada.", 3000, Notification.Position.MIDDLE);
-        }
-    }
-
-    private HorizontalLayout createImageComponent(String imagePath) {
-        Image image = new Image("file:" + imagePath, "Imagem");
-        image.setHeight("100px"); // Ajuste o tamanho conforme necessário
-
-        /*
-         * Button deleteButton = new Button("Excluir", event -> {
-         * imagePaths.remove(imagePath);
-         * imageLayout.remove(image);
-         * });
-         */
-
-        HorizontalLayout imageComponent = new HorizontalLayout(image/* , deleteButton */);
-        return imageComponent;
-    }
-
     private void clearForm() {
         osId = null;
         status.clear();
@@ -482,6 +541,7 @@ public class OrdemServicoView extends VerticalLayout {
         cliente.clear();
         funcionario.clear();
         data.clear();
+        datap.clear();
         produto.clear();
         image = null;
     }

@@ -10,8 +10,8 @@ public class OrdemServico {
     private List<String> imagens;
     private String endereco;
     private Funcionario funcionario;
-    private LocalDate data;
- //   private LocalDate dataPrevFinakiza;
+    private LocalDate dataAbertura;
+    private LocalDate dataPrevFinaliza;
     private String observacao;
     private String imagem;
 
@@ -19,12 +19,13 @@ public class OrdemServico {
     }
 
     public OrdemServico(StatusOS statusOS, Cliente cliente, String endereco,
-            Funcionario funcionario, LocalDate data, String observacao) {
+            Funcionario funcionario, LocalDate dataAbertura, LocalDate dataPrevFinaliza, String observacao) {
         this.statusOS = statusOS;
         this.cliente = cliente;
         this.endereco = endereco;
         this.funcionario = funcionario;
-        this.data = data;
+        this.dataAbertura = dataAbertura;
+        this.dataPrevFinaliza = dataPrevFinaliza;
         this.observacao = observacao;
     }
 
@@ -76,12 +77,12 @@ public class OrdemServico {
         this.funcionario = funcionario;
     }
 
-    public LocalDate getData() {
-        return data;
+    public LocalDate getDataAbertura() {
+        return dataAbertura;
     }
 
-    public void setData(LocalDate data) {
-        this.data = data;
+    public void setDataAbertura(LocalDate dataAbertura) {
+        this.dataAbertura = dataAbertura;
     }
 
     public String getObservacao() {
@@ -90,5 +91,13 @@ public class OrdemServico {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public LocalDate getDataPrevFinaliza() {
+        return dataPrevFinaliza;
+    }
+
+    public void setDataPrevFinaliza(LocalDate dataPrevFinaliza) {
+        this.dataPrevFinaliza = dataPrevFinaliza;
     }
 }

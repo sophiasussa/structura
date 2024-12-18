@@ -22,46 +22,34 @@ public class DaoOrdemServico {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    public boolean saveOrdemServico(OrdemServico os, List<Produto> produtos) {
-        String sqlOS = "INSERT INTO os (status_os, endereco, imagens, dataa, observacoes, cliente_id, funcionario_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        String sqlOsProdutos = "INSERT INTO produto_os (os_id, produto_id) VALUES (?, ?)";
-
-        try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmtOS.setString(1, os.getStatusOS().name());
+    public long saveOrdemServico(OrdemServico os) throws SQLException {
+        String sql = "INSERT INTO os (status_os, endereco, imagens, dataa, datap, observacoes, cliente_id, funcionario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    
+        try (PreparedStatement stmtOS = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
             stmtOS.setString(2, os.getEndereco());
-            stmtOS.setString(3, String.join(",", os.getImagens()));
-            stmtOS.setDate(4, java.sql.Date.valueOf(os.getData()));
-            stmtOS.setString(5, os.getObservacao());
-            stmtOS.setLong(6, os.getCliente().getId());
-            stmtOS.setLong(7, os.getFuncionario().getId());
-
+            stmtOS.setString(3, os.getImagens() != null ? String.join(",", os.getImagens()) : null);
+            stmtOS.setDate(4, os.getDataAbertura() != null ? java.sql.Date.valueOf(os.getDataAbertura()) : null);
+            stmtOS.setDate(5, os.getDataPrevFinaliza() != null ? java.sql.Date.valueOf(os.getDataPrevFinaliza()) : null);
+            stmtOS.setString(6, os.getObservacao());
+            stmtOS.setLong(7, os.getCliente().getId());
+            stmtOS.setLong(8, os.getFuncionario() != null ? os.getFuncionario().getId() : null);
+    
             int rowsInserted = stmtOS.executeUpdate();
-
+    
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmtOS.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int idOs = generatedKeys.getInt(1);
-
-                        try (PreparedStatement stmtOsProdutos = connection.prepareStatement(sqlOsProdutos)) {
-                            for (Produto produto : produtos) {
-                                stmtOsProdutos.setInt(1, idOs);
-                                stmtOsProdutos.setLong(2, produto.getId());
-                                stmtOsProdutos.addBatch();
-                            }
-                            stmtOsProdutos.executeBatch();
-                        }
+                        return generatedKeys.getLong(1);
                     }
                 }
             }
-            return false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
+        return -1;
     }
-
+    
     public boolean updateOrdemServico(OrdemServico os, List<Produto> produtos) {
-        String sqlOS = "UPDATE os SET status_os = ?, endereco = ?, imagens = ?, dataa = ?, observacoes = ?, cliente_id = ?, funcionario_id = ? WHERE id = ?";
+        String sqlOS = "UPDATE os SET status_os = ?, endereco = ?, imagens = ?, dataa = ?, datap = ?, observacoes = ?, cliente_id = ?, funcionario_id = ? WHERE id = ?";
         String deleteOsProdutos = "DELETE FROM os_produto WHERE id_os = ?";
         String insertOsProdutos = "INSERT INTO os_produto (id_os, id_produto) VALUES (?, ?)";
 
@@ -69,11 +57,12 @@ public class DaoOrdemServico {
             stmtOS.setString(1, os.getStatusOS().name());
             stmtOS.setString(2, os.getEndereco());
             stmtOS.setString(3, String.join(",", os.getImagens()));
-            stmtOS.setDate(4, java.sql.Date.valueOf(os.getData()));
-            stmtOS.setString(5, os.getObservacao());
-            stmtOS.setLong(6, os.getCliente().getId());
-            stmtOS.setLong(7, os.getFuncionario().getId());
-            stmtOS.setLong(8, os.getId());
+            stmtOS.setDate(4, java.sql.Date.valueOf(os.getDataAbertura()));
+            stmtOS.setDate(5, java.sql.Date.valueOf(os.getDataPrevFinaliza()));
+            stmtOS.setString(6, os.getObservacao());
+            stmtOS.setLong(7, os.getCliente().getId());
+            stmtOS.setLong(8, os.getFuncionario().getId());
+            stmtOS.setLong(9, os.getId());
 
             int rowsUpdated = stmtOS.executeUpdate();
 
@@ -140,7 +129,8 @@ public class DaoOrdemServico {
                 String imagens = rsOS.getString("imagens");
                 os.setImagens(imagens != null ? Arrays.asList(imagens.split(",")) : new ArrayList<>());
                 java.sql.Date dataSql = rsOS.getDate("dataa");
-                os.setData(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacoes"));
                 os.setCliente(new DaoCliente().getClienteById(rsOS.getInt("cliente_id")));
                 os.setFuncionario(new DaoFuncionario().getFuncionarioById(rsOS.getInt("funcionario_id")));
@@ -188,7 +178,8 @@ public class DaoOrdemServico {
                 os.setEndereco(rsOS.getString("endereco"));
                 os.setImagens(Arrays.asList(rsOS.getString("imagens").split(",")));
                 java.sql.Date dataSql = rsOS.getDate("dataa");
-                os.setData(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacao"));
                 os.setCliente(new DaoCliente().getClienteById(rsOS.getInt("id_cliente")));
                 os.setFuncionario(new DaoFuncionario().getFuncionarioById(rsOS.getInt("id_mecanico")));
@@ -219,7 +210,8 @@ public class DaoOrdemServico {
                 os.setEndereco(result.getString("endereco"));
                 os.setImagens(Arrays.asList(result.getString("imagens").split(",")));
                 java.sql.Date dataSql = result.getDate("dataa");
-                os.setData(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(result.getString("observacao"));
                 os.setCliente(new DaoCliente().getClienteById(result.getInt("id_cliente")));
                 os.setFuncionario(new DaoFuncionario().getFuncionarioById(result.getInt("id_mecanico")));

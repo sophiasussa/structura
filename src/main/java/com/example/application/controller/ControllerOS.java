@@ -17,12 +17,12 @@ public class ControllerOS {
         }
     }
 
-    public boolean saveOrdemServico(OrdemServico os, List<Produto> produtos) {
+    public Long saveOrdemServico(OrdemServico os) {
         try {
-            return daoOS.saveOrdemServico(os, produtos);
+            return daoOS.saveOrdemServico(os);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 

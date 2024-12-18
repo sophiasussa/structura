@@ -15,6 +15,7 @@ public class DaoOSProduto {
     public DaoOSProduto() throws SQLException {
         this.connection = DBConnection.getInstance().getConnection();
     }
+    
 
     public List<ProdutoOS> getProdutoOSsByOrdemServicoId(long idOs) {
         List<ProdutoOS> osProdutosList = new ArrayList<>();
