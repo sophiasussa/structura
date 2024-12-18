@@ -1,31 +1,85 @@
 package com.example.application.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.application.model.Fornecedor;
 import com.example.application.repository.DaoFornecedor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ControllerFornecedor {
-    DaoFornecedor dao = new DaoFornecedor();
 
-    public boolean inserir(Fornecedor fornecedor){
-        return dao.inserir(fornecedor);
+    private static final Logger logger = LoggerFactory.getLogger(ControllerFornecedor.class);
+    private DaoFornecedor daoFornecedor;
+
+    public ControllerFornecedor() {
+        try {
+            this.daoFornecedor = new DaoFornecedor();
+        } catch (Exception e) {
+            logger.error("Erro ao conectar ao banco de dados", e);
+            throw new RuntimeException("Erro ao conectar ao banco de dados", e);
+        }
     }
 
-    public boolean alterar(Fornecedor fornecedor){
-        return dao.alterar(fornecedor);
+    public boolean inserir(Fornecedor fornecedor) {
+        if (fornecedor == null) {
+            logger.warn("Tentativa de inserir fornecedor com valor nulo");
+            return false;
+        }
+        try {
+            return daoFornecedor.inserir(fornecedor);
+        } catch (Exception e) {
+            logger.error("Erro ao inserir fornecedor", e);
+            return false;
+        }
     }
 
-    public boolean excluir(Fornecedor fornecedor){
-        return dao.excluir(fornecedor);
+    public boolean alterar(Fornecedor fornecedor) {
+        if (fornecedor == null) {
+            logger.warn("Tentativa de alterar fornecedor com valor nulo");
+            return false;
+        }
+        try {
+            return daoFornecedor.alterar(fornecedor);
+        } catch (Exception e) {
+            logger.error("Erro ao alterar fornecedor", e);
+            return false;
+        }
     }
 
-    public List<Fornecedor> pesquisarTodos(){
-        return dao.pesquisarTodos();
+    public boolean excluir(Fornecedor fornecedor) {
+        if (fornecedor == null) {
+            logger.warn("Tentativa de excluir fornecedor com valor nulo");
+            return false;
+        }
+        try {
+            return daoFornecedor.excluir(fornecedor);
+        } catch (Exception e) {
+            logger.error("Erro ao excluir fornecedor", e);
+            return false;
+        }
     }
 
-    public List<Fornecedor> pesquisaFornecedors(String pesquisa){
-        return dao.pesquisarFornecedor(pesquisa);
+    public List<Fornecedor> pesquisarTodos() {
+        try {
+            return daoFornecedor.pesquisarTodos();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar todos os fornecedores", e);
+            return null;
+        }
     }
 
+    public List<Fornecedor> pesquisaFornecedors(String pesquisa) {
+        if (pesquisa == null || pesquisa.isEmpty()) {
+            logger.warn("Busca de fornecedor com parâmetro de pesquisa inválido");
+            return new ArrayList<>();
+        }
+        try {
+            return daoFornecedor.pesquisarFornecedor(pesquisa);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar fornecedor com pesquisa: " + pesquisa, e);
+            return null;
+        }
+    }
 }

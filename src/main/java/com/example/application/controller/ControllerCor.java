@@ -5,22 +5,68 @@ import java.util.List;
 import com.example.application.model.Cor;
 import com.example.application.repository.DaoCor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ControllerCor {
-    DaoCor dao = new DaoCor();
 
-    public boolean inserir(Cor cor){
-        return dao.inserir(cor);
+    private static final Logger logger = LoggerFactory.getLogger(ControllerCor.class);
+    private DaoCor daoCor;
+
+    public ControllerCor() {
+        try {
+            this.daoCor = new DaoCor();
+        } catch (Exception e) {
+            logger.error("Erro ao conectar ao banco de dados", e);
+            throw new RuntimeException("Erro ao conectar ao banco de dados", e);
+        }
     }
 
-    public boolean alterar(Cor cor){
-        return dao.alterar(cor);
+    public boolean inserir(Cor cor) {
+        if (cor == null) {
+            logger.warn("Tentativa de inserir cor com valor nulo");
+            return false;
+        }
+        try {
+            return daoCor.inserir(cor);
+        } catch (Exception e) {
+            logger.error("Erro ao inserir cor", e);
+            return false;
+        }
     }
 
-    public boolean excluir(Cor cor){
-        return dao.excluir(cor);
+    public boolean alterar(Cor cor) {
+        if (cor == null) {
+            logger.warn("Tentativa de alterar cor com valor nulo");
+            return false;
+        }
+        try {
+            return daoCor.alterar(cor);
+        } catch (Exception e) {
+            logger.error("Erro ao alterar cor", e);
+            return false;
+        }
     }
 
-    public List<Cor> pesquisarTodos(){
-        return dao.pesquisarTodos();
+    public boolean excluir(Cor cor) {
+        if (cor == null) {
+            logger.warn("Tentativa de excluir cor com valor nulo");
+            return false;
+        }
+        try {
+            return daoCor.excluir(cor);
+        } catch (Exception e) {
+            logger.error("Erro ao excluir cor", e);
+            return false;
+        }
+    }
+
+    public List<Cor> pesquisarTodos() {
+        try {
+            return daoCor.pesquisarTodos();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar todas as cores", e);
+            return null;
+        }
     }
 }

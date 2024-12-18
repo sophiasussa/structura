@@ -1,34 +1,95 @@
 package com.example.application.controller;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.application.model.Cliente;
 import com.example.application.repository.DaoCliente;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ControllerCliente {
-    DaoCliente dao = new DaoCliente();
 
-    public boolean inserir(Cliente cliente){
-        return dao.inserir(cliente);
+    private static final Logger logger = LoggerFactory.getLogger(ControllerCliente.class);
+    private DaoCliente daoCliente;
+
+    public ControllerCliente() {
+        try {
+            this.daoCliente = new DaoCliente();
+        } catch (Exception e) {
+            logger.error("Erro ao conectar ao banco de dados", e);
+            throw new RuntimeException("Erro ao conectar ao banco de dados", e);
+        }
     }
 
-    public boolean alterar(Cliente cliente){
-        return dao.alterar(cliente);
+    public boolean inserir(Cliente cliente) {
+        if (cliente == null) {
+            logger.warn("Tentativa de inserir cliente com valor nulo");
+            return false;
+        }
+        try {
+            return daoCliente.inserir(cliente);
+        } catch (Exception e) {
+            logger.error("Erro ao inserir cliente", e);
+            return false;
+        }
     }
 
-    public boolean excluir(Cliente cliente){
-        return dao.excluir(cliente);
+    public boolean alterar(Cliente cliente) {
+        if (cliente == null) {
+            logger.warn("Tentativa de alterar cliente com valor nulo");
+            return false;
+        }
+        try {
+            return daoCliente.alterar(cliente);
+        } catch (Exception e) {
+            logger.error("Erro ao alterar cliente", e);
+            return false;
+        }
     }
 
-    public List<Cliente> pesquisarTodos(){
-        return dao.pesquisarTodos();
+    public boolean excluir(Cliente cliente) {
+        if (cliente == null) {
+            logger.warn("Tentativa de excluir cliente com valor nulo");
+            return false;
+        }
+        try {
+            return daoCliente.excluir(cliente);
+        } catch (Exception e) {
+            logger.error("Erro ao excluir cliente", e);
+            return false;
+        }
     }
-    
-    public List<Cliente> pesquisarCliente(String pesquisa){
-        return dao.pesquisarCliente(pesquisa);
+
+    public List<Cliente> pesquisarTodos() {
+        try {
+            return daoCliente.pesquisarTodos();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar todos os clientes", e);
+            return null;
+        }
+    }
+
+    public List<Cliente> pesquisarCliente(String pesquisa) {
+        if (pesquisa == null || pesquisa.isEmpty()) {
+            logger.warn("Busca de cliente com parâmetro de pesquisa inválido");
+            return new ArrayList<>();
+        }
+        try {
+            return daoCliente.pesquisarCliente(pesquisa);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar cliente com pesquisa: " + pesquisa, e);
+            return null;
+        }
     }
 
     public Cliente getClienteById(int id) {
-        return dao.getClienteById(id);
+        try {
+            return daoCliente.getClienteById(id);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar cliente com ID: " + id, e);
+            return null;
+        }
     }
 }
