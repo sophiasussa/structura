@@ -6,15 +6,16 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.application.model.Modelo;
+import com.example.application.model.UnidMedida;
 
-public class DaoModelo {
-    public boolean inserir(Modelo modelo){
+public class UnidMedidaRepository {
+
+    public boolean inserir(UnidMedida unidMedida){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO modelo (nome) VALUE (?)";
+            String insert = "INSERT INTO unidMedida (nome) VALUE (?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
-            prepareStatement.setString(1, modelo.getNome());
+            prepareStatement.setString(1, unidMedida.getNome());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -23,13 +24,13 @@ public class DaoModelo {
         }
     }
 
-        public boolean alterar(Modelo modelo){
+        public boolean alterar(UnidMedida unidMedida){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE modelo SET nome = ? WHERE id = ?";
+            String update = "UPDATE unidMedida SET nome = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
-            prepareStatement.setString(1, modelo.getNome());
-            prepareStatement.setInt(2, modelo.getId());
+            prepareStatement.setString(1, unidMedida.getNome());
+            prepareStatement.setInt(2, unidMedida.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){
@@ -38,12 +39,12 @@ public class DaoModelo {
         }
     }
 
-    public boolean excluir(Modelo modelo) {
+    public boolean excluir(UnidMedida unidMedida) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            String delete = "DELETE FROM modelo WHERE id = ?";
+            String delete = "DELETE FROM unidMedida WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(delete);
-            prepareStatement.setLong(1, modelo.getId());
+            prepareStatement.setLong(1, unidMedida.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e) {
@@ -52,19 +53,19 @@ public class DaoModelo {
         }
     }
     
-    public List<Modelo> pesquisarTodos(){
+    public List<UnidMedida> pesquisarTodos(){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String consulta = "SELECT * from modelo";
-            List<Modelo> lista = new ArrayList<Modelo>();
-            Modelo modelo;
+            String consulta = "SELECT * from unidMedida";
+            List<UnidMedida> lista = new ArrayList<UnidMedida>();
+            UnidMedida unidMedida;
             PreparedStatement prepareStatement = connection.prepareStatement(consulta);
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next()){
-                modelo = new Modelo();
-                modelo.setId(resultSet.getInt("id"));
-                modelo.setNome(resultSet.getString("nome"));
-                lista.add(modelo);
+                unidMedida = new UnidMedida();
+                unidMedida.setId(resultSet.getInt("id"));
+                unidMedida.setNome(resultSet.getString("nome"));
+                lista.add(unidMedida);
             }
             return lista;
         }catch(Exception e){

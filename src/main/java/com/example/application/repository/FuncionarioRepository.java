@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
 
-public class DaoFuncionario {
+public class FuncionarioRepository {
 
     public boolean inserir(Funcionario funcionario){
         try {

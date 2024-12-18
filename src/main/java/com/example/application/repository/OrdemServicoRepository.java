@@ -14,11 +14,11 @@ import com.example.application.model.Produto;
 import com.example.application.model.StatusAgenda;
 import com.example.application.model.StatusOS;
 
-public class DaoOrdemServico {
+public class OrdemServicoRepository {
 
     private Connection connection;
     
-    public DaoOrdemServico() throws SQLException {
+    public OrdemServicoRepository() throws SQLException {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
@@ -132,8 +132,8 @@ public class DaoOrdemServico {
                 os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacoes"));
-                os.setCliente(new DaoCliente().getClienteById(rsOS.getInt("cliente_id")));
-                os.setFuncionario(new DaoFuncionario().getFuncionarioById(rsOS.getInt("funcionario_id")));
+                os.setCliente(new ClienteRepository().getClienteById(rsOS.getInt("cliente_id")));
+                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(rsOS.getInt("funcionario_id")));
 
                 List<Produto> produtos = new ArrayList<>();
                 try (PreparedStatement stmtProdutos = connection.prepareStatement(sqlProdutos)) {
@@ -181,8 +181,8 @@ public class DaoOrdemServico {
                 os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacao"));
-                os.setCliente(new DaoCliente().getClienteById(rsOS.getInt("id_cliente")));
-                os.setFuncionario(new DaoFuncionario().getFuncionarioById(rsOS.getInt("id_mecanico")));
+                os.setCliente(new ClienteRepository().getClienteById(rsOS.getInt("id_cliente")));
+                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(rsOS.getInt("id_mecanico")));
 
                 ordens.add(os);
             }
@@ -213,8 +213,8 @@ public class DaoOrdemServico {
                 os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setObservacao(result.getString("observacao"));
-                os.setCliente(new DaoCliente().getClienteById(result.getInt("id_cliente")));
-                os.setFuncionario(new DaoFuncionario().getFuncionarioById(result.getInt("id_mecanico")));
+                os.setCliente(new ClienteRepository().getClienteById(result.getInt("id_cliente")));
+                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(result.getInt("id_mecanico")));
 
                 return os;
             } else {

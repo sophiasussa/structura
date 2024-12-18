@@ -18,7 +18,7 @@ import com.example.application.model.Produto;
 import com.example.application.model.StatusAgenda;
 import com.example.application.model.UnidMedida;
 
-public class DaoAgenda {
+public class AgendaRepository {
 
     public boolean inserir(Agenda agenda){
         try {

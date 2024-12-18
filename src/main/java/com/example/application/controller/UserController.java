@@ -1,6 +1,6 @@
 package com.example.application.controller;
 import com.example.application.model.User;
-import com.example.application.repository.DaoUser;
+import com.example.application.repository.UserRepository;
 import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private DaoUser userRepository;
+    private UserRepository userRepository;
 
     public UserController() {
         try {
-            this.userRepository = new DaoUser();
+            this.userRepository = new UserRepository();
         } catch (SQLException e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

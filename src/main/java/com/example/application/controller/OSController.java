@@ -1,7 +1,7 @@
 package com.example.application.controller;
 
 import com.example.application.model.OrdemServico;
-import com.example.application.repository.DaoOrdemServico;
+import com.example.application.repository.OrdemServicoRepository;
 import com.example.application.model.Produto;
 
 import java.util.ArrayList;
@@ -9,14 +9,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerOS {
+public class OSController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerOS.class);
-    private final DaoOrdemServico daoOS;
+    private static final Logger logger = LoggerFactory.getLogger(OSController.class);
+    private final OrdemServicoRepository daoOS;
 
-    public ControllerOS() {
+    public OSController() {
         try {
-            this.daoOS = new DaoOrdemServico();
+            this.daoOS = new OrdemServicoRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

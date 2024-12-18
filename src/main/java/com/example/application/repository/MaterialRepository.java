@@ -5,17 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import com.example.application.model.Material;
 
-import com.example.application.model.Cor;
+public class MaterialRepository {
 
-public class DaoCor {
-    
-    public boolean inserir(Cor cor){
+    public boolean inserir(Material material){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO cor (nome) VALUE (?)";
+            String insert = "INSERT INTO material (nome) VALUE (?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
-            prepareStatement.setString(1, cor.getNome());
+            prepareStatement.setString(1, material.getNome());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -24,13 +23,13 @@ public class DaoCor {
         }
     }
 
-        public boolean alterar(Cor cor){
+        public boolean alterar(Material material){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE cor SET nome = ? WHERE id = ?";
+            String update = "UPDATE material SET nome = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
-            prepareStatement.setString(1, cor.getNome());
-            prepareStatement.setInt(2, cor.getId());
+            prepareStatement.setString(1, material.getNome());
+            prepareStatement.setInt(2, material.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){
@@ -39,12 +38,12 @@ public class DaoCor {
         }
     }
 
-    public boolean excluir(Cor cor) {
+    public boolean excluir(Material material) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            String delete = "DELETE FROM cor WHERE id = ?";
+            String delete = "DELETE FROM material WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(delete);
-            prepareStatement.setLong(1, cor.getId());
+            prepareStatement.setLong(1, material.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e) {
@@ -53,19 +52,19 @@ public class DaoCor {
         }
     }
     
-    public List<Cor> pesquisarTodos(){
+    public List<Material> pesquisarTodos(){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String consulta = "SELECT * from cor";
-            List<Cor> lista = new ArrayList<Cor>();
-            Cor cor;
+            String consulta = "SELECT * from material";
+            List<Material> lista = new ArrayList<Material>();
+            Material material;
             PreparedStatement prepareStatement = connection.prepareStatement(consulta);
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next()){
-                cor = new Cor();
-                cor.setId(resultSet.getInt("id"));
-                cor.setNome(resultSet.getString("nome"));
-                lista.add(cor);
+                material = new Material();
+                material.setId(resultSet.getInt("id"));
+                material.setNome(resultSet.getString("nome"));
+                lista.add(material);
             }
             return lista;
         }catch(Exception e){

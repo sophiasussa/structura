@@ -9,10 +9,10 @@ import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 import com.example.application.model.Produto;
 import com.example.application.model.UnidMedida;
-import com.example.application.repository.DaoMaterial;
-import com.example.application.repository.DaoModelo;
-import com.example.application.repository.DaoProduto;
-import com.example.application.repository.DaoUnidMedida;
+import com.example.application.repository.MaterialRepository;
+import com.example.application.repository.ModeloRepository;
+import com.example.application.repository.ProdutoRepository;
+import com.example.application.repository.UnidMedidaRepository;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -43,10 +43,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 @Route(value = "my-view4", layout = MainLayout.class)
 public class ProdutoView extends VerticalLayout {
 
-    private DaoProduto produtoRepository = new DaoProduto();
-    private DaoMaterial materialRepository = new DaoMaterial();
-    private DaoUnidMedida unidMedidaRepository = new DaoUnidMedida();
-    private DaoModelo modeloRepository = new DaoModelo();
+    private ProdutoRepository produtoRepository = new ProdutoRepository();
+    private MaterialRepository materialRepository = new MaterialRepository();
+    private UnidMedidaRepository unidMedidaRepository = new UnidMedidaRepository();
+    private ModeloRepository modeloRepository = new ModeloRepository();
     private Grid<Produto> grid = new Grid<>(Produto.class, false);
     private TextField nome = new TextField("Nome");
     private TextField quantidadeAtual = new TextField("Quantidade Atual");

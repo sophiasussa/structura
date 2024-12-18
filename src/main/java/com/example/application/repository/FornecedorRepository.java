@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.example.application.model.Fornecedor;
 
-public class DaoFornecedor {
+public class FornecedorRepository {
 
     public boolean inserir(Fornecedor fornecedor){
         try {

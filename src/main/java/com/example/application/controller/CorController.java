@@ -3,19 +3,19 @@ package com.example.application.controller;
 import java.util.List;
 
 import com.example.application.model.Cor;
-import com.example.application.repository.DaoCor;
+import com.example.application.repository.CorRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerCor {
+public class CorController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerCor.class);
-    private DaoCor daoCor;
+    private static final Logger logger = LoggerFactory.getLogger(CorController.class);
+    private CorRepository daoCor;
 
-    public ControllerCor() {
+    public CorController() {
         try {
-            this.daoCor = new DaoCor();
+            this.daoCor = new CorRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

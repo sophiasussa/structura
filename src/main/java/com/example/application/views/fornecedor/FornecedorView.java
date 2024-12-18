@@ -29,14 +29,14 @@ import java.util.List;
 
 import com.example.application.model.Fornecedor;
 import com.example.application.model.Funcionario;
-import com.example.application.repository.DaoFornecedor;
+import com.example.application.repository.FornecedorRepository;
 import com.example.application.views.MainLayout;
 
 @PageTitle("Fornecedor")
 @Route(value = "my-view3", layout = MainLayout.class)
 public class FornecedorView extends Composite<VerticalLayout> {
 
-    private DaoFornecedor fornecedorRepository = new DaoFornecedor();
+    private FornecedorRepository fornecedorRepository = new FornecedorRepository();
     private Grid<Fornecedor> grid = new Grid<>();
     private TextField empresa = new TextField();
     private TextField vendedor = new TextField();

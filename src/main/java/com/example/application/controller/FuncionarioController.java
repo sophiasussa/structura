@@ -5,18 +5,18 @@ import java.util.List;
 
 import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
-import com.example.application.repository.DaoFuncionario;
+import com.example.application.repository.FuncionarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerFuncionario {
+public class FuncionarioController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerFuncionario.class);
-    private DaoFuncionario daoFuncionario;
+    private static final Logger logger = LoggerFactory.getLogger(FuncionarioController.class);
+    private FuncionarioRepository daoFuncionario;
 
-    public ControllerFuncionario() {
+    public FuncionarioController() {
         try {
-            this.daoFuncionario = new DaoFuncionario();
+            this.daoFuncionario = new FuncionarioRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

@@ -3,18 +3,18 @@ package com.example.application.controller;
 import java.util.List;
 
 import com.example.application.model.Material;
-import com.example.application.repository.DaoMaterial;
+import com.example.application.repository.MaterialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerMaterial {
+public class MaterialController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerMaterial.class);
-    private DaoMaterial daoMaterial;
+    private static final Logger logger = LoggerFactory.getLogger(MaterialController.class);
+    private MaterialRepository daoMaterial;
 
-    public ControllerMaterial() {
+    public MaterialController() {
         try {
-            this.daoMaterial = new DaoMaterial();
+            this.daoMaterial = new MaterialRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

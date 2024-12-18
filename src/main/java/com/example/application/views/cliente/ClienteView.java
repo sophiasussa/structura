@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
-import com.example.application.repository.DaoCliente;
+import com.example.application.repository.ClienteRepository;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
@@ -33,7 +33,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 @Route(value = "my-view", layout = MainLayout.class)
 public class ClienteView extends Composite<VerticalLayout> {
 
-    private DaoCliente clienteRepository = new DaoCliente();
+    private ClienteRepository clienteRepository = new ClienteRepository();
     private Grid<Cliente> grid = new Grid(Cliente.class, false);
     private TextField nome = new TextField("Nome");
     private TextField cpf = new TextField("CNPJ/CPF");

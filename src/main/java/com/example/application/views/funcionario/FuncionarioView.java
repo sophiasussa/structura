@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.example.application.model.Funcionario;
-import com.example.application.repository.DaoFuncionario;
+import com.example.application.repository.FuncionarioRepository;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.example.application.views.MainLayout;
@@ -41,7 +41,7 @@ import com.example.application.views.MainLayout;
 @Route(value = "my-view2", layout = MainLayout.class)
 public class FuncionarioView extends Composite<VerticalLayout> {
 
-    private DaoFuncionario funcionarioRepository = new DaoFuncionario();
+    private FuncionarioRepository funcionarioRepository = new FuncionarioRepository();
     private Grid<Funcionario> grid = new Grid<>();
     private TextField nome = new TextField();
     private TextField cpf = new TextField();

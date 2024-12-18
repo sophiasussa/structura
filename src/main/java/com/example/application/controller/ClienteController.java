@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.application.model.Cliente;
-import com.example.application.repository.DaoCliente;
+import com.example.application.repository.ClienteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerCliente {
+public class ClienteController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerCliente.class);
-    private DaoCliente daoCliente;
+    private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
+    private ClienteRepository daoCliente;
 
-    public ControllerCliente() {
+    public ClienteController() {
         try {
-            this.daoCliente = new DaoCliente();
-        } catch (Exception e) {
+            this.daoCliente = new ClienteRepository();
+        } catch (SQLException e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);
         }

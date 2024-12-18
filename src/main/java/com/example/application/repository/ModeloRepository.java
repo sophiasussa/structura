@@ -5,16 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import com.example.application.model.Material;
 
-public class DaoMaterial {
+import com.example.application.model.Modelo;
 
-    public boolean inserir(Material material){
+public class ModeloRepository {
+    public boolean inserir(Modelo modelo){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO material (nome) VALUE (?)";
+            String insert = "INSERT INTO modelo (nome) VALUE (?)";
             PreparedStatement prepareStatement = connection.prepareStatement(insert);
-            prepareStatement.setString(1, material.getNome());
+            prepareStatement.setString(1, modelo.getNome());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         }catch(Exception e){
@@ -23,13 +23,13 @@ public class DaoMaterial {
         }
     }
 
-        public boolean alterar(Material material){
+        public boolean alterar(Modelo modelo){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE material SET nome = ? WHERE id = ?";
+            String update = "UPDATE modelo SET nome = ? WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(update);
-            prepareStatement.setString(1, material.getNome());
-            prepareStatement.setInt(2, material.getId());
+            prepareStatement.setString(1, modelo.getNome());
+            prepareStatement.setInt(2, modelo.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e){
@@ -38,12 +38,12 @@ public class DaoMaterial {
         }
     }
 
-    public boolean excluir(Material material) {
+    public boolean excluir(Modelo modelo) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            String delete = "DELETE FROM material WHERE id = ?";
+            String delete = "DELETE FROM modelo WHERE id = ?";
             PreparedStatement prepareStatement = connection.prepareStatement(delete);
-            prepareStatement.setLong(1, material.getId());
+            prepareStatement.setLong(1, modelo.getId());
             int resultado = prepareStatement.executeUpdate();
             return resultado > 0;
         } catch (Exception e) {
@@ -52,19 +52,19 @@ public class DaoMaterial {
         }
     }
     
-    public List<Material> pesquisarTodos(){
+    public List<Modelo> pesquisarTodos(){
         try{
             Connection connection = DBConnection.getInstance().getConnection();
-            String consulta = "SELECT * from material";
-            List<Material> lista = new ArrayList<Material>();
-            Material material;
+            String consulta = "SELECT * from modelo";
+            List<Modelo> lista = new ArrayList<Modelo>();
+            Modelo modelo;
             PreparedStatement prepareStatement = connection.prepareStatement(consulta);
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next()){
-                material = new Material();
-                material.setId(resultSet.getInt("id"));
-                material.setNome(resultSet.getString("nome"));
-                lista.add(material);
+                modelo = new Modelo();
+                modelo.setId(resultSet.getInt("id"));
+                modelo.setNome(resultSet.getString("nome"));
+                lista.add(modelo);
             }
             return lista;
         }catch(Exception e){

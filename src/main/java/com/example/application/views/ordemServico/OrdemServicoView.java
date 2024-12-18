@@ -18,11 +18,11 @@ import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
 import com.example.application.model.ProdutoOS;
 import com.example.application.model.StatusOS;
-import com.example.application.repository.DaoCliente;
-import com.example.application.repository.DaoFuncionario;
-import com.example.application.repository.DaoOSProduto;
-import com.example.application.repository.DaoOrdemServico;
-import com.example.application.repository.DaoProduto;
+import com.example.application.repository.ClienteRepository;
+import com.example.application.repository.FuncionarioRepository;
+import com.example.application.repository.OSProdutoRepository;
+import com.example.application.repository.OrdemServicoRepository;
+import com.example.application.repository.ProdutoRepository;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -57,11 +57,11 @@ import com.vaadin.flow.component.Component;
 @Route(value = "my-view5", layout = MainLayout.class)
 public class OrdemServicoView extends VerticalLayout {
 
-    private DaoProduto produtoRepository;
-    private DaoFuncionario funcionarioRepository;
-    private DaoCliente clienteRepository;
-    private DaoOrdemServico osRepository;
-    private DaoOSProduto osProdutoRepository;
+    private ProdutoRepository produtoRepository;
+    private FuncionarioRepository funcionarioRepository;
+    private ClienteRepository clienteRepository;
+    private OrdemServicoRepository osRepository;
+    private OSProdutoRepository osProdutoRepository;
     private Grid<OrdemServico> grid = new Grid<>(OrdemServico.class, false);
     private ComboBox<StatusOS> status = new ComboBox<>("Status");
     private TextArea endereco = new TextArea("Endereço");
@@ -83,11 +83,11 @@ public class OrdemServicoView extends VerticalLayout {
 
     public OrdemServicoView() {
         try {
-            produtoRepository = new DaoProduto();
-            funcionarioRepository = new DaoFuncionario();
-            clienteRepository = new DaoCliente();
-            osRepository = new DaoOrdemServico();
-            osProdutoRepository = new DaoOSProduto();
+            produtoRepository = new ProdutoRepository();
+            funcionarioRepository = new FuncionarioRepository();
+            clienteRepository = new ClienteRepository();
+            osRepository = new OrdemServicoRepository();
+            osProdutoRepository = new OSProdutoRepository();
 
             tabSheet = new TabSheet();
             this.setWidth("100%");

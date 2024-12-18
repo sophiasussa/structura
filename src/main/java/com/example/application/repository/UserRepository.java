@@ -5,10 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 
-public class DaoUser {
+public class UserRepository {
     private Connection connection;
     
-    public DaoUser() throws SQLException {
+    public UserRepository() throws SQLException {
         this.connection = DBConnection.getInstance().getConnection();
     }
 

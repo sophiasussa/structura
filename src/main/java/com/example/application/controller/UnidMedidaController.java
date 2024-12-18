@@ -3,18 +3,18 @@ package com.example.application.controller;
 import java.util.List;
 
 import com.example.application.model.UnidMedida;
-import com.example.application.repository.DaoUnidMedida;
+import com.example.application.repository.UnidMedidaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerUnidMedida {
+public class UnidMedidaController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerUnidMedida.class);
-    private DaoUnidMedida daoUnidMedida;
+    private static final Logger logger = LoggerFactory.getLogger(UnidMedidaController.class);
+    private UnidMedidaRepository daoUnidMedida;
 
-    public ControllerUnidMedida() {
+    public UnidMedidaController() {
         try {
-            this.daoUnidMedida = new DaoUnidMedida();
+            this.daoUnidMedida = new UnidMedidaRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

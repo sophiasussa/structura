@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.application.model.Agenda;
-import com.example.application.repository.DaoAgenda;
+import com.example.application.repository.AgendaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerAgenda {
+public class AgendaController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerAgenda.class);
-    private DaoAgenda daoAgenda;
+    private static final Logger logger = LoggerFactory.getLogger(AgendaController.class);
+    private AgendaRepository daoAgenda;
 
-    public ControllerAgenda() {
+    public AgendaController() {
         try {
-            this.daoAgenda = new DaoAgenda();
+            this.daoAgenda = new AgendaRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

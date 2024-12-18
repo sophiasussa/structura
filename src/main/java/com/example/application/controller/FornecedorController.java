@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.application.model.Fornecedor;
-import com.example.application.repository.DaoFornecedor;
+import com.example.application.repository.FornecedorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerFornecedor {
+public class FornecedorController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerFornecedor.class);
-    private DaoFornecedor daoFornecedor;
+    private static final Logger logger = LoggerFactory.getLogger(FornecedorController.class);
+    private FornecedorRepository daoFornecedor;
 
-    public ControllerFornecedor() {
+    public FornecedorController() {
         try {
-            this.daoFornecedor = new DaoFornecedor();
+            this.daoFornecedor = new FornecedorRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

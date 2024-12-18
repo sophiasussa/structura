@@ -3,18 +3,18 @@ package com.example.application.controller;
 import java.util.List;
 
 import com.example.application.model.Modelo;
-import com.example.application.repository.DaoModelo;
+import com.example.application.repository.ModeloRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerModelo {
+public class ModeloController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerModelo.class);
-    private DaoModelo daoModelo;
+    private static final Logger logger = LoggerFactory.getLogger(ModeloController.class);
+    private ModeloRepository daoModelo;
 
-    public ControllerModelo() {
+    public ModeloController() {
         try {
-            this.daoModelo = new DaoModelo();
+            this.daoModelo = new ModeloRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

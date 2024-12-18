@@ -34,16 +34,16 @@ import java.util.List;
 import com.example.application.model.Agenda;
 import com.example.application.model.Funcionario;
 import com.example.application.model.StatusAgenda;
-import com.example.application.repository.DaoAgenda;
-import com.example.application.repository.DaoFuncionario;
+import com.example.application.repository.AgendaRepository;
+import com.example.application.repository.FuncionarioRepository;
 import com.example.application.views.MainLayout;
 
 @PageTitle("Agenda")
 @Route(value = "my-view6", layout = MainLayout.class)
 public class AgendaView extends VerticalLayout {
 
-    private DaoFuncionario funcionarioRepository;
-    private DaoAgenda agendaRepository;
+    private FuncionarioRepository funcionarioRepository;
+    private AgendaRepository agendaRepository;
     private Grid<Agenda> grid = new Grid<>(Agenda.class, false);
     private ComboBox<StatusAgenda> status = new ComboBox<>("Status");
     private TextField titulo = new TextField("Título");
@@ -57,8 +57,8 @@ public class AgendaView extends VerticalLayout {
     private TabSheet tabSheet;
 
     public AgendaView() {
-        funcionarioRepository = new DaoFuncionario();
-        agendaRepository = new DaoAgenda();
+        funcionarioRepository = new FuncionarioRepository();
+        agendaRepository = new AgendaRepository();
         tabSheet = new TabSheet();
         this.setWidth("100%");
         this.getStyle().set("flex-grow", "1");

@@ -14,7 +14,7 @@ import com.example.application.model.Funcionario;
 import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 
-public class DaoProduto {
+public class ProdutoRepository {
 
     public boolean inserir(Produto produto){
         try{

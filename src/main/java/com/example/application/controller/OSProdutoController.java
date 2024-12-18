@@ -4,18 +4,18 @@ import java.util.List;
 
 import com.example.application.model.OrdemServico;
 import com.example.application.model.ProdutoOS;
-import com.example.application.repository.DaoOSProduto;
+import com.example.application.repository.OSProdutoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerOSProduto {
+public class OSProdutoController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ControllerOSProduto.class);
-    private final DaoOSProduto daoOSProduto;
+    private static final Logger logger = LoggerFactory.getLogger(OSProdutoController.class);
+    private final OSProdutoRepository daoOSProduto;
 
-    public ControllerOSProduto() {
+    public OSProdutoController() {
         try {
-            this.daoOSProduto = new DaoOSProduto();
+            this.daoOSProduto = new OSProdutoRepository();
         } catch (Exception e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);

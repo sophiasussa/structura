@@ -9,10 +9,10 @@ import java.util.List;
 
 import com.example.application.model.ProdutoOS;
 
-public class DaoOSProduto {
+public class OSProdutoRepository {
     private Connection connection;
     
-    public DaoOSProduto() throws SQLException {
+    public OSProdutoRepository() throws SQLException {
         this.connection = DBConnection.getInstance().getConnection();
     }
     
@@ -27,8 +27,8 @@ public class DaoOSProduto {
             
             while (result.next()) {
                 ProdutoOS osProduto = new ProdutoOS();
-                osProduto.setOrdemServico(new DaoOrdemServico().OrdemServicoById(result.getLong("id_os")));
-                osProduto.setProduto(new DaoProduto().getProdutoById(result.getInt("id_produto")));
+                osProduto.setOrdemServico(new OrdemServicoRepository().OrdemServicoById(result.getLong("id_os")));
+                osProduto.setProduto(new ProdutoRepository().getProdutoById(result.getInt("id_produto")));
                 osProdutosList.add(osProduto);
             }
         } catch (SQLException e) {
