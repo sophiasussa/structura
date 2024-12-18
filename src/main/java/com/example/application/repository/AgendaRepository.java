@@ -17,78 +17,97 @@ import com.example.application.model.Modelo;
 import com.example.application.model.Produto;
 import com.example.application.model.StatusAgenda;
 import com.example.application.model.UnidMedida;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgendaRepository {
 
-    public boolean inserir(Agenda agenda){
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String insert = "INSERT INTO agenda (titulo, descricao, endereco, dataa, statuss, funcionario_id) VALUES (?,?,?,?,?,?)";
-            PreparedStatement prepareStatement = connection.prepareStatement(insert);
-            prepareStatement.setString(1, agenda.getTitulo());
-            prepareStatement.setString(2, agenda.getDescricao());
-            prepareStatement.setString(3, agenda.getEndereco());
-            prepareStatement.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
-            prepareStatement.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
-            prepareStatement.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
-            int resultado = prepareStatement.executeUpdate();
-            return resultado > 0;
+    private static final Logger logger = LoggerFactory.getLogger(AgendaRepository.class);
+    private Connection connection;
+
+    public AgendaRepository() throws SQLException {
+        this.connection = DBConnection.getInstance().getConnection();
+    }
+
+    public boolean inserir(Agenda agenda) {
+        String sql = "INSERT INTO agenda (titulo, descricao, endereco, dataa, statuss, funcionario_id) VALUES (?,?,?,?,?,?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, agenda.getTitulo());
+            stmt.setString(2, agenda.getDescricao());
+            stmt.setString(3, agenda.getEndereco());
+            stmt.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
+            stmt.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
+            stmt.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                logger.info("Agenda inserida com sucesso: " + agenda.getTitulo());
+                return true;
+            } else {
+                logger.warn("Nenhuma linha inserida para a agenda: " + agenda.getTitulo());
+                return false;
+            }
+        } catch (SQLException e) {
+            logger.error("Erro ao inserir agenda: " + agenda.getTitulo(), e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
+            logger.error("Erro inesperado ao inserir agenda: " + agenda.getTitulo(), e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
     public boolean alterar(Agenda agenda) {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String update = "UPDATE agenda SET titulo = ?, descricao = ?, endereco = ?, dataa = ?, statuss = ?, funcionario_id = ? WHERE id = ?";
-            
-            PreparedStatement prepareStatement = connection.prepareStatement(update);
-            prepareStatement.setString(1, agenda.getTitulo());
-            prepareStatement.setString(2, agenda.getDescricao());
-            prepareStatement.setString(3, agenda.getEndereco());
-            prepareStatement.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
-            prepareStatement.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
-            prepareStatement.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
-            prepareStatement.setLong(7, agenda.getId());
-            
-            int resultado = prepareStatement.executeUpdate();
-            return resultado > 0;
+        String sql = "UPDATE agenda SET titulo = ?, descricao = ?, endereco = ?, dataa = ?, statuss = ?, funcionario_id = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, agenda.getTitulo());
+            stmt.setString(2, agenda.getDescricao());
+            stmt.setString(3, agenda.getEndereco());
+            stmt.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
+            stmt.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
+            stmt.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
+            stmt.setLong(7, agenda.getId());
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                logger.info("Agenda atualizada com sucesso: " + agenda.getTitulo());
+                return true;
+            } else {
+                logger.warn("Nenhuma linha atualizada para a agenda com ID: " + agenda.getId());
+                return false;
+            }
+        } catch (SQLException e) {
+            logger.error("Erro ao alterar agenda com ID: " + agenda.getId(), e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro inesperado ao alterar agenda com ID: " + agenda.getId(), e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
-
 
     public boolean excluir(Agenda agenda) {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String delete = "DELETE FROM agenda WHERE id = ?";
-            
-            PreparedStatement prepareStatement = connection.prepareStatement(delete);
-            prepareStatement.setLong(1, agenda.getId());
-            
-            int resultado = prepareStatement.executeUpdate();
-            return resultado > 0;
+        String sql = "DELETE FROM agenda WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, agenda.getId());
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                logger.info("Agenda excluída com sucesso: " + agenda.getId());
+                return true;
+            } else {
+                logger.warn("Nenhuma linha excluída para a agenda com ID: " + agenda.getId());
+                return false;
+            }
+        } catch (SQLException e) {
+            logger.error("Erro ao excluir agenda com ID: " + agenda.getId(), e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro inesperado ao excluir agenda com ID: " + agenda.getId(), e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
-        
+
     public List<Agenda> pesquisarTodos() {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String consulta = """
-                SELECT a.*, f.nome AS funcionario_nome
-                FROM agenda a
-                LEFT JOIN funcionario f ON a.funcionario_id = f.id
-            """;
-            List<Agenda> lista = new ArrayList<>();
-            PreparedStatement prepareStatement = connection.prepareStatement(consulta);
-            ResultSet resultSet = prepareStatement.executeQuery();
+        List<Agenda> lista = new ArrayList<>();
+        String sql = "SELECT a.*, f.nome AS funcionario_nome FROM agenda a LEFT JOIN funcionario f ON a.funcionario_id = f.id";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet resultSet = stmt.executeQuery()) {
 
             while (resultSet.next()) {
                 Agenda agenda = new Agenda();
@@ -109,80 +128,71 @@ public class AgendaRepository {
 
                 lista.add(agenda);
             }
-            return lista;
+            logger.info("Pesquisados " + lista.size() + " agendas.");
+        } catch (SQLException e) {
+            logger.error("Erro ao pesquisar todas as agendas.", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
+            logger.error("Erro inesperado ao pesquisar todas as agendas.", e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
+        return lista;
     }
-    
+
     public List<Agenda> pesquisarAgenda(String pesquisa) {
         List<Agenda> lista = new ArrayList<>();
-        String consulta = """
-            SELECT a.*, f.nome AS funcionario_nome
-            FROM agenda a
-            LEFT JOIN funcionario f ON a.funcionario_id = f.id
-            WHERE f.nome LIKE ? OR a.titulo LIKE ? OR DATE(a.dataa) = ? OR a.statuss LIKE ?
-        """;
-    
-        try (Connection connection = DBConnection.getInstance().getConnection();
-             PreparedStatement prepareStatement = connection.prepareStatement(consulta)) {
-    
+        String sql = "SELECT a.*, f.nome AS funcionario_nome FROM agenda a LEFT JOIN funcionario f ON a.funcionario_id = f.id WHERE f.nome LIKE ? OR a.titulo LIKE ? OR DATE(a.dataa) = ? OR a.statuss LIKE ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             String buscaTexto = "%" + pesquisa + "%";
-    
-            prepareStatement.setString(1, buscaTexto);
-            prepareStatement.setString(2, buscaTexto);
-            prepareStatement.setString(4, buscaTexto);
-    
+            stmt.setString(1, buscaTexto);
+            stmt.setString(2, buscaTexto);
+            stmt.setString(4, buscaTexto);
+
             try {
                 DateTimeFormatter entradaFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 LocalDate dataFormatada = LocalDate.parse(pesquisa, entradaFormatter);
-                prepareStatement.setDate(3, java.sql.Date.valueOf(dataFormatada));
+                stmt.setDate(3, java.sql.Date.valueOf(dataFormatada));
             } catch (DateTimeParseException e) {
-                prepareStatement.setNull(3, java.sql.Types.DATE);
+                stmt.setNull(3, java.sql.Types.DATE);
             }
-    
-            ResultSet resultSet = prepareStatement.executeQuery();
-    
-            while (resultSet.next()) {
-                Agenda agenda = new Agenda();
-                agenda.setId(resultSet.getLong("id"));
-                agenda.setTitulo(resultSet.getString("titulo"));
-                agenda.setDescricao(resultSet.getString("descricao"));
-                agenda.setEndereco(resultSet.getString("endereco"));
-                agenda.setDataHora(resultSet.getTimestamp("dataa") != null
-                    ? resultSet.getTimestamp("dataa").toLocalDateTime()
-                    : null);
-                String status = resultSet.getString("statuss");
-                agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
-    
-                Funcionario funcionario = new Funcionario();
-                funcionario.setId(resultSet.getLong("funcionario_id"));
-                funcionario.setNome(resultSet.getString("funcionario_nome"));
-                agenda.setFuncionario(funcionario.getId() != 0 ? funcionario : null);
-    
-                lista.add(agenda);
+
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                while (resultSet.next()) {
+                    Agenda agenda = new Agenda();
+                    agenda.setId(resultSet.getLong("id"));
+                    agenda.setTitulo(resultSet.getString("titulo"));
+                    agenda.setDescricao(resultSet.getString("descricao"));
+                    agenda.setEndereco(resultSet.getString("endereco"));
+                    agenda.setDataHora(resultSet.getTimestamp("dataa") != null
+                        ? resultSet.getTimestamp("dataa").toLocalDateTime()
+                        : null);
+                    String status = resultSet.getString("statuss");
+                    agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
+
+                    Funcionario funcionario = new Funcionario();
+                    funcionario.setId(resultSet.getLong("funcionario_id"));
+                    funcionario.setNome(resultSet.getString("funcionario_nome"));
+                    agenda.setFuncionario(funcionario.getId() != 0 ? funcionario : null);
+
+                    lista.add(agenda);
+                }
             }
+            logger.info("Pesquisados " + lista.size() + " agendas para a pesquisa: " + pesquisa);
+        } catch (SQLException e) {
+            logger.error("Erro ao pesquisar agenda com a pesquisa: " + pesquisa, e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Erro inesperado ao pesquisar agenda com a pesquisa: " + pesquisa, e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
 
     public List<Agenda> pesquisarTarefasDeHoje() {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            
-            String consulta = """
-                SELECT a.*, f.nome AS funcionario_nome
-                FROM agenda a
-                LEFT JOIN funcionario f ON a.funcionario_id = f.id
-                WHERE DATE(a.dataa) = CURRENT_DATE
-            """;
-            
-            List<Agenda> lista = new ArrayList<>();
-            PreparedStatement prepareStatement = connection.prepareStatement(consulta);
-            ResultSet resultSet = prepareStatement.executeQuery();
+        List<Agenda> lista = new ArrayList<>();
+        String sql = "SELECT a.*, f.nome AS funcionario_nome FROM agenda a LEFT JOIN funcionario f ON a.funcionario_id = f.id WHERE DATE(a.dataa) = CURRENT_DATE";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet resultSet = stmt.executeQuery()) {
 
             while (resultSet.next()) {
                 Agenda agenda = new Agenda();
@@ -204,10 +214,14 @@ public class AgendaRepository {
                 lista.add(agenda);
             }
 
-            return lista;
+            logger.info("Pesquisados " + lista.size() + " tarefas para hoje.");
+        } catch (SQLException e) {
+            logger.error("Erro ao pesquisar tarefas de hoje.", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
+            logger.error("Erro inesperado ao pesquisar tarefas de hoje.", e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
+        return lista;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.application.views.cliente;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,12 +29,15 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @PageTitle("Cliente")
 @Route(value = "my-view", layout = MainLayout.class)
 public class ClienteView extends Composite<VerticalLayout> {
+    private static final Logger logger = LoggerFactory.getLogger(ClienteView.class);
 
-    private ClienteRepository clienteRepository = new ClienteRepository();
+    private ClienteRepository clienteRepository;
     private Grid<Cliente> grid = new Grid(Cliente.class, false);
     private TextField nome = new TextField("Nome");
     private TextField cpf = new TextField("CNPJ/CPF");
@@ -43,12 +47,18 @@ public class ClienteView extends Composite<VerticalLayout> {
     private TabSheet tabSheet;
 
     public ClienteView() {
-        tabSheet = new TabSheet();
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        tabSheet.setWidth("100%");
-        setTabSheetSampleData(tabSheet);
-        getContent().add(tabSheet);
+        try {
+            clienteRepository = new ClienteRepository();
+
+            tabSheet = new TabSheet();
+            getContent().setWidth("100%");
+            getContent().getStyle().set("flex-grow", "1");
+            tabSheet.setWidth("100%");
+            setTabSheetSampleData(tabSheet);
+            getContent().add(tabSheet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     //This method sets up two tabs
@@ -144,9 +154,12 @@ public class ClienteView extends Composite<VerticalLayout> {
             tabSheet.setSelectedIndex(1);
         });
 
-        List<Cliente> listaDeClientes = clienteRepository.pesquisarTodos();
-        if (listaDeClientes == null) {
-            listaDeClientes = Collections.emptyList();
+        List<Cliente> listaDeClientes = Collections.emptyList();
+        try {
+            listaDeClientes = clienteRepository.pesquisarTodos();
+        } catch (Exception e) {
+            Notification.show("Erro inesperado ao consultar os clientes", 3000, Notification.Position.MIDDLE);
+            logger.error("Erro inesperado ao consultar os clientes", e);
         }
         grid.setItems(listaDeClientes);
 
@@ -217,28 +230,32 @@ public class ClienteView extends Composite<VerticalLayout> {
             Cliente cliente = new Cliente(nomeCliente, cpfCliente, rgCliente, telefoneCliente);
             cliente.setId(clienteId);
         
-            boolean sucesso;
-            if (clienteId != null && clienteId > 0) {
-                sucesso = clienteRepository.alterar(cliente);
-                if (sucesso) {
-                    Notification.show("Cliente atualizado com sucesso!");
-                    clearForm();
+            boolean sucesso = false;
+            try {
+                if (clienteId != null && clienteId > 0) {
+                    sucesso = clienteRepository.alterar(cliente);
+                    if (sucesso) {
+                        Notification.show("Cliente atualizado com sucesso!");
+                        clearForm();
+                    } else {
+                        Notification.show("Erro ao atualizar o cliente", 3000, Notification.Position.MIDDLE);
+                    }
                 } else {
-                    Notification.show("Erro ao atualizar o cliente", 3000, Notification.Position.MIDDLE);
+                    sucesso = clienteRepository.inserir(cliente);
+                    if (sucesso) {
+                        Notification.show("Cliente salvo com sucesso!");
+                        clearForm();
+                    } else {
+                        Notification.show("Erro ao salvar o cliente", 3000, Notification.Position.MIDDLE);
+                    }
                 }
-            } else {
-                sucesso = clienteRepository.inserir(cliente);
                 if (sucesso) {
-                    Notification.show("Cliente salvo com sucesso!");
-                    clearForm();
-                } else {
-                    Notification.show("Erro ao salvar o cliente", 3000, Notification.Position.MIDDLE);
+                    tabSheet.setSelectedIndex(0);
+                    refreshGrid();
                 }
-            }
-        
-            if (sucesso) {
-                tabSheet.setSelectedIndex(0);
-                refreshGrid();
+            } catch (Exception e) {
+                Notification.show("Erro ao acessar o banco de dados: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
+                e.printStackTrace();
             }
         });
 
@@ -272,14 +289,23 @@ public class ClienteView extends Composite<VerticalLayout> {
         grid.setItems(clientes);
     }
 
-    private void deleteCliente(Cliente cliente){
-        boolean success = clienteRepository.excluir(cliente);
-        if(success){
-            refreshGrid();
-        }else{
-            System.out.println("Erro ao excluir cliente");
+    private void deleteCliente(Cliente cliente) {
+        try {
+            boolean success = clienteRepository.excluir(cliente);
+            if (success) {
+                refreshGrid();
+            } else {
+                System.out.println("Erro ao excluir cliente");
+                Notification.show("Erro ao excluir cliente", 3000, Notification.Position.MIDDLE);
+            }
+        } catch (Exception e) {
+            // Tratar outros erros inesperados
+            System.out.println("Erro inesperado ao excluir cliente");
+            Notification.show("Erro inesperado ao excluir cliente", 3000, Notification.Position.MIDDLE);
+            logger.error("Erro inesperado ao excluir cliente", e);
         }
     }
+    
 
     private void editCliente(Cliente cliente) {
         clienteId = cliente.getId();

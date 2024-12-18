@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.Connection;
 import com.example.application.model.Cliente;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class ClienteRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClienteRepository.class);
     private Connection connection;
 
     public ClienteRepository() throws SQLException {
@@ -24,10 +26,19 @@ public class ClienteRepository {
             stmt.setString(3, cliente.getRg());
             stmt.setString(4, cliente.getTelefone());
             int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
+            if (rowsInserted > 0) {
+                logger.info("Cliente inserido com sucesso: " + cliente.getNome());
+                return true;
+            } else {
+                logger.warn("Nenhuma linha inserida para o cliente: " + cliente.getNome());
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro ao inserir cliente: " + cliente.getNome(), e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao inserir cliente: " + cliente.getNome(), e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -40,10 +51,19 @@ public class ClienteRepository {
             stmt.setString(4, cliente.getTelefone());
             stmt.setLong(5, cliente.getId());
             int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
+            if (rowsUpdated > 0) {
+                logger.info("Cliente atualizado com sucesso: " + cliente.getNome());
+                return true;
+            } else {
+                logger.warn("Nenhuma linha atualizada para o cliente com ID: " + cliente.getId());
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro ao alterar cliente com ID: " + cliente.getId(), e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao alterar cliente com ID: " + cliente.getId(), e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -52,10 +72,19 @@ public class ClienteRepository {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, cliente.getId());
             int rowsDeleted = stmt.executeUpdate();
-            return rowsDeleted > 0;
+            if (rowsDeleted > 0) {
+                logger.info("Cliente excluído com sucesso: " + cliente.getId());
+                return true;
+            } else {
+                logger.warn("Nenhuma linha excluída para o cliente com ID: " + cliente.getId());
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro ao excluir cliente com ID: " + cliente.getId(), e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao excluir cliente com ID: " + cliente.getId(), e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -74,8 +103,13 @@ public class ClienteRepository {
                 cliente.setTelefone(resultSet.getString("telefone"));
                 lista.add(cliente);
             }
+            logger.info("Pesquisados " + lista.size() + " clientes.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar todos os clientes.", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao pesquisar todos os clientes.", e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -98,8 +132,13 @@ public class ClienteRepository {
                 cliente.setTelefone(resultSet.getString("telefone"));
                 lista.add(cliente);
             }
+            logger.info("Pesquisados " + lista.size() + " clientes para a pesquisa: " + pesquisa);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar cliente com a pesquisa: " + pesquisa, e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao pesquisar cliente com a pesquisa: " + pesquisa, e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -116,11 +155,18 @@ public class ClienteRepository {
                 cliente.setCpf(resultSet.getString("cpf"));
                 cliente.setRg(resultSet.getString("rg"));
                 cliente.setTelefone(resultSet.getString("telefone"));
+                logger.info("Cliente encontrado pelo ID: " + id);
                 return cliente;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao buscar cliente pelo ID: " + id, e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao buscar cliente pelo ID: " + id, e);
+            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return null;
     }
 }
+
+
