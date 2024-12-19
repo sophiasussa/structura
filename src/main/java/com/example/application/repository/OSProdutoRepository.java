@@ -33,16 +33,11 @@ public class OSProdutoRepository {
                     osProduto.setProduto(new ProdutoRepository().getProdutoById(result.getInt("id_produto")));
                     osProdutosList.add(osProduto);
                 }
-                logger.info("Pesquisados " + osProdutosList.size() + " produtos para a ordem de serviço ID: " + idOs);
             }
         } catch (SQLException e) {
             logger.error("Erro ao buscar produtos para a ordem de serviço ID: " + idOs, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao buscar produtos para a ordem de serviço ID: " + idOs, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
-
         return osProdutosList;
     }
 }

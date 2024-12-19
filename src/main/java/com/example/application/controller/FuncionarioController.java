@@ -8,6 +8,7 @@ import com.example.application.model.Funcionario;
 import com.example.application.repository.FuncionarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.sql.SQLException;
 
 public class FuncionarioController {
 
@@ -17,7 +18,7 @@ public class FuncionarioController {
     public FuncionarioController() {
         try {
             this.daoFuncionario = new FuncionarioRepository();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);
         }
@@ -29,9 +30,15 @@ public class FuncionarioController {
             return false;
         }
         try {
-            return daoFuncionario.inserir(funcionario);
+            boolean sucesso = daoFuncionario.inserir(funcionario);
+            if (sucesso) {
+                logger.info("Funcionário inserido com sucesso: " + funcionario.getNome());
+            } else {
+                logger.warn("Nenhuma linha foi inserida para o funcionário: " + funcionario.getNome());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao inserir funcionário", e);
+            logger.error("Erro ao inserir funcionário: " + funcionario.getNome(), e);
             return false;
         }
     }
@@ -42,9 +49,15 @@ public class FuncionarioController {
             return false;
         }
         try {
-            return daoFuncionario.alterar(funcionario);
+            boolean sucesso = daoFuncionario.alterar(funcionario);
+            if (sucesso) {
+                logger.info("Funcionário atualizado com sucesso: " + funcionario.getNome());
+            } else {
+                logger.warn("Nenhuma linha atualizada para o funcionário com ID: " + funcionario.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao alterar funcionário", e);
+            logger.error("Erro ao alterar funcionário: " + funcionario.getNome(), e);
             return false;
         }
     }
@@ -55,18 +68,41 @@ public class FuncionarioController {
             return false;
         }
         try {
-            return daoFuncionario.excluir(funcionario);
+            boolean sucesso = daoFuncionario.excluir(funcionario);
+            if (sucesso) {
+                logger.info("Funcionário excluído com sucesso: " + funcionario.getId());
+            } else {
+                logger.warn("Nenhuma linha excluída para o funcionário com ID: " + funcionario.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao excluir funcionário", e);
+            logger.error("Erro ao excluir funcionário com ID: " + funcionario.getId(), e);
             return false;
         }
     }
 
     public List<Funcionario> pesquisarTodos() {
         try {
-            return daoFuncionario.pesquisarTodos();
+            List<Funcionario> lista = daoFuncionario.pesquisarTodos();
+            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " funcionários.");
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar todos os funcionários", e);
+            return new ArrayList<>();
+        }
+    }
+
+    public Funcionario getFuncionarioById(int id) {
+        try {
+            Funcionario funcionario = daoFuncionario.getFuncionarioById(id);
+            if (funcionario != null) {
+                logger.info("Funcionário encontrado pelo ID: " + id);
+            } else {
+                logger.warn("Nenhum funcionário encontrado com o ID: " + id);
+            }
+            return funcionario;
+        } catch (Exception e) {
+            logger.error("Erro ao buscar funcionário com ID: " + id, e);
             return null;
         }
     }
@@ -77,19 +113,12 @@ public class FuncionarioController {
             return new ArrayList<>();
         }
         try {
-            return daoFuncionario.pesquisarFuncionario(pesquisa);
+            List<Funcionario> lista = daoFuncionario.pesquisarFuncionario(pesquisa);
+            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " funcionários para a pesquisa: " + pesquisa);
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar funcionário com pesquisa: " + pesquisa, e);
-            return null;
-        }
-    }
-
-    public Funcionario getFuncionarioById(int id) {
-        try {
-            return daoFuncionario.getFuncionarioById(id);
-        } catch (Exception e) {
-            logger.error("Erro ao buscar funcionário com ID: " + id, e);
-            return null;
+            return new ArrayList<>();
         }
     }
 }

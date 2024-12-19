@@ -21,11 +21,17 @@ public class UserController {
 
     public User login(String username, String password) {
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-            logger.warn("Tentativa de login com parâmetros inválidos (username ou password nulo/ vazio)");
+            logger.warn("Tentativa de login com parâmetros inválidos (username ou password nulo/vazio)");
             return null;
         }
         try {
-            return userRepository.findByUsernameAndPassword(username, password);
+            User user = userRepository.findByUsernameAndPassword(username, password);
+            if (user != null) {
+                logger.info("Login bem-sucedido para o usuário: " + username);
+            } else {
+                logger.warn("Credenciais inválidas para o usuário: " + username);
+            }
+            return user;
         } catch (Exception e) {
             logger.error("Erro ao realizar login com username: " + username, e);
             return null;

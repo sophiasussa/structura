@@ -9,10 +9,10 @@ import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 import com.example.application.model.Produto;
 import com.example.application.model.UnidMedida;
-import com.example.application.repository.MaterialRepository;
-import com.example.application.repository.ModeloRepository;
-import com.example.application.repository.ProdutoRepository;
-import com.example.application.repository.UnidMedidaRepository;
+import com.example.application.controller.MaterialController;
+import com.example.application.controller.ModeloController;
+import com.example.application.controller.ProdutoController;
+import com.example.application.controller.UnidMedidaController;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -43,10 +43,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 @Route(value = "my-view4", layout = MainLayout.class)
 public class ProdutoView extends VerticalLayout {
 
-    private ProdutoRepository produtoRepository = new ProdutoRepository();
-    private MaterialRepository materialRepository = new MaterialRepository();
-    private UnidMedidaRepository unidMedidaRepository = new UnidMedidaRepository();
-    private ModeloRepository modeloRepository = new ModeloRepository();
+    private ProdutoController produtoController = new ProdutoController();
+    private MaterialController materialController = new MaterialController();
+    private UnidMedidaController unidMedidaController = new UnidMedidaController();
+    private ModeloController modeloController = new ModeloController();
     private Grid<Produto> grid = new Grid<>(Produto.class, false);
     private TextField nome = new TextField("Nome");
     private TextField quantidadeAtual = new TextField("Quantidade Atual");
@@ -96,9 +96,9 @@ public class ProdutoView extends VerticalLayout {
             List<Produto> resultados;
 
             if (pesquisa.isEmpty()) {
-                resultados = produtoRepository.pesquisarTodos();
+                resultados = produtoController.pesquisarTodos();
             } else {
-                resultados = produtoRepository.pesquisarProduto(pesquisa);
+                resultados = produtoController.pesquisarProduto(pesquisa);
             }
 
             if (resultados.isEmpty()) {
@@ -188,14 +188,14 @@ public class ProdutoView extends VerticalLayout {
 
             boolean sucesso;
             if (produtoId != null && produtoId > 0) {
-                sucesso = produtoRepository.alterar(produto);
+                sucesso = produtoController.alterar(produto);
                 if (sucesso) {
                     Notification.show("Produto atualizado com sucesso!");
                 } else {
                     Notification.show("Erro ao atualizar o produto", 3000, Notification.Position.MIDDLE);
                 }
             } else {
-                sucesso = produtoRepository.inserir(produto);
+                sucesso = produtoController.inserir(produto);
                 if (sucesso) {
                     Notification.show("Produto salvo com sucesso!");
                 } else {
@@ -293,36 +293,36 @@ public class ProdutoView extends VerticalLayout {
             tabSheet.setSelectedIndex(1);
         });
 
-        grid.setItems(produtoRepository.pesquisarTodos());
+        grid.setItems(produtoController.pesquisarTodos());
 
         return grid;
     }
 
     private void setComboBoxMaterialData(ComboBox<Material> comboBox) {
-        List<Material> materiais = materialRepository.pesquisarTodos();
+        List<Material> materiais = materialController.pesquisarTodos();
         comboBox.setItems(materiais);
         comboBox.setItemLabelGenerator(material -> material.getNome());
     }
 
     private void setComboBoxUnidMedidaData(ComboBox<UnidMedida> comboBox) {
-        List<UnidMedida> medidas = unidMedidaRepository.pesquisarTodos();
+        List<UnidMedida> medidas = unidMedidaController.pesquisarTodos();
         comboBox.setItems(medidas);
         comboBox.setItemLabelGenerator(unidMedida -> unidMedida.getNome());
     }
 
     private void setComboBoxModeloData(ComboBox<Modelo> comboBox) {
-        List<Modelo> modelos = modeloRepository.pesquisarTodos();
+        List<Modelo> modelos = modeloController.pesquisarTodos();
         comboBox.setItems(modelos);
         comboBox.setItemLabelGenerator(modelo -> modelo.getNome());
     }
 
     private void refreshGrid() {
-        List<Produto> produtos = produtoRepository.pesquisarTodos();
+        List<Produto> produtos = produtoController.pesquisarTodos();
         grid.setItems(produtos);
     }
 
     private void deleteProduto(Produto produto) {
-        boolean success = produtoRepository.excluir(produto);
+        boolean success = produtoController.excluir(produto);
         if (success) {
             refreshGrid();
         } else {
@@ -402,7 +402,7 @@ public class ProdutoView extends VerticalLayout {
         Grid<Modelo> grid = new Grid<>(Modelo.class);
         grid.setColumns("nome");
 
-        List<Modelo> modelos = modeloRepository.pesquisarTodos();
+        List<Modelo> modelos = modeloController.pesquisarTodos();
         grid.setItems(modelos);
 
         Editor<Modelo> editor = grid.getEditor();
@@ -427,7 +427,7 @@ public class ProdutoView extends VerticalLayout {
                 if (editor.isOpen()) {
                     editor.save();
                     Modelo editedModelo = editor.getItem();
-                    if (modeloRepository.alterar(editedModelo)) {
+                    if (modeloController.alterar(editedModelo)) {
                         Notification notification = new Notification(
                                 "Modelo atualizado com sucesso.", 3000);
                         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -435,7 +435,7 @@ public class ProdutoView extends VerticalLayout {
                         notification.open();
 
                         modelos.clear();
-                        modelos.addAll(modeloRepository.pesquisarTodos());
+                        modelos.addAll(modeloController.pesquisarTodos());
                         grid.getDataProvider().refreshAll();
                     } else {
                         Notification notification = new Notification(
@@ -459,7 +459,7 @@ public class ProdutoView extends VerticalLayout {
         grid.addComponentColumn(modelo -> {
             Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
-                if (modeloRepository.excluir(modelo)) {
+                if (modeloController.excluir(modelo)) {
                     Notification notification = new Notification(
                             "Modelo deletado com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -467,7 +467,7 @@ public class ProdutoView extends VerticalLayout {
                     notification.open();
 
                     modelos.clear();
-                    modelos.addAll(modeloRepository.pesquisarTodos());
+                    modelos.addAll(modeloController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
@@ -490,7 +490,7 @@ public class ProdutoView extends VerticalLayout {
             } else {
                 Modelo modelo = new Modelo();
                 modelo.setNome(nomeField.getValue());
-                if (modeloRepository.inserir(modelo) == true) {
+                if (modeloController.inserir(modelo) == true) {
                     Notification notification = new Notification(
                             "Modelo salvo com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -499,7 +499,7 @@ public class ProdutoView extends VerticalLayout {
 
                     nomeField.clear();
                     modelos.clear();
-                    modelos.addAll(modeloRepository.pesquisarTodos());
+                    modelos.addAll(modeloController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
@@ -553,7 +553,7 @@ public class ProdutoView extends VerticalLayout {
         Grid<Material> grid = new Grid<>(Material.class);
         grid.setColumns("nome");
 
-        List<Material> materiais = materialRepository.pesquisarTodos();
+        List<Material> materiais = materialController.pesquisarTodos();
         grid.setItems(materiais);
 
         Editor<Material> editor = grid.getEditor();
@@ -579,7 +579,7 @@ public class ProdutoView extends VerticalLayout {
                     alterarButton.setText("Salvar");
                     editor.save();
                     Material editedMaterial = editor.getItem();
-                    if (materialRepository.alterar(editedMaterial)) {
+                    if (materialController.alterar(editedMaterial)) {
                         Notification notification = new Notification(
                                 "Material atualizado com sucesso.", 3000);
                         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -587,7 +587,7 @@ public class ProdutoView extends VerticalLayout {
                         notification.open();
 
                         materiais.clear();
-                        materiais.addAll(materialRepository.pesquisarTodos());
+                        materiais.addAll(materialController.pesquisarTodos());
                         grid.getDataProvider().refreshAll();
                     } else {
                         Notification notification = new Notification(
@@ -611,7 +611,7 @@ public class ProdutoView extends VerticalLayout {
         grid.addComponentColumn(material -> {
             Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
-                if (materialRepository.excluir(material)) {
+                if (materialController.excluir(material)) {
                     Notification notification = new Notification(
                             "Material deletado com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -619,7 +619,7 @@ public class ProdutoView extends VerticalLayout {
                     notification.open();
 
                     materiais.clear();
-                    materiais.addAll(materialRepository.pesquisarTodos());
+                    materiais.addAll(materialController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
@@ -642,7 +642,7 @@ public class ProdutoView extends VerticalLayout {
             } else {
                 Material material = new Material();
                 material.setNome(nomeField.getValue());
-                if (materialRepository.inserir(material) == true) {
+                if (materialController.inserir(material) == true) {
                     Notification notification = new Notification(
                             "Material salvo com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -651,7 +651,7 @@ public class ProdutoView extends VerticalLayout {
 
                     nomeField.clear();
                     materiais.clear();
-                    materiais.addAll(materialRepository.pesquisarTodos());
+                    materiais.addAll(materialController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
@@ -705,7 +705,7 @@ public class ProdutoView extends VerticalLayout {
         Grid<UnidMedida> grid = new Grid<>(UnidMedida.class);
         grid.setColumns("nome");
 
-        List<UnidMedida> medidas = unidMedidaRepository.pesquisarTodos();
+        List<UnidMedida> medidas = unidMedidaController.pesquisarTodos();
         grid.setItems(medidas);
 
         Editor<UnidMedida> editor = grid.getEditor();
@@ -731,7 +731,7 @@ public class ProdutoView extends VerticalLayout {
                     alterarButton.setText("Salvar");
                     editor.save();
                     UnidMedida editedUnidMedida = editor.getItem();
-                    if (unidMedidaRepository.alterar(editedUnidMedida)) {
+                    if (unidMedidaController.alterar(editedUnidMedida)) {
                         Notification notification = new Notification(
                                 "Unidade de Medida atualizada com sucesso.", 3000);
                         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -739,7 +739,7 @@ public class ProdutoView extends VerticalLayout {
                         notification.open();
 
                         medidas.clear();
-                        medidas.addAll(unidMedidaRepository.pesquisarTodos());
+                        medidas.addAll(unidMedidaController.pesquisarTodos());
                         grid.getDataProvider().refreshAll();
                     } else {
                         Notification notification = new Notification(
@@ -763,7 +763,7 @@ public class ProdutoView extends VerticalLayout {
         grid.addComponentColumn(unidMedida -> {
             Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
-                if (unidMedidaRepository.excluir(unidMedida)) {
+                if (unidMedidaController.excluir(unidMedida)) {
                     Notification notification = new Notification(
                             "Unidade de medida deletada com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -771,7 +771,7 @@ public class ProdutoView extends VerticalLayout {
                     notification.open();
 
                     medidas.clear();
-                    medidas.addAll(unidMedidaRepository.pesquisarTodos());
+                    medidas.addAll(unidMedidaController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
@@ -794,7 +794,7 @@ public class ProdutoView extends VerticalLayout {
             } else {
                 UnidMedida unidMedida = new UnidMedida();
                 unidMedida.setNome(nomeField.getValue());
-                if (unidMedidaRepository.inserir(unidMedida) == true) {
+                if (unidMedidaController.inserir(unidMedida) == true) {
                     Notification notification = new Notification(
                             "Unidade de medida salva com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -803,7 +803,7 @@ public class ProdutoView extends VerticalLayout {
 
                     nomeField.clear();
                     medidas.clear();
-                    medidas.addAll(unidMedidaRepository.pesquisarTodos());
+                    medidas.addAll(unidMedidaController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(

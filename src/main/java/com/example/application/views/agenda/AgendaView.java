@@ -24,26 +24,24 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import com.example.application.controller.AgendaController;
+import com.example.application.controller.FuncionarioController;
 import com.example.application.model.Agenda;
 import com.example.application.model.Funcionario;
 import com.example.application.model.StatusAgenda;
-import com.example.application.repository.AgendaRepository;
-import com.example.application.repository.FuncionarioRepository;
 import com.example.application.views.MainLayout;
 
 @PageTitle("Agenda")
 @Route(value = "my-view6", layout = MainLayout.class)
 public class AgendaView extends VerticalLayout {
 
-    private FuncionarioRepository funcionarioRepository;
-    private AgendaRepository agendaRepository;
+    private FuncionarioController funcionarioController = new FuncionarioController();
+    private AgendaController agendaController = new AgendaController();
     private Grid<Agenda> grid = new Grid<>(Agenda.class, false);
     private ComboBox<StatusAgenda> status = new ComboBox<>("Status");
     private TextField titulo = new TextField("Título");
@@ -57,14 +55,11 @@ public class AgendaView extends VerticalLayout {
     private TabSheet tabSheet;
 
     public AgendaView() {
-        funcionarioRepository = new FuncionarioRepository();
-        agendaRepository = new AgendaRepository();
         tabSheet = new TabSheet();
         this.setWidth("100%");
         this.getStyle().set("flex-grow", "1");
         tabSheet.setWidth("100%");
         setTabSheetSampleData(tabSheet);
-
         this.add(tabSheet);
     }
 
@@ -92,9 +87,9 @@ public class AgendaView extends VerticalLayout {
             List<Agenda> resultados;
 
             if (pesquisa.isEmpty()) {
-                resultados = agendaRepository.pesquisarTodos();
+                resultados = agendaController.pesquisarTodos();
             } else {
-                resultados = agendaRepository.pesquisarAgenda(pesquisa);
+                resultados = agendaController.pesquisarAgenda(pesquisa);
             }
 
             if (resultados.isEmpty()) {
@@ -169,14 +164,14 @@ public class AgendaView extends VerticalLayout {
 
             boolean sucesso;
             if (agendaId != null && agendaId > 0) {
-                sucesso = agendaRepository.alterar(agenda);
+                sucesso = agendaController.alterar(agenda);
                 if (sucesso) {
                     Notification.show("Agendamento atualizado com sucesso!");
                 } else {
                     Notification.show("Erro ao atualizar a agendamento", 3000, Notification.Position.MIDDLE);
                 }
             } else {
-                sucesso = agendaRepository.inserir(agenda);
+                sucesso = agendaController.inserir(agenda);
                 if (sucesso) {
                     Notification.show("Agendamento salvo com sucesso!");
                 } else {
@@ -217,7 +212,7 @@ public class AgendaView extends VerticalLayout {
     }
 
     private void setComboBoxFuncionarioData(ComboBox<Funcionario> comboBox) {
-        List<Funcionario> funcionarios = funcionarioRepository.pesquisarTodos();
+        List<Funcionario> funcionarios = funcionarioController.pesquisarTodos();
         comboBox.setItems(funcionarios);
         comboBox.setItemLabelGenerator(funcionario -> funcionario.getNome());
     }
@@ -290,18 +285,18 @@ public class AgendaView extends VerticalLayout {
             tabSheet.setSelectedIndex(1);
         });
 
-        grid.setItems(agendaRepository.pesquisarTodos());
+        grid.setItems(agendaController.pesquisarTodos());
 
         return grid;
     }
 
     private void refreshGrid(){
-        List<Agenda> agendas = agendaRepository.pesquisarTodos();
+        List<Agenda> agendas = agendaController.pesquisarTodos();
         grid.setItems(agendas);
     }
 
     private void deleteAgenda(Agenda agenda){
-        boolean sucess = agendaRepository.excluir(agenda);
+        boolean sucess = agendaController.excluir(agenda);
         if(sucess){
             refreshGrid();
         }else{

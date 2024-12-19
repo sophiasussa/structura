@@ -31,17 +31,17 @@ import java.util.List;
 import java.util.Locale;
 
 import com.example.application.model.Funcionario;
-import com.example.application.repository.FuncionarioRepository;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.example.application.views.MainLayout;
+import com.example.application.controller.FuncionarioController;
 
 
 @PageTitle("Funcionário")
 @Route(value = "my-view2", layout = MainLayout.class)
 public class FuncionarioView extends Composite<VerticalLayout> {
 
-    private FuncionarioRepository funcionarioRepository = new FuncionarioRepository();
+    private FuncionarioController funcionarioController = new FuncionarioController();
     private Grid<Funcionario> grid = new Grid<>();
     private TextField nome = new TextField();
     private TextField cpf = new TextField();
@@ -85,9 +85,9 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             List<Funcionario> resultados;
 
             if(pesquisa.isEmpty()){
-                resultados = funcionarioRepository.pesquisarTodos();
+                resultados = funcionarioController.pesquisarTodos();
             }else {
-                resultados = funcionarioRepository.pesquisarFuncionario(pesquisa);
+                resultados = funcionarioController.pesquisarFuncionario(pesquisa);
             }
 
             grid.setItems(resultados);
@@ -149,7 +149,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             tabSheet.setSelectedIndex(1);
         });
 
-        List<Funcionario> listaDeFuncionarios = funcionarioRepository.pesquisarTodos();
+        List<Funcionario> listaDeFuncionarios = funcionarioController.pesquisarTodos();
         if (listaDeFuncionarios == null) {
             listaDeFuncionarios = Collections.emptyList();
         }
@@ -233,7 +233,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
 
             boolean sucesso;
             if(funcionarioId != null && funcionarioId > 0) {
-                sucesso = funcionarioRepository.alterar(funcionario);
+                sucesso = funcionarioController.alterar(funcionario);
                 if(sucesso) {
                     Notification.show("Funcionario atualizado com sucesso!");
                     clearForm();
@@ -241,7 +241,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
                     Notification.show("Erro ao atualizar o funcionario");
                 }
             } else {
-                sucesso = funcionarioRepository.inserir(funcionario);
+                sucesso = funcionarioController.inserir(funcionario);
                 if(sucesso) {
                     Notification.show("Funcionario salvo com sucesso!");
                     clearForm();
@@ -284,12 +284,12 @@ public class FuncionarioView extends Composite<VerticalLayout> {
     }
 
     private void refreshGrid(){
-        List<Funcionario> funcionarios = funcionarioRepository.pesquisarTodos();
+        List<Funcionario> funcionarios = funcionarioController.pesquisarTodos();
         grid.setItems(funcionarios);
     }
 
     private void deleteFuncionario(Funcionario funcionario){
-        boolean sucess = funcionarioRepository.excluir(funcionario);
+        boolean sucess = funcionarioController.excluir(funcionario);
         if(sucess){
             refreshGrid();
         }else{

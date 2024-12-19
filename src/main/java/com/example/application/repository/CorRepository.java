@@ -1,8 +1,5 @@
 package com.example.application.repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,20 +24,10 @@ public class CorRepository {
         String sql = "INSERT INTO cor (nome) VALUES (?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cor.getNome());
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Cor inserida com sucesso: " + cor.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para a cor: " + cor.getNome());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir cor: " + cor.getNome(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir cor: " + cor.getNome(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -49,20 +36,10 @@ public class CorRepository {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cor.getNome());
             stmt.setInt(2, cor.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Cor atualizada com sucesso: " + cor.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para a cor com ID: " + cor.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar cor com ID: " + cor.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar cor com ID: " + cor.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -70,20 +47,10 @@ public class CorRepository {
         String sql = "DELETE FROM cor WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, cor.getId());
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Cor excluída com sucesso: " + cor.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para a cor com ID: " + cor.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir cor com ID: " + cor.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir cor com ID: " + cor.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -99,13 +66,9 @@ public class CorRepository {
                 cor.setNome(resultSet.getString("nome"));
                 lista.add(cor);
             }
-            logger.info("Pesquisadas " + lista.size() + " cores.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todas as cores.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todas as cores.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }

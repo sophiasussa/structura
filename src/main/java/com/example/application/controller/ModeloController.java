@@ -1,6 +1,8 @@
 package com.example.application.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLException;
 
 import com.example.application.model.Modelo;
 import com.example.application.repository.ModeloRepository;
@@ -15,7 +17,7 @@ public class ModeloController {
     public ModeloController() {
         try {
             this.daoModelo = new ModeloRepository();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);
         }
@@ -27,9 +29,15 @@ public class ModeloController {
             return false;
         }
         try {
-            return daoModelo.inserir(modelo);
+            boolean sucesso = daoModelo.inserir(modelo);
+            if (sucesso) {
+                logger.info("Modelo inserido com sucesso: " + modelo.getNome());
+            } else {
+                logger.warn("Nenhuma linha foi inserida para o modelo: " + modelo.getNome());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao inserir modelo", e);
+            logger.error("Erro ao inserir modelo: " + modelo.getNome(), e);
             return false;
         }
     }
@@ -40,9 +48,15 @@ public class ModeloController {
             return false;
         }
         try {
-            return daoModelo.alterar(modelo);
+            boolean sucesso = daoModelo.alterar(modelo);
+            if (sucesso) {
+                logger.info("Modelo atualizado com sucesso: " + modelo.getNome());
+            } else {
+                logger.warn("Nenhuma linha atualizada para o modelo com ID: " + modelo.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao alterar modelo", e);
+            logger.error("Erro ao alterar modelo: " + modelo.getNome(), e);
             return false;
         }
     }
@@ -53,19 +67,27 @@ public class ModeloController {
             return false;
         }
         try {
-            return daoModelo.excluir(modelo);
+            boolean sucesso = daoModelo.excluir(modelo);
+            if (sucesso) {
+                logger.info("Modelo excluído com sucesso: " + modelo.getId());
+            } else {
+                logger.warn("Nenhuma linha excluída para o modelo com ID: " + modelo.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao excluir modelo", e);
+            logger.error("Erro ao excluir modelo com ID: " + modelo.getId(), e);
             return false;
         }
     }
 
     public List<Modelo> pesquisarTodos() {
         try {
-            return daoModelo.pesquisarTodos();
+            List<Modelo> lista = daoModelo.pesquisarTodos();
+            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " modelos.");
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar todos os modelos", e);
-            return null;
+            return new ArrayList<>();
         }
     }
 }

@@ -23,20 +23,10 @@ public class MaterialRepository {
         String sql = "INSERT INTO material (nome) VALUES (?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, material.getNome());
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Material inserido com sucesso: " + material.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para o material: " + material.getNome());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir material: " + material.getNome(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir material: " + material.getNome(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -45,20 +35,10 @@ public class MaterialRepository {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, material.getNome());
             stmt.setInt(2, material.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Material atualizado com sucesso: " + material.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para o material com ID: " + material.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar material com ID: " + material.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar material com ID: " + material.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -66,20 +46,10 @@ public class MaterialRepository {
         String sql = "DELETE FROM material WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, material.getId());
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Material excluído com sucesso: " + material.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para o material com ID: " + material.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir material com ID: " + material.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir material com ID: " + material.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -95,13 +65,9 @@ public class MaterialRepository {
                 material.setNome(resultSet.getString("nome"));
                 lista.add(material);
             }
-            logger.info("Pesquisados " + lista.size() + " materiais.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todos os materiais.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todos os materiais.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }

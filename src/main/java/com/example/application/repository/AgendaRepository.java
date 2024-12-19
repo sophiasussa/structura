@@ -38,20 +38,10 @@ public class AgendaRepository {
             stmt.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
             stmt.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
             stmt.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Agenda inserida com sucesso: " + agenda.getTitulo());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para a agenda: " + agenda.getTitulo());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir agenda: " + agenda.getTitulo(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir agenda: " + agenda.getTitulo(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -65,20 +55,10 @@ public class AgendaRepository {
             stmt.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
             stmt.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             stmt.setLong(7, agenda.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Agenda atualizada com sucesso: " + agenda.getTitulo());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para a agenda com ID: " + agenda.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar agenda com ID: " + agenda.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar agenda com ID: " + agenda.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -86,20 +66,10 @@ public class AgendaRepository {
         String sql = "DELETE FROM agenda WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, agenda.getId());
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Agenda excluída com sucesso: " + agenda.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para a agenda com ID: " + agenda.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir agenda com ID: " + agenda.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir agenda com ID: " + agenda.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -128,13 +98,9 @@ public class AgendaRepository {
 
                 lista.add(agenda);
             }
-            logger.info("Pesquisados " + lista.size() + " agendas.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todas as agendas.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todas as agendas.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -177,13 +143,9 @@ public class AgendaRepository {
                     lista.add(agenda);
                 }
             }
-            logger.info("Pesquisados " + lista.size() + " agendas para a pesquisa: " + pesquisa);
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar agenda com a pesquisa: " + pesquisa, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar agenda com a pesquisa: " + pesquisa, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -213,14 +175,9 @@ public class AgendaRepository {
 
                 lista.add(agenda);
             }
-
-            logger.info("Pesquisados " + lista.size() + " tarefas para hoje.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar tarefas de hoje.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar tarefas de hoje.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }

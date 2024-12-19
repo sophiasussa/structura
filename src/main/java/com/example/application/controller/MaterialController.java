@@ -1,6 +1,8 @@
 package com.example.application.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLException;
 
 import com.example.application.model.Material;
 import com.example.application.repository.MaterialRepository;
@@ -15,7 +17,7 @@ public class MaterialController {
     public MaterialController() {
         try {
             this.daoMaterial = new MaterialRepository();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);
         }
@@ -27,9 +29,15 @@ public class MaterialController {
             return false;
         }
         try {
-            return daoMaterial.inserir(material);
+            boolean sucesso = daoMaterial.inserir(material);
+            if (sucesso) {
+                logger.info("Material inserido com sucesso: " + material.getNome());
+            } else {
+                logger.warn("Nenhuma linha foi inserida para o material: " + material.getNome());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao inserir material", e);
+            logger.error("Erro ao inserir material: " + material.getNome(), e);
             return false;
         }
     }
@@ -40,9 +48,15 @@ public class MaterialController {
             return false;
         }
         try {
-            return daoMaterial.alterar(material);
+            boolean sucesso = daoMaterial.alterar(material);
+            if (sucesso) {
+                logger.info("Material atualizado com sucesso: " + material.getNome());
+            } else {
+                logger.warn("Nenhuma linha atualizada para o material com ID: " + material.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao alterar material", e);
+            logger.error("Erro ao alterar material: " + material.getNome(), e);
             return false;
         }
     }
@@ -53,19 +67,27 @@ public class MaterialController {
             return false;
         }
         try {
-            return daoMaterial.excluir(material);
+            boolean sucesso = daoMaterial.excluir(material);
+            if (sucesso) {
+                logger.info("Material excluído com sucesso: " + material.getId());
+            } else {
+                logger.warn("Nenhuma linha excluída para o material com ID: " + material.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao excluir material", e);
+            logger.error("Erro ao excluir material com ID: " + material.getId(), e);
             return false;
         }
     }
 
     public List<Material> pesquisarTodos() {
         try {
-            return daoMaterial.pesquisarTodos();
+            List<Material> lista = daoMaterial.pesquisarTodos();
+            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " materiais.");
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar todos os materiais", e);
-            return null;
+            return new ArrayList<>();
         }
     }
 }

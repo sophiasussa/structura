@@ -30,20 +30,10 @@ public class FuncionarioRepository {
             stmt.setString(4, funcionario.getTelefone());
             stmt.setObject(5, funcionario.getDataAdmissao() != null ? java.sql.Date.valueOf(funcionario.getDataAdmissao()) : null, java.sql.Types.DATE);
             stmt.setDouble(6, funcionario.getSalario());
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Funcionário inserido com sucesso: " + funcionario.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para o funcionário: " + funcionario.getNome());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir funcionário: " + funcionario.getNome(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir funcionário: " + funcionario.getNome(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -57,20 +47,10 @@ public class FuncionarioRepository {
             stmt.setObject(5, funcionario.getDataAdmissao() != null ? java.sql.Date.valueOf(funcionario.getDataAdmissao()) : null, java.sql.Types.DATE);
             stmt.setDouble(6, funcionario.getSalario());
             stmt.setLong(7, funcionario.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Funcionário atualizado com sucesso: " + funcionario.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para o funcionário com ID: " + funcionario.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar funcionário com ID: " + funcionario.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar funcionário com ID: " + funcionario.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -78,20 +58,10 @@ public class FuncionarioRepository {
         String sql = "DELETE FROM funcionario WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, funcionario.getId());
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Funcionário excluído com sucesso: " + funcionario.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para o funcionário com ID: " + funcionario.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir funcionário com ID: " + funcionario.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir funcionário com ID: " + funcionario.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -113,13 +83,9 @@ public class FuncionarioRepository {
                 funcionario.setSalario(resultSet.getDouble("salario"));
                 lista.add(funcionario);
             }
-            logger.info("Pesquisados " + lista.size() + " funcionários.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todos os funcionários.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todos os funcionários.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -145,13 +111,9 @@ public class FuncionarioRepository {
                 funcionario.setSalario(resultSet.getDouble("salario"));
                 lista.add(funcionario);
             }
-            logger.info("Pesquisados " + lista.size() + " funcionários para a pesquisa: " + pesquisa);
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar funcionário com a pesquisa: " + pesquisa, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar funcionário com a pesquisa: " + pesquisa, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -171,15 +133,11 @@ public class FuncionarioRepository {
                 java.sql.Date dataSql = resultSet.getDate("dataAdmissao");
                 funcionario.setDataAdmissao(dataSql != null ? dataSql.toLocalDate() : null);
                 funcionario.setSalario(resultSet.getDouble("salario"));
-                logger.info("Funcionário encontrado pelo ID: " + id);
                 return funcionario;
             }
         } catch (SQLException e) {
             logger.error("Erro ao buscar funcionário pelo ID: " + id, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao buscar funcionário pelo ID: " + id, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return null;
     }

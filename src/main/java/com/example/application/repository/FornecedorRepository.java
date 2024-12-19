@@ -1,8 +1,5 @@
 package com.example.application.repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.application.model.Fornecedor;
@@ -32,20 +29,10 @@ public class FornecedorRepository {
             stmt.setString(5, fornecedor.getTelefone());
             stmt.setString(6, fornecedor.getEmail());
             stmt.setString(7, fornecedor.getDescriProdutos());
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Fornecedor inserido com sucesso: " + fornecedor.getEmpresa());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para o fornecedor: " + fornecedor.getEmpresa());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir fornecedor: " + fornecedor.getEmpresa(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir fornecedor: " + fornecedor.getEmpresa(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -60,20 +47,10 @@ public class FornecedorRepository {
             stmt.setString(6, fornecedor.getEmail());
             stmt.setString(7, fornecedor.getDescriProdutos());
             stmt.setLong(8, fornecedor.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Fornecedor atualizado com sucesso: " + fornecedor.getEmpresa());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para o fornecedor com ID: " + fornecedor.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar fornecedor com ID: " + fornecedor.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar fornecedor com ID: " + fornecedor.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -81,20 +58,10 @@ public class FornecedorRepository {
         String sql = "DELETE FROM fornecedor WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, fornecedor.getId());
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Fornecedor excluído com sucesso: " + fornecedor.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para o fornecedor com ID: " + fornecedor.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir fornecedor com ID: " + fornecedor.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir fornecedor com ID: " + fornecedor.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -116,13 +83,9 @@ public class FornecedorRepository {
                 fornecedor.setDescriProdutos(resultSet.getString("descriProdutos"));
                 lista.add(fornecedor);
             }
-            logger.info("Pesquisados " + lista.size() + " fornecedores.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todos os fornecedores.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todos os fornecedores.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
@@ -149,13 +112,9 @@ public class FornecedorRepository {
                 fornecedor.setDescriProdutos(resultSet.getString("descriProdutos"));
                 lista.add(fornecedor);
             }
-            logger.info("Pesquisados " + lista.size() + " fornecedores para a pesquisa: " + pesquisa);
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar fornecedor com a pesquisa: " + pesquisa, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar fornecedor com a pesquisa: " + pesquisa, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }

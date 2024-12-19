@@ -29,20 +29,32 @@ public class ClienteController {
             return false;
         }
         try {
-            return daoCliente.inserir(cliente);
+            boolean sucesso = daoCliente.inserir(cliente);
+            if (sucesso) {
+                logger.info("Cliente inserido com sucesso: " + cliente.getNome());
+            } else {
+                logger.warn("Nenhuma linha foi inserida para o cliente: " + cliente.getNome());
+            }
+            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao inserir cliente", e);
+            logger.error("Erro ao inserir cliente: " + cliente.getNome(), e);
             return false;
         }
     }
-
+    
     public boolean alterar(Cliente cliente) {
         if (cliente == null) {
             logger.warn("Tentativa de alterar cliente com valor nulo");
             return false;
         }
         try {
-            return daoCliente.alterar(cliente);
+            boolean sucesso = daoCliente.alterar(cliente);
+            if (sucesso) {
+                logger.info("Cliente atualizado com sucesso: " + cliente.getNome());
+            } else {
+                logger.warn("Nenhuma linha atualizada para o cliente com ID: " + cliente.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao alterar cliente", e);
             return false;
@@ -55,7 +67,13 @@ public class ClienteController {
             return false;
         }
         try {
-            return daoCliente.excluir(cliente);
+            boolean sucesso = daoCliente.excluir(cliente);
+            if (sucesso) {
+                logger.info("Cliente excluído com sucesso: " + cliente.getId());
+            } else {
+                logger.warn("Nenhuma linha excluída para o cliente com ID: " + cliente.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir cliente", e);
             return false;
@@ -64,29 +82,39 @@ public class ClienteController {
 
     public List<Cliente> pesquisarTodos() {
         try {
-            return daoCliente.pesquisarTodos();
+            List<Cliente> lista = daoCliente.pesquisarTodos();
+            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " clientes.");
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar todos os clientes", e);
-            return null;
+            return new ArrayList<>();
         }
     }
-
+    
     public List<Cliente> pesquisarCliente(String pesquisa) {
         if (pesquisa == null || pesquisa.isEmpty()) {
             logger.warn("Busca de cliente com parâmetro de pesquisa inválido");
             return new ArrayList<>();
         }
         try {
-            return daoCliente.pesquisarCliente(pesquisa);
+            List<Cliente> lista = daoCliente.pesquisarCliente(pesquisa);
+            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " clientes para a pesquisa: " + pesquisa);
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar cliente com pesquisa: " + pesquisa, e);
-            return null;
+            return new ArrayList<>();
         }
     }
-
+    
     public Cliente getClienteById(int id) {
         try {
-            return daoCliente.getClienteById(id);
+            Cliente cliente = daoCliente.getClienteById(id);
+            if (cliente != null) {
+                logger.info("Cliente encontrado pelo ID: " + id);
+            } else {
+                logger.warn("Nenhum cliente encontrado com o ID: " + id);
+            }
+            return cliente;
         } catch (Exception e) {
             logger.error("Erro ao buscar cliente com ID: " + id, e);
             return null;

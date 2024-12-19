@@ -29,14 +29,14 @@ import java.util.List;
 
 import com.example.application.model.Fornecedor;
 import com.example.application.model.Funcionario;
-import com.example.application.repository.FornecedorRepository;
 import com.example.application.views.MainLayout;
+import com.example.application.controller.FornecedorController;
 
 @PageTitle("Fornecedor")
 @Route(value = "my-view3", layout = MainLayout.class)
 public class FornecedorView extends Composite<VerticalLayout> {
 
-    private FornecedorRepository fornecedorRepository = new FornecedorRepository();
+    private FornecedorController fornecedorController = new FornecedorController();
     private Grid<Fornecedor> grid = new Grid<>();
     private TextField empresa = new TextField();
     private TextField vendedor = new TextField();
@@ -82,9 +82,9 @@ public class FornecedorView extends Composite<VerticalLayout> {
             List<Fornecedor> resultados;
 
             if(pesquisa.isEmpty()){
-                resultados = fornecedorRepository.pesquisarTodos();
+                resultados = fornecedorController.pesquisarTodos();
             }else{
-                resultados = fornecedorRepository.pesquisarFornecedor(pesquisa);
+                resultados = fornecedorController.pesquisarFornecedor(pesquisa);
             }
 
             grid.setItems(resultados);
@@ -146,7 +146,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
             tabSheet.setSelectedIndex(1);
         });
 
-        List<Fornecedor> listaDeFornecedores = fornecedorRepository.pesquisarTodos();
+        List<Fornecedor> listaDeFornecedores = fornecedorController.pesquisarTodos();
         if (listaDeFornecedores == null) {
             listaDeFornecedores = Collections.emptyList();
         }
@@ -235,7 +235,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
 
             boolean sucesso;
             if (fornecedorId != null && fornecedorId > 0) {
-                sucesso = fornecedorRepository.alterar(fornecedor);
+                sucesso = fornecedorController.alterar(fornecedor);
                 if (sucesso) {
                     Notification.show("Fornecedor atualizado com sucesso!");
                     clearForm();
@@ -243,7 +243,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
                     Notification.show("Erro ao atualizar o fornecedor", 3000, Notification.Position.MIDDLE);
                 }
             } else {
-                sucesso = fornecedorRepository.inserir(fornecedor);
+                sucesso = fornecedorController.inserir(fornecedor);
                 if (sucesso) {
                     Notification.show("Fornecedor salvo com sucesso!");
                     clearForm();
@@ -288,12 +288,12 @@ public class FornecedorView extends Composite<VerticalLayout> {
     }
 
     private void refreshGrid(){
-        List<Fornecedor> fornecedores = fornecedorRepository.pesquisarTodos();
+        List<Fornecedor> fornecedores = fornecedorController.pesquisarTodos();
         grid.setItems(fornecedores);
     }
 
     private void deleteFornecedor(Fornecedor fornecedor){
-        boolean sucess = fornecedorRepository.excluir(fornecedor);
+        boolean sucess = fornecedorController.excluir(fornecedor);
         if(sucess){
             refreshGrid();
         }else{

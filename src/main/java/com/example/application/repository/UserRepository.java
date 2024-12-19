@@ -24,18 +24,12 @@ public class UserRepository {
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
                     User user = new User(resultSet.getString("username"), resultSet.getString("password"));
-                    logger.info("Usuário encontrado com sucesso: " + username);
                     return user;
-                } else {
-                    logger.warn("Nenhum usuário encontrado para o username: " + username);
                 }
             }
         } catch (SQLException e) {
             logger.error("Erro ao buscar usuário com username: " + username, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao buscar usuário com username: " + username, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return null;
     }

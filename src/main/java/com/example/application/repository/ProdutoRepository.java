@@ -36,20 +36,10 @@ public class ProdutoRepository {
             stmt.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
             stmt.setObject(7, produto.getModelo() != null ? produto.getModelo().getId() : null, java.sql.Types.INTEGER);
 
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Produto inserido com sucesso: " + produto.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para o produto: " + produto.getNome());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir produto: " + produto.getNome(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir produto: " + produto.getNome(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -65,20 +55,10 @@ public class ProdutoRepository {
             stmt.setObject(7, produto.getModelo() != null ? produto.getModelo().getId() : null, java.sql.Types.INTEGER);
             stmt.setLong(8, produto.getId());
 
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Produto atualizado com sucesso: " + produto.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para o produto com ID: " + produto.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar produto com ID: " + produto.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar produto com ID: " + produto.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -86,21 +66,10 @@ public class ProdutoRepository {
         String sql = "DELETE FROM produto WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, produto.getId());
-
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Produto excluído com sucesso: " + produto.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para o produto com ID: " + produto.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir produto com ID: " + produto.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir produto com ID: " + produto.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -141,16 +110,63 @@ public class ProdutoRepository {
 
                 lista.add(produto);
             }
-            logger.info("Pesquisados " + lista.size() + " produtos.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todos os produtos.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todos os produtos.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }
+
+    public List<Produto> pesquisarProduto(String pesquisa) {
+        List<Produto> lista = new ArrayList<>();
+        String consulta = """
+            SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome, mo.nome AS modelo_nome
+            FROM produto p
+            LEFT JOIN material m ON p.material_id = m.id
+            LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
+            LEFT JOIN modelo mo ON p.modelo_id = mo.id
+            WHERE p.nome LIKE ? OR m.nome LIKE ?
+        """;
+    
+        try (PreparedStatement prepareStatement = connection.prepareStatement(consulta)) {
+            String busca = "%" + pesquisa + "%";
+            prepareStatement.setString(1, busca);
+            prepareStatement.setString(2, busca);
+    
+            try (ResultSet resultSet = prepareStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Produto produto = new Produto();
+                    produto.setId(resultSet.getLong("id"));
+                    produto.setNome(resultSet.getString("nome"));
+                    produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
+                    produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
+                    produto.setCustoUnitario(resultSet.getDouble("custoUnitario"));
+    
+                    Material material = new Material();
+                    material.setId(resultSet.getInt("material_id"));
+                    material.setNome(resultSet.getString("material_nome"));
+                    produto.setMaterial(material.getId() != 0 ? material : null);
+    
+                    UnidMedida unidMedida = new UnidMedida();
+                    unidMedida.setId(resultSet.getInt("unid_medida_id"));
+                    unidMedida.setNome(resultSet.getString("unid_medida_nome"));
+                    produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
+    
+                    Modelo modelo = new Modelo();
+                    modelo.setId(resultSet.getInt("modelo_id"));
+                    modelo.setNome(resultSet.getString("modelo_nome"));
+                    produto.setModelo(modelo.getId() != 0 ? modelo : null);
+    
+                    lista.add(produto);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Erro ao pesquisar produtos com a pesquisa: " + pesquisa, e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        }
+        return lista;
+    }
+    
 
     public Produto getProdutoById(int id) {
         String sql = "SELECT * FROM produto WHERE id = ?";
@@ -180,16 +196,60 @@ public class ProdutoRepository {
                 modelo.setNome(resultSet.getString("modelo_nome"));
                 produto.setModelo(modelo.getId() != 0 ? modelo : null);
 
-                logger.info("Produto encontrado pelo ID: " + id);
                 return produto;
             }
         } catch (SQLException e) {
             logger.error("Erro ao buscar produto pelo ID: " + id, e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao buscar produto pelo ID: " + id, e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return null;
     }
+
+    public List<Produto> pesquisarProdutoComQuantidadeMinimaIgual() {
+        List<Produto> lista = new ArrayList<>();
+        String consulta = """
+            SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome, mo.nome AS modelo_nome
+            FROM produto p
+            LEFT JOIN material m ON p.material_id = m.id
+            LEFT JOIN unidMedida um ON p.unid_medida_id = um.id
+            LEFT JOIN modelo mo ON p.modelo_id = mo.id
+            WHERE p.quantidadeAtual = p.quantidadeMinima
+        """;
+    
+        try (PreparedStatement prepareStatement = connection.prepareStatement(consulta);
+             ResultSet resultSet = prepareStatement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                Produto produto = new Produto();
+                produto.setId(resultSet.getLong("id"));
+                produto.setNome(resultSet.getString("nome"));
+                produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
+                produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
+                produto.setCustoUnitario(resultSet.getDouble("custoUnitario"));
+    
+                Material material = new Material();
+                material.setId(resultSet.getInt("material_id"));
+                material.setNome(resultSet.getString("material_nome"));
+                produto.setMaterial(material.getId() != 0 ? material : null);
+    
+                UnidMedida unidMedida = new UnidMedida();
+                unidMedida.setId(resultSet.getInt("unid_medida_id"));
+                unidMedida.setNome(resultSet.getString("unid_medida_nome"));
+                produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
+    
+                Modelo modelo = new Modelo();
+                modelo.setId(resultSet.getInt("modelo_id"));
+                modelo.setNome(resultSet.getString("modelo_nome"));
+                produto.setModelo(modelo.getId() != 0 ? modelo : null);
+    
+                lista.add(produto);
+            }
+
+        } catch (SQLException e) {
+            logger.error("Erro ao pesquisar produtos com quantidade mínima igual à atual.", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        }
+        return lista;
+    }
+    
 }

@@ -23,20 +23,10 @@ public class UnidMedidaRepository {
         String sql = "INSERT INTO unidMedida (nome) VALUES (?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, unidMedida.getNome());
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Unidade de Medida inserida com sucesso: " + unidMedida.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha inserida para a Unidade de Medida: " + unidMedida.getNome());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao inserir Unidade de Medida: " + unidMedida.getNome(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao inserir Unidade de Medida: " + unidMedida.getNome(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -45,20 +35,10 @@ public class UnidMedidaRepository {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, unidMedida.getNome());
             stmt.setInt(2, unidMedida.getId());
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                logger.info("Unidade de Medida atualizada com sucesso: " + unidMedida.getNome());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha atualizada para a Unidade de Medida com ID: " + unidMedida.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao alterar Unidade de Medida com ID: " + unidMedida.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao alterar Unidade de Medida com ID: " + unidMedida.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -66,20 +46,10 @@ public class UnidMedidaRepository {
         String sql = "DELETE FROM unidMedida WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, unidMedida.getId());
-            int rowsDeleted = stmt.executeUpdate();
-            if (rowsDeleted > 0) {
-                logger.info("Unidade de Medida excluída com sucesso: " + unidMedida.getId());
-                return true;
-            } else {
-                logger.warn("Nenhuma linha excluída para a Unidade de Medida com ID: " + unidMedida.getId());
-                return false;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Erro ao excluir Unidade de Medida com ID: " + unidMedida.getId(), e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao excluir Unidade de Medida com ID: " + unidMedida.getId(), e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
     }
 
@@ -95,13 +65,9 @@ public class UnidMedidaRepository {
                 unidMedida.setNome(resultSet.getString("nome"));
                 lista.add(unidMedida);
             }
-            logger.info("Pesquisadas " + lista.size() + " unidades de medida.");
         } catch (SQLException e) {
             logger.error("Erro ao pesquisar todas as unidades de medida.", e);
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
-        } catch (Exception e) {
-            logger.error("Erro inesperado ao pesquisar todas as unidades de medida.", e);
-            throw new RuntimeException("Erro inesperado ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
     }

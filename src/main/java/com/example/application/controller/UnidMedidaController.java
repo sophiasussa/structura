@@ -1,7 +1,8 @@
 package com.example.application.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import java.sql.SQLException;
 import com.example.application.model.UnidMedida;
 import com.example.application.repository.UnidMedidaRepository;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ public class UnidMedidaController {
     public UnidMedidaController() {
         try {
             this.daoUnidMedida = new UnidMedidaRepository();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("Erro ao conectar ao banco de dados", e);
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);
         }
@@ -27,7 +28,13 @@ public class UnidMedidaController {
             return false;
         }
         try {
-            return daoUnidMedida.inserir(unidMedida);
+            boolean sucesso = daoUnidMedida.inserir(unidMedida);
+            if (sucesso) {
+                logger.info("Unidade de medida inserida com sucesso: " + unidMedida.getNome());
+            } else {
+                logger.warn("Nenhuma linha inserida para a unidade de medida: " + unidMedida.getNome());
+            }
+            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao inserir unidade de medida", e);
             return false;
@@ -40,7 +47,13 @@ public class UnidMedidaController {
             return false;
         }
         try {
-            return daoUnidMedida.alterar(unidMedida);
+            boolean sucesso = daoUnidMedida.alterar(unidMedida);
+            if (sucesso) {
+                logger.info("Unidade de medida alterada com sucesso: " + unidMedida.getNome());
+            } else {
+                logger.warn("Nenhuma linha atualizada para a unidade de medida: " + unidMedida.getNome());
+            }
+            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao alterar unidade de medida", e);
             return false;
@@ -53,7 +66,13 @@ public class UnidMedidaController {
             return false;
         }
         try {
-            return daoUnidMedida.excluir(unidMedida);
+            boolean sucesso = daoUnidMedida.excluir(unidMedida);
+            if (sucesso) {
+                logger.info("Unidade de medida excluída com sucesso: " + unidMedida.getId());
+            } else {
+                logger.warn("Nenhuma linha excluída para a unidade de medida com ID: " + unidMedida.getId());
+            }
+            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir unidade de medida", e);
             return false;
@@ -62,10 +81,12 @@ public class UnidMedidaController {
 
     public List<UnidMedida> pesquisarTodos() {
         try {
-            return daoUnidMedida.pesquisarTodos();
+            List<UnidMedida> lista = daoUnidMedida.pesquisarTodos();
+            logger.info("Pesquisadas " + (lista != null ? lista.size() : 0) + " unidades de medida.");
+            return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar todas as unidades de medida", e);
-            return null;
+            return new ArrayList<>();
         }
     }
 }
