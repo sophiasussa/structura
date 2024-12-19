@@ -2,9 +2,11 @@ package com.example.application.views.produto;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import com.example.application.model.Funcionario;
 import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 import com.example.application.model.Produto;
@@ -70,17 +72,13 @@ public class ProdutoView extends VerticalLayout {
         this.add(tabSheet);
     }
 
-    // This method sets up two tabs
     private void setTabSheetSampleData(TabSheet tabSheet) {
         Div produtosContent = createProdutosContent();
         tabSheet.add("Produtos", produtosContent);
-
         Div addProdutosContent = createAddProdutosContent();
         tabSheet.add("Adicionar Produto", addProdutosContent);
     }
 
-    // This method creates the content for the "Produtos" tab, which consists of a
-    // form to see all the Produtos and search for a specific produto
     private Div createProdutosContent() {
         Div produtosContentDiv = new Div();
         Div space = new Div();
@@ -90,25 +88,6 @@ public class ProdutoView extends VerticalLayout {
         HorizontalLayout layoutRow = new HorizontalLayout();
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
-
-        buttonPrimary.addClickListener(event -> {
-            String pesquisa = textField.getValue().trim();
-            List<Produto> resultados;
-
-            if (pesquisa.isEmpty()) {
-                resultados = produtoController.pesquisarTodos();
-            } else {
-                resultados = produtoController.pesquisarProduto(pesquisa);
-            }
-
-            if (resultados.isEmpty()) {
-                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
-            }
-
-            grid.setItems(resultados);
-        });
-
-        // For a better interface
         textField.setPlaceholder("Nome ou Material");
         textField.setWidth("250px");
         layoutRow.setWidthFull();
@@ -121,18 +100,31 @@ public class ProdutoView extends VerticalLayout {
         buttonPrimary.setIcon(VaadinIcon.SEARCH.create());
         buttonPrimary.getStyle().set("border-radius", "50%");
         textField.addClassName("rounded-text-field");
-        layoutRow.add(textField, buttonPrimary);
+
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<Produto> resultados;
+            if (pesquisa.isEmpty()) {
+                resultados = produtoController.pesquisarTodos();
+            } else {
+                resultados = produtoController.pesquisarProduto(pesquisa);
+            }
+            if (resultados.isEmpty()) {
+                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
+            }
+
+            grid.setItems(resultados);
+        });
 
         grid = createGrid();
 
+        layoutRow.add(textField, buttonPrimary);
         layout.add(layoutRow, space, grid);
         produtosContentDiv.add(layout);
 
         return produtosContentDiv;
     }
 
-    // This method creates the content for the "Adicionar Produto" tab, which
-    // consists of a form to add a new Produto.
     private Div createAddProdutosContent() {
         Div addProdutosContentDiv = new Div();
         Div space = new Div();
@@ -146,10 +138,10 @@ public class ProdutoView extends VerticalLayout {
         FormLayout formLayout2Col = new FormLayout();
         FormLayout formLayout3Col = new FormLayout();
         nome = new TextField("Nome");
+        nome.setMaxLength(100);
         quantidadeAtual = new TextField("Quantidade Atual");
         quantidadeMinima = new TextField("Quantidade Mínima");
         custoUnitario = new TextField("Custo Unitário");
-
         setComboBoxMaterialData(material);
         material.setWidth("min-content");
         buttonTertiary2.setText("+ Material");
@@ -168,12 +160,31 @@ public class ProdutoView extends VerticalLayout {
         buttonTertiary.setWidth("min-content");
         buttonTertiary.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         buttonTertiary.addClickListener(event -> openDialog());
+        nome.addClassName("rounded-text-field");
+        quantidadeAtual.addClassName("rounded-text-field");
+        quantidadeMinima.addClassName("rounded-text-field");
+        custoUnitario.addClassName("rounded-text-field");
+        custoUnitario.setPlaceholder("Exemplo: 1000.00 ou 1000");
+        material.addClassName("rounded-text-field");
+        unidMedida.addClassName("rounded-text-field");
+        modelo.addClassName("rounded-text-field");
+        nome.setRequiredIndicatorVisible(true);
+        layout3.setAlignItems(FlexComponent.Alignment.END);
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
+        formLayout3Col.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1),
+                new FormLayout.ResponsiveStep("500px", 3));
 
         Button saveButton = new Button("Salvar", event -> {
             if (nome.isEmpty()) {
                 Notification.show("Preencha o campo obrigatório: Nome", 3000, Notification.Position.MIDDLE);
                 return;
             }
+            
             String nomeProduto = nome.getValue();
             Integer quantidadeAtualProduto = quantidadeAtual.isEmpty() ? null : Integer.valueOf(quantidadeAtual.getValue());
             Integer quantidadeMinimaProduto = quantidadeMinima.isEmpty() ? null : Integer.valueOf(quantidadeMinima.getValue());
@@ -184,6 +195,7 @@ public class ProdutoView extends VerticalLayout {
 
             Produto produto = new Produto(nomeProduto, quantidadeAtualProduto, quantidadeMinimaProduto,
                     custoUnitarioProduto, materialProduto, unidMedidaProduto, modeloProduto);
+            
             produto.setId(produtoId);
 
             boolean sucesso;
@@ -202,7 +214,6 @@ public class ProdutoView extends VerticalLayout {
                     Notification.show("Erro ao salvar o produto", 3000, Notification.Position.MIDDLE);
                 }
             }
-
             if (sucesso) {
                 clearForm();
                 tabSheet.setSelectedIndex(0);
@@ -210,29 +221,8 @@ public class ProdutoView extends VerticalLayout {
             }
         });
 
-        // For a better interface
-        nome.addClassName("rounded-text-field");
-        quantidadeAtual.addClassName("rounded-text-field");
-        quantidadeMinima.addClassName("rounded-text-field");
-        custoUnitario.addClassName("rounded-text-field");
-        custoUnitario.setPlaceholder("Exemplo: 1000.00 ou 1000");
-        material.addClassName("rounded-text-field");
-        unidMedida.addClassName("rounded-text-field");
-        modelo.addClassName("rounded-text-field");
-        nome.setRequiredIndicatorVisible(true);
-        layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
-        layout2.setWidth("1100px");
-        layout2.getStyle().set("margin", "0 auto");
-
-        formLayout3Col.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("500px", 3));
-
         formLayout2Col.add(nome, custoUnitario, quantidadeAtual, quantidadeMinima);
         formLayout3Col.add(material, unidMedida, modelo, buttonTertiary2, buttonTertiary3, buttonTertiary);
         layout2.add(formLayout2Col, formLayout3Col, space);
@@ -247,12 +237,13 @@ public class ProdutoView extends VerticalLayout {
         grid = new Grid<>(Produto.class, false);
         grid.addClassName("borderless-grid");
         grid.setAllRowsVisible(true);
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(createProdutoDetailsRenderer());
 
         grid.addColumn(Produto::getNome).setHeader("Nome").setSortable(true);
         grid.addColumn(produto -> produto.getMaterial() != null && produto.getMaterial().getNome() != null
                 ? produto.getMaterial().getNome()
                 : "Sem Material").setHeader("Material").setSortable(true);
-
         grid.addColumn(produto -> produto.getModelo() != null && produto.getModelo().getNome() != null
                 ? produto.getModelo().getNome()
                 : "Sem Modelo").setHeader("Modelo").setSortable(true);
@@ -268,7 +259,6 @@ public class ProdutoView extends VerticalLayout {
                     deleteProduto(produto);
                     confirm.close();
                 });
-
                 Button cancel = new Button("Cancelar", event -> confirm.close());
 
                 confirm.getFooter().add(confirmButton, cancel);
@@ -278,9 +268,6 @@ public class ProdutoView extends VerticalLayout {
             delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
             return delete;
         }).setHeader("Ações");
-
-        grid.setDetailsVisibleOnClick(false);
-        grid.setItemDetailsRenderer(createProdutoDetailsRenderer());
 
         grid.addItemClickListener(event -> {
             Produto produto = event.getItem();
@@ -293,7 +280,11 @@ public class ProdutoView extends VerticalLayout {
             tabSheet.setSelectedIndex(1);
         });
 
-        grid.setItems(produtoController.pesquisarTodos());
+        List<Produto> listaDeProdutos = produtoController.pesquisarTodos();
+        if (listaDeProdutos == null) {
+            listaDeProdutos = Collections.emptyList();
+        }
+        grid.setItems(listaDeProdutos);
 
         return grid;
     }
@@ -326,7 +317,7 @@ public class ProdutoView extends VerticalLayout {
         if (success) {
             refreshGrid();
         } else {
-            System.out.println("Erro ao excluir produto");
+            Notification.show("Erro ao excluir produto", 3000, Notification.Position.MIDDLE);
         }
     }
 
@@ -398,6 +389,7 @@ public class ProdutoView extends VerticalLayout {
 
         FormLayout formLayout = new FormLayout();
         TextField nomeField = new TextField("Nome");
+        nomeField.setMaxLength(100);
 
         Grid<Modelo> grid = new Grid<>(Modelo.class);
         grid.setColumns("nome");
@@ -549,6 +541,7 @@ public class ProdutoView extends VerticalLayout {
 
         FormLayout formLayout = new FormLayout();
         TextField nomeField = new TextField("Nome");
+        nomeField.setMaxLength(100);
 
         Grid<Material> grid = new Grid<>(Material.class);
         grid.setColumns("nome");
@@ -701,6 +694,7 @@ public class ProdutoView extends VerticalLayout {
 
         FormLayout formLayout = new FormLayout();
         TextField nomeField = new TextField("Nome");
+        nomeField.setMaxLength(100);
 
         Grid<UnidMedida> grid = new Grid<>(UnidMedida.class);
         grid.setColumns("nome");
@@ -845,5 +839,4 @@ public class ProdutoView extends VerticalLayout {
         dialog.add(dialogLayout);
         dialog.open();
     }
-
 }

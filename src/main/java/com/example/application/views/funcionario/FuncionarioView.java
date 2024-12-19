@@ -64,12 +64,10 @@ public class FuncionarioView extends Composite<VerticalLayout> {
     private void setTabSheetSampleData(TabSheet tabSheet) {
         Div funcionarioContent = createFuncionariosContent();
         tabSheet.add("Funcionários", funcionarioContent);
-
         Div addFuncionariosContent = createAddFuncionariosContent();
         tabSheet.add("Adicionar Funcionário", addFuncionariosContent);
     }
 
-    //This method creates the content for the "Funcionários" tab, which consists of a form to see all the employees and search for a specific employee
     private Div createFuncionariosContent(){
         Div funcionarioContentDiv = new Div();
         Div space = new Div();
@@ -79,21 +77,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         HorizontalLayout layoutRow = new HorizontalLayout();
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
-
-        buttonPrimary.addClickListener(event -> {
-            String pesquisa = textField.getValue().trim();
-            List<Funcionario> resultados;
-
-            if(pesquisa.isEmpty()){
-                resultados = funcionarioController.pesquisarTodos();
-            }else {
-                resultados = funcionarioController.pesquisarFuncionario(pesquisa);
-            }
-
-            grid.setItems(resultados);
-        });
-
-        //For a better interface
         textField.setPlaceholder("Nome, CNPJ/CPF ou IE/RG");
         textField.setWidth("250px");
         layoutRow.setWidthFull();
@@ -109,10 +92,24 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         layoutRow.add(textField, buttonPrimary);
         grid.setAllRowsVisible(true);
         grid.addClassName("borderless-grid");
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(createPersonDetailsRenderer());
+
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<Funcionario> resultados;
+            if(pesquisa.isEmpty()){
+                resultados = funcionarioController.pesquisarTodos();
+            }else {
+                resultados = funcionarioController.pesquisarFuncionario(pesquisa);
+            }
+            grid.setItems(resultados);
+        });
 
         grid.addColumn(Funcionario::getNome).setHeader("Nome");
         grid.addColumn(Funcionario::getTelefone).setHeader("Telefone");
         grid.addColumn(Funcionario::getDataAdmissao).setHeader("Admissão");
+
         grid.addComponentColumn(funcionario -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -124,7 +121,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
                     deleteFuncionario(funcionario);
                     confirm.close();
                 });
-
                 Button cancel = new Button("Cancelar", event -> confirm.close());
 
                 confirm.getFooter().add(confirmButton, cancel);
@@ -134,9 +130,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
             delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
             return delete;
         }).setHeader("Ações");
-
-        grid.setDetailsVisibleOnClick(false);
-        grid.setItemDetailsRenderer(createPersonDetailsRenderer());
 
         grid.addItemClickListener(event -> {
             Funcionario funcionario = event.getItem();
@@ -161,7 +154,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         return funcionarioContentDiv;
     }
 
-   //This method creates the content for the "Adicionar Funcionário" tab, which consists of a form to add a new employee.
     private Div createAddFuncionariosContent(){
         Div addFuncionariosContentDiv = new Div();
         Div space = new Div();
@@ -173,18 +165,31 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         VerticalLayout layout2 = new VerticalLayout();
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
-
         nome = new TextField("Nome");
+        nome.setMaxLength(100);
         cpf = new TextField("CPF");
         rg = new TextField("RG");
         telefone = new TextField("Telefone");
         salario = new TextField("Salário");
         data = new DatePicker("Data Admissão");
         salario.setPlaceholder("Exemplo: 2000.00 ou 2000");
+        nome.addClassName("rounded-text-field");
+        cpf.addClassName("rounded-text-field");
+        rg.addClassName("rounded-text-field");
+        telefone.addClassName("rounded-text-field");
+        salario.addClassName("rounded-text-field");
+        data.addClassName("rounded-text-field");
+        nome.setRequiredIndicatorVisible(true);
+        telefone.setRequiredIndicatorVisible(true);
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
+        layout3.setAlignItems(FlexComponent.Alignment.END);
 
         cpf.addBlurListener(event -> {
             String value = cpf.getValue().replaceAll("[^\\d]", "");
-
             if (value.length() == 11) {
                 value = value.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
             }
@@ -194,7 +199,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
 
         rg.addBlurListener(event -> {
             String value = rg.getValue().replaceAll("[^\\d]", "");
-
             if (value.length() == 9) {
                 value = value.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d)", "$1.$2.$3-$4");
             }
@@ -204,13 +208,12 @@ public class FuncionarioView extends Composite<VerticalLayout> {
 
         telefone.addBlurListener(event -> {
             String value = telefone.getValue().replaceAll("[^\\d]", "");
-        
             if (value.length() == 10) {
                 value = value.replaceAll("(\\d{2})(\\d{4})(\\d{4})", "($1) $2-$3");
             } else if (value.length() == 11) {
                 value = value.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3");
             }
-        
+
             telefone.setValue(value);
         });
         telefone.setMaxLength(15);
@@ -249,31 +252,14 @@ public class FuncionarioView extends Composite<VerticalLayout> {
                     Notification.show("Erro ao salvar funcionario", 3000, Notification.Position.MIDDLE);
                 }
             }
-
             if(sucesso) {
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
             }
         });
 
-        //For a better interface
-        nome.addClassName("rounded-text-field");
-        cpf.addClassName("rounded-text-field");
-        rg.addClassName("rounded-text-field");
-        telefone.addClassName("rounded-text-field");
-        salario.addClassName("rounded-text-field");
-        data.addClassName("rounded-text-field");
-        nome.setRequiredIndicatorVisible(true);
-        telefone.setRequiredIndicatorVisible(true);
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
-        layout2.setWidth("1100px");
-        layout2.getStyle().set("margin", "0 auto");
-        layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
-        
         formLayout2Col.add(nome, cpf, rg, telefone, data, salario);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
@@ -293,7 +279,7 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         if(sucess){
             refreshGrid();
         }else{
-            System.out.println("Erro ao excluir funcionario");
+            Notification.show("Erro ao excluir funcionário", 3000, Notification.Position.MIDDLE);
         }
     }
 

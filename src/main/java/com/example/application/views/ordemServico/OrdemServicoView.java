@@ -72,9 +72,6 @@ public class OrdemServicoView extends VerticalLayout {
     private ComboBox<Funcionario> funcionario = new ComboBox<>("Funcionario");
     private MultiSelectComboBox<Produto> produto = new MultiSelectComboBox<>("Produto");
     private TextField imagemPathField;
-    private Button buttonTertiary = new Button();
-    private Button buttonTertiary2 = new Button();
-    private Button buttonTertiary3 = new Button();
     private Long osId;
     private TabSheet tabSheet;
     private String image;
@@ -182,7 +179,9 @@ public class OrdemServicoView extends VerticalLayout {
         FormLayout formLayout3Col = new FormLayout();
         status = new ComboBox<>("Status");
         endereco = new TextArea("Endereço");
+        endereco.setMaxLength(255);
         observacao = new TextArea("Observação");
+        observacao.setMaxLength(255);
         data = new DatePicker("Data Abertura");
         datap = new DatePicker("Data de Previsão");
         cliente = new ComboBox<>("Cliente");

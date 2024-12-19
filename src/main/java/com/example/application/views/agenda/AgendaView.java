@@ -28,10 +28,12 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import com.example.application.controller.AgendaController;
 import com.example.application.controller.FuncionarioController;
 import com.example.application.model.Agenda;
+import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
 import com.example.application.model.StatusAgenda;
 import com.example.application.views.MainLayout;
@@ -43,14 +45,12 @@ public class AgendaView extends VerticalLayout {
     private FuncionarioController funcionarioController = new FuncionarioController();
     private AgendaController agendaController = new AgendaController();
     private Grid<Agenda> grid = new Grid<>(Agenda.class, false);
-    private ComboBox<StatusAgenda> status = new ComboBox<>("Status");
     private TextField titulo = new TextField("Título");
     private TextArea descricao = new TextArea("Descrição");
     private TextArea endereco = new TextArea("Endereço");
     private DateTimePicker data = new DateTimePicker();
     private ComboBox<Funcionario> funcionario = new ComboBox<>("Funcionario");
-    private Button buttonTertiary = new Button();
-    private Button buttonTertiary2 = new Button();
+    private ComboBox<StatusAgenda> status = new ComboBox<>("Status");
     private Long agendaId;
     private TabSheet tabSheet;
 
@@ -63,11 +63,9 @@ public class AgendaView extends VerticalLayout {
         this.add(tabSheet);
     }
 
-    // This method sets up two tabs
     private void setTabSheetSampleData(TabSheet tabSheet) {
         Div agendaContent = createAgendaContent();
         tabSheet.add("Agenda", agendaContent);
-
         Div addAgendaContent = createAddAgendaContent();
         tabSheet.add("Adicionar agendamento", addAgendaContent);
     }
@@ -81,25 +79,6 @@ public class AgendaView extends VerticalLayout {
         HorizontalLayout layoutRow = new HorizontalLayout();
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
-
-        buttonPrimary.addClickListener(event -> {
-            String pesquisa = textField.getValue().trim();
-            List<Agenda> resultados;
-
-            if (pesquisa.isEmpty()) {
-                resultados = agendaController.pesquisarTodos();
-            } else {
-                resultados = agendaController.pesquisarAgenda(pesquisa);
-            }
-
-            if (resultados.isEmpty()) {
-                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
-            }
-
-            grid.setItems(resultados);
-        });
-
-        // For a better interface
         textField.setPlaceholder("Título, Data, Status ou Funcionario");
         textField.setWidth("290px");
         layoutRow.setWidthFull();
@@ -114,6 +93,22 @@ public class AgendaView extends VerticalLayout {
         textField.addClassName("rounded-text-field");
         layoutRow.add(textField, buttonPrimary);
 
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<Agenda> resultados;
+
+            if (pesquisa.isEmpty()) {
+                resultados = agendaController.pesquisarTodos();
+            } else {
+                resultados = agendaController.pesquisarAgenda(pesquisa);
+            }
+            if (resultados.isEmpty()) {
+                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
+            }
+
+            grid.setItems(resultados);
+        });
+
         grid = createGrid();
 
         layout.add(layoutRow, space, grid);
@@ -122,9 +117,6 @@ public class AgendaView extends VerticalLayout {
         return osContentDiv;
     }
 
-    // This method creates the content for the "Adicionar Ordem de Serviço" tab,
-    // which
-    // consists of a form to add a new Ordem de Serviço.
     private Div createAddAgendaContent() {
         Div addOSContentDiv = new Div();
         Div space = new Div();
@@ -138,13 +130,28 @@ public class AgendaView extends VerticalLayout {
         FormLayout formLayout2Col = new FormLayout();
         status = new ComboBox<>("Status");
         titulo = new TextField("Título");
+        titulo.setMaxLength(50);
         descricao = new TextArea("Descrição");
+        descricao.setMaxLength(255);
         data = new DateTimePicker("Data");
         data.setStep(Duration.ofMinutes(1));
         funcionario = new ComboBox<>("Funcionario");
         endereco = new TextArea("Endereço");
+        endereco.setMaxLength(255);
         status.setItems(StatusAgenda.values());
         setComboBoxFuncionarioData(funcionario);
+        status.addClassName("rounded-text-field");
+        titulo.addClassName("rounded-text-field");
+        descricao.addClassName("rounded-text-field");
+        endereco.addClassName("rounded-text-field");
+        funcionario.addClassName("rounded-text-field");
+        titulo.setRequiredIndicatorVisible(true);
+        layout3.setAlignItems(FlexComponent.Alignment.END);
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
 
         Button saveButton = new Button("Salvar", event -> {
             if (titulo.isEmpty()) {
@@ -178,7 +185,6 @@ public class AgendaView extends VerticalLayout {
                     Notification.show("Erro ao salvar agendamento", 3000, Notification.Position.MIDDLE);
                 }
             }
-
             if (sucesso) {
                 clearForm();
                 tabSheet.setSelectedIndex(0);
@@ -186,22 +192,8 @@ public class AgendaView extends VerticalLayout {
             }
         });
 
-        // For a better interface
-        status.addClassName("rounded-text-field");
-        titulo.addClassName("rounded-text-field");
-        descricao.addClassName("rounded-text-field");
-        endereco.addClassName("rounded-text-field");
-        funcionario.addClassName("rounded-text-field");
-        titulo.setRequiredIndicatorVisible(true);
-        layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
-        layout2.setWidth("1100px");
-        layout2.getStyle().set("margin", "0 auto");
-
         formLayout2Col.add(titulo, data, status, funcionario, descricao, endereco);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
@@ -221,6 +213,8 @@ public class AgendaView extends VerticalLayout {
         grid = new Grid<>(Agenda.class, false);
         grid.addClassName("borderless-grid");
         grid.setAllRowsVisible(true);
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(createAgendaDetailsRenderer());
 
         grid.addColumn(Agenda::getTitulo).setHeader("Titulo").setSortable(true);
 
@@ -230,23 +224,23 @@ public class AgendaView extends VerticalLayout {
             .setSortable(true);
 
         grid.addColumn(new ComponentRenderer<>(agenda -> {
-        Span statusBadge = new Span(agenda.getStatus() != null ? agenda.getStatus().getDescricao() : "Indefinido");
-        statusBadge.addClassName("status-badge");
-        if (agenda.getStatus() != null) {
-            switch (agenda.getStatus()) {
-                case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
-                case EM_ANDAMENTO -> statusBadge.getStyle().set("background-color", "lightgoldenrodyellow");
-                case CONCLUIDA -> statusBadge.getStyle().set("background-color", "lightgreen");
-                case CANCELADA -> statusBadge.getStyle().set("background-color", "lightcoral");
-                default -> statusBadge.getStyle().set("background-color", "lightgray");
+            Span statusBadge = new Span(agenda.getStatus() != null ? agenda.getStatus().getDescricao() : "Indefinido");
+            statusBadge.addClassName("status-badge");
+            if (agenda.getStatus() != null) {
+                switch (agenda.getStatus()) {
+                    case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
+                    case EM_ANDAMENTO -> statusBadge.getStyle().set("background-color", "lightgoldenrodyellow");
+                    case CONCLUIDA -> statusBadge.getStyle().set("background-color", "lightgreen");
+                    case CANCELADA -> statusBadge.getStyle().set("background-color", "lightcoral");
+                    default -> statusBadge.getStyle().set("background-color", "lightgray");
+                }
             }
-        }
-        statusBadge.getStyle()
-                .set("color", "black")
-                .set("padding", "5px 10px")
-                .set("border-radius", "12px")
-                .set("font-weight", "bold");
-        return statusBadge;
+            statusBadge.getStyle()
+                    .set("color", "black")
+                    .set("padding", "5px 10px")
+                    .set("border-radius", "12px")
+                    .set("font-weight", "bold");
+            return statusBadge;
         })).setHeader("Status").setSortable(true);
 
         grid.addComponentColumn(agenda -> {
@@ -260,7 +254,6 @@ public class AgendaView extends VerticalLayout {
                     deleteAgenda(agenda);
                     confirm.close();
                 });
-
                 Button cancel = new Button("Cancelar", event -> confirm.close());
 
                 confirm.getFooter().add(confirmButton, cancel);
@@ -270,9 +263,6 @@ public class AgendaView extends VerticalLayout {
             delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
             return delete;
         }).setHeader("Ações");
-
-        grid.setDetailsVisibleOnClick(false);
-        grid.setItemDetailsRenderer(createAgendaDetailsRenderer());
 
         grid.addItemClickListener(event -> {
             Agenda agenda = event.getItem();
@@ -285,7 +275,11 @@ public class AgendaView extends VerticalLayout {
             tabSheet.setSelectedIndex(1);
         });
 
-        grid.setItems(agendaController.pesquisarTodos());
+        List<Agenda> listaDeAgendas = agendaController.pesquisarTodos();
+        if (listaDeAgendas == null) {
+            listaDeAgendas = Collections.emptyList();
+        }
+        grid.setItems(listaDeAgendas);
 
         return grid;
     }
@@ -300,7 +294,7 @@ public class AgendaView extends VerticalLayout {
         if(sucess){
             refreshGrid();
         }else{
-            System.out.println("Erro ao excluir agendamento");
+            Notification.show("Erro ao excluir agendamento", 3000, Notification.Position.MIDDLE);
         }
     }
 

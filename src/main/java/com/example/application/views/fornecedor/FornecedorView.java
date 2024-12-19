@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.example.application.model.Fornecedor;
-import com.example.application.model.Funcionario;
 import com.example.application.views.MainLayout;
 import com.example.application.controller.FornecedorController;
 
@@ -57,16 +56,13 @@ public class FornecedorView extends Composite<VerticalLayout> {
         getContent().add(tabSheet);
     }
 
-    //This method sets up two tabs
     private void setTabSheetSampleData(TabSheet tabSheet) {
         Div fornecedoresContent = createFornecedoresContent();
         tabSheet.add("Fornecedores", fornecedoresContent);
-
         Div addFornecedorContent = createAddFornecedorContent();
         tabSheet.add("Adicionar Fornecedor", addFornecedorContent);
     }
 
-    //This method creates the content for the "Fornecedores" tab, which consists of a form to see all the suppliers and search for a specific suppliers
     private Div createFornecedoresContent(){
         Div fornecedorContentDiv = new Div();
         Div space = new Div();
@@ -76,21 +72,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         HorizontalLayout layoutRow = new HorizontalLayout();
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
-
-        buttonPrimary.addClickListener(event -> {
-            String pesquisa = textField.getValue().trim();
-            List<Fornecedor> resultados;
-
-            if(pesquisa.isEmpty()){
-                resultados = fornecedorController.pesquisarTodos();
-            }else{
-                resultados = fornecedorController.pesquisarFornecedor(pesquisa);
-            }
-
-            grid.setItems(resultados);
-        });
-
-        //For a better interface
         textField.setPlaceholder("Empresa, CNPJ ou IE");
         textField.setWidth("250px");
         layoutRow.setWidthFull();
@@ -107,9 +88,21 @@ public class FornecedorView extends Composite<VerticalLayout> {
         grid.setAllRowsVisible(true);
         grid.addClassName("borderless-grid");
 
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<Fornecedor> resultados;
+            if(pesquisa.isEmpty()){
+                resultados = fornecedorController.pesquisarTodos();
+            }else{
+                resultados = fornecedorController.pesquisarFornecedor(pesquisa);
+            }
+            grid.setItems(resultados);
+        });
+
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getEmpresa).setHeader("Empresa");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getVendedor).setHeader("Vendedor");
         grid.addColumn((ValueProvider<Fornecedor, String>) Fornecedor::getTelefone).setHeader("Telefone");
+        
         grid.addComponentColumn(fornecedor -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 Dialog confirm = new Dialog();
@@ -121,7 +114,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
                     deleteFornecedor(fornecedor);
                     confirm.close();
                 });
-
                 Button cancel = new Button("Cancelar", event -> confirm.close());
 
                 confirm.getFooter().add(confirmButton, cancel);
@@ -158,7 +150,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         return fornecedorContentDiv;
     }
 
-    // This method creates the content for the "Adicionar Fornecedor" tab, which consists of a form to add a new supplier.
     private Div createAddFornecedorContent() {
         Div addFornecedorContentDiv = new Div();
         Div space = new Div();
@@ -172,12 +163,31 @@ public class FornecedorView extends Composite<VerticalLayout> {
         FormLayout formLayout2Col = new FormLayout();
         
         empresa = new TextField("Empresa");
+        empresa.setMaxLength(100);
         vendedor = new TextField("Vendedor");
+        vendedor.setMaxLength(100);
         cnpj = new TextField("CNPJ");
         ie = new TextField("Inscrição Estadual");
         telefone = new TextField("Telefone");
         email = new TextField("Email");
+        email.setMaxLength(100);
         produto = new TextArea("Descrição do Produto Fornecido");
+        produto.setMaxLength(255);
+        empresa.addClassName("rounded-text-field");
+        vendedor.addClassName("rounded-text-field");
+        cnpj.addClassName("rounded-text-field");
+        ie.addClassName("rounded-text-field");
+        telefone.addClassName("rounded-text-field");
+        email.addClassName("rounded-text-field");
+        produto.addClassName("rounded-text-field");
+        empresa.setRequiredIndicatorVisible(true);
+        telefone.setRequiredIndicatorVisible(true);
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
+        layout3.setAlignItems(FlexComponent.Alignment.END);
 
         cnpj.addBlurListener(event -> {
             String value = cnpj.getValue().replaceAll("[^\\d]", "");
@@ -251,33 +261,14 @@ public class FornecedorView extends Composite<VerticalLayout> {
                     Notification.show("Erro ao salvar fornecedor", 3000, Notification.Position.MIDDLE);
                 }
             }
-
             if (sucesso) {
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
             }
         });
 
-        // Estilos e classes de CSS
-        empresa.addClassName("rounded-text-field");
-        vendedor.addClassName("rounded-text-field");
-        cnpj.addClassName("rounded-text-field");
-        ie.addClassName("rounded-text-field");
-        telefone.addClassName("rounded-text-field");
-        email.addClassName("rounded-text-field");
-        produto.addClassName("rounded-text-field");
-        empresa.setRequiredIndicatorVisible(true);
-        telefone.setRequiredIndicatorVisible(true);
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
-        layout2.setWidth("1100px");
-        layout2.getStyle().set("margin", "0 auto");
-        layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
-
-        // Adiciona componentes ao layout
         formLayout2Col.add(empresa, vendedor, cnpj, ie, produto, email, telefone);
         layout2.add(formLayout2Col, space);
         layout3.add(saveButton);
@@ -297,7 +288,7 @@ public class FornecedorView extends Composite<VerticalLayout> {
         if(sucess){
             refreshGrid();
         }else{
-            System.out.println("Erro ao excluir fornecedor");
+            Notification.show("Erro ao excluir fornecedor", 3000, Notification.Position.MIDDLE);
         }
     }
 

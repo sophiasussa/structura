@@ -129,8 +129,10 @@ public class ClienteView extends Composite<VerticalLayout> {
             tabSheet.setSelectedIndex(1);
         });
 
-        List<Cliente> listaDeClientes = Collections.emptyList();
-        listaDeClientes = clienteController.pesquisarTodos();
+        List<Cliente> listaDeClientes = clienteController.pesquisarTodos();
+        if (listaDeClientes == null) {
+            listaDeClientes = Collections.emptyList();
+        }
         grid.setItems(listaDeClientes);
 
         layout.add(layoutRow, space, grid);
@@ -150,6 +152,7 @@ public class ClienteView extends Composite<VerticalLayout> {
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
         nome = new TextField("Nome");
+        nome.setMaxLength(100);
         cpf = new TextField("CNPJ/CPF");
         rg = new TextField("IE/RG");
         telefone = new TextField("Telefone");
