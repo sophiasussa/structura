@@ -22,9 +22,45 @@ public class AgendaController {
         }
     }
 
-    public boolean inserir(Agenda agenda) {
+    private boolean validarAgenda(Agenda agenda) {
         if (agenda == null) {
             logger.warn("Tentativa de inserir agenda com valor nulo");
+            return false;
+        }
+        if (agenda.getTitulo() == null || agenda.getTitulo().isEmpty()) {
+            logger.warn("Título da agenda é obrigatório");
+            return false;
+        }
+        if (agenda.getTitulo().length() > 50) {
+            logger.warn("Título da agenda não pode ter mais de 50 caracteres");
+            return false;
+        }
+        if (agenda.getDescricao().length() > 255) {
+            logger.warn("Descrição da agenda não pode ter mais de 255 caracteres");
+            return false;
+        }
+        if (agenda.getEndereco().length() > 255) {
+            logger.warn("Endereço da agenda não pode ter mais de 255 caracteres");
+            return false;
+        }
+        if (agenda.getDataHora() == null) {
+            logger.warn("Data da agenda é obrigatória");
+            return false;
+        }
+        if (agenda.getStatus().name().length() > 20) {
+            logger.warn("Status da agenda não pode ter mais de 20 caracteres");
+            return false;
+        }
+        if (agenda.getFuncionario() == null) {
+            logger.warn("Funcionario_id da agenda é obrigatório");
+            return false;
+        }
+    
+        return true;
+    }
+
+    public boolean inserir(Agenda agenda) {
+        if (!validarAgenda(agenda)) {
             return false;
         }
         try {
@@ -42,8 +78,7 @@ public class AgendaController {
     }
 
     public boolean alterar(Agenda agenda) {
-        if (agenda == null) {
-            logger.warn("Tentativa de alterar agenda com valor nulo");
+        if (!validarAgenda(agenda)) {
             return false;
         }
         try {
@@ -61,8 +96,8 @@ public class AgendaController {
     }
 
     public boolean excluir(Agenda agenda) {
-        if (agenda == null) {
-            logger.warn("Tentativa de excluir agenda com valor nulo");
+        if (agenda == null || agenda.getId() == null) {
+            logger.warn("Tentativa de excluir agenda com valor nulo ou ID inválido");
             return false;
         }
         try {

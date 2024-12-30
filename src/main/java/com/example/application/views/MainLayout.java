@@ -4,7 +4,6 @@ import com.example.application.views.cliente.ClienteView;
 import com.example.application.model.User;
 import com.example.application.views.fornecedor.FornecedorView;
 import com.example.application.views.funcionario.FuncionarioView;
-import com.example.application.views.ordemServico.OrdemServicoView;
 import com.example.application.views.home.HomeView;
 import com.example.application.views.agenda.AgendaView;
 import com.example.application.views.produto.ProdutoView;
@@ -135,7 +134,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         nav.setLabel("Serviços");
         nav.setCollapsible(true);
         nav.setExpanded(false);
-        nav.addItem(new SideNavItem("Ordem de Serviço", OrdemServicoView.class, VaadinIcon.CLIPBOARD_TEXT.create()));
 
         return nav;
     }

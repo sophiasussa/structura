@@ -23,9 +23,28 @@ public class ClienteController {
         }
     }
 
-    public boolean inserir(Cliente cliente) {
+    private boolean validarCliente(Cliente cliente) {
         if (cliente == null) {
             logger.warn("Tentativa de inserir cliente com valor nulo");
+            return false;
+        }
+        if (cliente.getNome() == null || cliente.getNome().isEmpty()) {
+            logger.warn("Nome do cliente é obrigatório");
+            return false;
+        }
+        if (cliente.getTelefone() == null || cliente.getTelefone().isEmpty()) {
+            logger.warn("Telefone do cliente é obrigatório");
+            return false;
+        }
+        if (!cliente.getTelefone().matches("\\(\\d{2}\\) \\d{4,5}-\\d{4}")) {
+            logger.warn("Telefone do cliente com formato inválido: " + cliente.getTelefone());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean inserir(Cliente cliente) {
+        if (!validarCliente(cliente)) {
             return false;
         }
         try {
@@ -43,8 +62,7 @@ public class ClienteController {
     }
     
     public boolean alterar(Cliente cliente) {
-        if (cliente == null) {
-            logger.warn("Tentativa de alterar cliente com valor nulo");
+        if (!validarCliente(cliente)) {
             return false;
         }
         try {
@@ -62,8 +80,8 @@ public class ClienteController {
     }
 
     public boolean excluir(Cliente cliente) {
-        if (cliente == null) {
-            logger.warn("Tentativa de excluir cliente com valor nulo");
+        if (cliente == null || cliente.getId() == null) {
+            logger.warn("Tentativa de excluir cliente com valor nulo ou ID inválido");
             return false;
         }
         try {
@@ -83,7 +101,10 @@ public class ClienteController {
     public List<Cliente> pesquisarTodos() {
         try {
             List<Cliente> lista = daoCliente.pesquisarTodos();
-            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " clientes.");
+            if (lista == null) {
+                lista = new ArrayList<>();
+            }
+            logger.info("Pesquisados " + lista.size() + " clientes.");
             return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar todos os clientes", e);
@@ -96,9 +117,13 @@ public class ClienteController {
             logger.warn("Busca de cliente com parâmetro de pesquisa inválido");
             return new ArrayList<>();
         }
+    
         try {
             List<Cliente> lista = daoCliente.pesquisarCliente(pesquisa);
-            logger.info("Pesquisados " + (lista != null ? lista.size() : 0) + " clientes para a pesquisa: " + pesquisa);
+            if (lista == null) {
+                lista = new ArrayList<>();
+            }
+            logger.info("Pesquisados " + lista.size() + " clientes para a pesquisa: " + pesquisa);
             return lista;
         } catch (Exception e) {
             logger.error("Erro ao buscar cliente com pesquisa: " + pesquisa, e);
@@ -107,6 +132,11 @@ public class ClienteController {
     }
     
     public Cliente getClienteById(int id) {
+        if (id <= 0) {
+            logger.warn("ID de cliente inválido: " + id);
+            return null;
+        }
+    
         try {
             Cliente cliente = daoCliente.getClienteById(id);
             if (cliente != null) {
