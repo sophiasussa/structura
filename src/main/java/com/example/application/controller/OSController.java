@@ -23,13 +23,13 @@ public class OSController {
         }
     }
 
-    public Long saveOrdemServico(OrdemServico os) {
+    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos) {
         if (os == null) {
             logger.warn("Tentativa de salvar Ordem de Serviço com valor nulo");
             return null;
         }
         try {
-            return daoOS.saveOrdemServico(os);
+            return daoOS.saveOrdemServico(os, produtos);
         } catch (Exception e) {
             logger.error("Erro ao salvar Ordem de Serviço", e);
             return null;

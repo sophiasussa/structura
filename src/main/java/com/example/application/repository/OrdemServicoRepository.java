@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.application.model.Cliente;
+import com.example.application.model.EntregaOS;
 import com.example.application.model.Material;
 import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
@@ -22,76 +24,113 @@ public class OrdemServicoRepository {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    public long saveOrdemServico(OrdemServico os) throws SQLException {
-        String sql = "INSERT INTO os (status_os, endereco, imagens, dataa, datap, observacoes, cliente_id, funcionario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public long saveOrdemServico(OrdemServico os, List<Produto> produtos) throws SQLException {
+        String sqlOS = "INSERT INTO os (status_os, entrega_os, endereco, dataa, datap, observacoes, cliente_id, funcionario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlOsProdutos = "INSERT INTO produto_os (os_id, produto_id) VALUES (?, ?)";
     
-        try (PreparedStatement stmtOS = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
-            stmtOS.setString(2, os.getEndereco());
-            stmtOS.setString(3, os.getImagens() != null ? String.join(",", os.getImagens()) : null);
+            stmtOS.setString(2, os.getEntregaOS() != null ? os.getEntregaOS().name() : null);
+            stmtOS.setString(3, os.getEndereco());
             stmtOS.setDate(4, os.getDataAbertura() != null ? java.sql.Date.valueOf(os.getDataAbertura()) : null);
             stmtOS.setDate(5, os.getDataPrevFinaliza() != null ? java.sql.Date.valueOf(os.getDataPrevFinaliza()) : null);
             stmtOS.setString(6, os.getObservacao());
+    
+            if (os.getCliente() == null || os.getCliente().getId() == null) {
+                throw new IllegalArgumentException("O cliente ou o ID do cliente não pode ser nulo.");
+            }
             stmtOS.setLong(7, os.getCliente().getId());
-            stmtOS.setLong(8, os.getFuncionario() != null ? os.getFuncionario().getId() : null);
+    
+            if (os.getFuncionario() != null && os.getFuncionario().getId() != null) {
+                stmtOS.setLong(8, os.getFuncionario().getId());
+            } else {
+                stmtOS.setNull(8, java.sql.Types.BIGINT);
+            }
     
             int rowsInserted = stmtOS.executeUpdate();
     
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmtOS.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        return generatedKeys.getLong(1);
+                        long idOs = generatedKeys.getLong(1);
+    
+                        if (produtos != null && !produtos.isEmpty()) {
+                            try (PreparedStatement stmtOsProdutos = connection.prepareStatement(sqlOsProdutos)) {
+                                for (Produto produto : produtos) {
+                                    if (produto != null && produto.getId() != null) {
+                                        stmtOsProdutos.setLong(1, idOs);
+                                        stmtOsProdutos.setLong(2, produto.getId());
+                                        stmtOsProdutos.addBatch();
+                                    }
+                                }
+                                stmtOsProdutos.executeBatch();
+                            }
+                        }
+                        return idOs;
                     }
                 }
             }
+            return -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
-        return -1;
     }
     
     public boolean updateOrdemServico(OrdemServico os, List<Produto> produtos) {
-        String sqlOS = "UPDATE os SET status_os = ?, endereco = ?, imagens = ?, dataa = ?, datap = ?, observacoes = ?, cliente_id = ?, funcionario_id = ? WHERE id = ?";
-        String deleteOsProdutos = "DELETE FROM os_produto WHERE id_os = ?";
-        String insertOsProdutos = "INSERT INTO os_produto (id_os, id_produto) VALUES (?, ?)";
-
+        String sqlOS = "UPDATE os SET status_os = ?, entrega_os = ?, endereco = ?, dataa = ?, datap = ?, observacoes = ?, cliente_id = ?, funcionario_id = ? WHERE id = ?";
+        String deleteOsProdutos = "DELETE FROM produto_os WHERE os_id = ?";
+        String insertOsProdutos = "INSERT INTO produto_os (os_id, produto_id) VALUES (?, ?)";
+    
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS)) {
-            stmtOS.setString(1, os.getStatusOS().name());
-            stmtOS.setString(2, os.getEndereco());
-            stmtOS.setString(3, String.join(",", os.getImagens()));
-            stmtOS.setDate(4, java.sql.Date.valueOf(os.getDataAbertura()));
-            stmtOS.setDate(5, java.sql.Date.valueOf(os.getDataPrevFinaliza()));
+            stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
+            stmtOS.setString(2, os.getEntregaOS() != null ? os.getEntregaOS().name() : null);
+            stmtOS.setString(3, os.getEndereco());
+            stmtOS.setDate(4, os.getDataAbertura() != null ? java.sql.Date.valueOf(os.getDataAbertura()) : null);
+            stmtOS.setDate(5, os.getDataPrevFinaliza() != null ? java.sql.Date.valueOf(os.getDataPrevFinaliza()) : null);
             stmtOS.setString(6, os.getObservacao());
-            stmtOS.setLong(7, os.getCliente().getId());
-            stmtOS.setLong(8, os.getFuncionario().getId());
+    
+            stmtOS.setLong(7, os.getCliente() != null && os.getCliente().getId() != null ? os.getCliente().getId() : 0);
+            stmtOS.setLong(8, os.getFuncionario() != null && os.getFuncionario().getId() != null ? os.getFuncionario().getId() : 0);
+    
+            if (os.getId() == null) {
+                throw new IllegalArgumentException("ID da OS não pode ser nulo para a atualização.");
+            }
             stmtOS.setLong(9, os.getId());
-
+    
             int rowsUpdated = stmtOS.executeUpdate();
-
+    
             if (rowsUpdated > 0) {
                 try (PreparedStatement stmtDeleteProduto = connection.prepareStatement(deleteOsProdutos)) {
                     stmtDeleteProduto.setLong(1, os.getId());
                     stmtDeleteProduto.executeUpdate();
                 }
-
-                try (PreparedStatement stmtInsertProduto = connection.prepareStatement(insertOsProdutos)) {
-                    for (Produto produto : produtos) {
-                        stmtInsertProduto.setLong(1, os.getId());
-                        stmtInsertProduto.setLong(2, produto.getId());
-                        stmtInsertProduto.addBatch();
+    
+                if (produtos != null && !produtos.isEmpty()) {
+                    try (PreparedStatement stmtInsertProduto = connection.prepareStatement(insertOsProdutos)) {
+                        for (Produto produto : produtos) {
+                            if (produto != null && produto.getId() != null) {
+                                stmtInsertProduto.setLong(1, os.getId());
+                                stmtInsertProduto.setLong(2, produto.getId());
+                                stmtInsertProduto.addBatch();
+                            }
+                        }
+                        stmtInsertProduto.executeBatch();
                     }
-                    stmtInsertProduto.executeBatch();
                 }
                 return true;
             }
-
+    
             return false;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+    
 
     public boolean deleteOrdemServico(Long idOs) {
-        String sqlDeleteProdutos = "DELETE FROM os_produto WHERE id_os = ?";
+        String sqlDeleteProdutos = "DELETE FROM produto_os WHERE os_id = ?";
         String sqlDeleteOS = "DELETE FROM os WHERE id = ?";
 
         try (PreparedStatement stmtDeleteProdutos = connection.prepareStatement(sqlDeleteProdutos);
@@ -125,9 +164,9 @@ public class OrdemServicoRepository {
                 os.setId(rsOS.getLong("id"));
                 String status = rsOS.getString("status_os");
                 os.setStatusOS(status != null ? StatusOS.valueOf(status) : null);
+                String entrega = rsOS.getString("entrega_os");
+                os.setEntregaOS(entrega != null ? EntregaOS.valueOf(entrega) : null);
                 os.setEndereco(rsOS.getString("endereco"));
-                String imagens = rsOS.getString("imagens");
-                os.setImagens(imagens != null ? Arrays.asList(imagens.split(",")) : new ArrayList<>());
                 java.sql.Date dataSql = rsOS.getDate("dataa");
                 os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
@@ -145,7 +184,7 @@ public class OrdemServicoRepository {
                             produto.setNome(rsProdutos.getString("nome"));
                             Material material = new Material();
                             material.setId(rsProdutos.getInt("material_id"));
-                            material.setNome(rsProdutos.getString("material_nome"));
+                            material.setNome(rsProdutos.getString("nome"));
                             produto.setMaterial(material.getId() != 0 ? material : null);
                             produtos.add(produto);
                         }
@@ -161,40 +200,68 @@ public class OrdemServicoRepository {
 
     public List<OrdemServico> searchOS(String searchTerm) {
         List<OrdemServico> ordens = new ArrayList<>();
-        String sqlOS = "SELECT * FROM os WHERE status_os LIKE ?";
-        String sqlOSCliente = "SELECT * FROM os WHERE cliente_id LIKE ?";
+        String sqlOS = "SELECT os.*, c.nome AS cliente_nome FROM os " +
+                    "JOIN cliente c ON os.cliente_id = c.id " +
+                    "WHERE (os.id = ? OR c.nome LIKE ? OR os.status_os LIKE ?)";
         String sqlProdutos = "SELECT p.* FROM produto p " +
-                "JOIN os_produto op ON p.id = op.id_produto " +
-                "WHERE op.id_os = ?";
+                            "JOIN produto_os op ON p.id = op.produto_id " +
+                            "WHERE op.os_id = ?";
 
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS)) {
-            stmtOS.setString(1, "%" + searchTerm + "%");
-            ResultSet rsOS = stmtOS.executeQuery();
+            try {
+                long idSearch = Long.parseLong(searchTerm);
+                stmtOS.setLong(1, idSearch);
+            } catch (NumberFormatException e) {
+                stmtOS.setLong(1, -1);
+            }
 
-            while (rsOS.next()) {
-                OrdemServico os = new OrdemServico();
-                String status = rsOS.getString("status_os");
-                os.setStatusOS(status != null ? StatusOS.valueOf(status) : null);
-                os.setEndereco(rsOS.getString("endereco"));
-                os.setImagens(Arrays.asList(rsOS.getString("imagens").split(",")));
-                java.sql.Date dataSql = rsOS.getDate("dataa");
-                os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
-                os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
-                os.setObservacao(rsOS.getString("observacao"));
-                os.setCliente(new ClienteRepository().getClienteById(rsOS.getInt("id_cliente")));
-                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(rsOS.getInt("id_mecanico")));
+            stmtOS.setString(2, "%" + searchTerm + "%");
+            stmtOS.setString(3, "%" + searchTerm + "%");
 
-                ordens.add(os);
+            try (ResultSet rsOS = stmtOS.executeQuery()) {
+                while (rsOS.next()) {
+                    OrdemServico os = new OrdemServico();
+                    os.setId(rsOS.getLong("id"));
+                    String status = rsOS.getString("status_os");
+                    os.setStatusOS(status != null ? StatusOS.valueOf(status) : null);
+                    String entrega = rsOS.getString("entrega_os");
+                    os.setEntregaOS(entrega != null ? EntregaOS.valueOf(entrega) : null);
+                    os.setEndereco(rsOS.getString("endereco"));
+                    java.sql.Date dataSql = rsOS.getDate("dataa");
+                    os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
+                    os.setDataPrevFinaliza(rsOS.getDate("datap") != null ? rsOS.getDate("datap").toLocalDate() : null);
+                    os.setObservacao(rsOS.getString("observacoes"));
+                    os.setCliente(new ClienteRepository().getClienteById(rsOS.getInt("cliente_id")));
+                    os.setFuncionario(new FuncionarioRepository().getFuncionarioById(rsOS.getInt("funcionario_id")));
+
+                    List<Produto> produtos = new ArrayList<>();
+                    try (PreparedStatement stmtProdutos = connection.prepareStatement(sqlProdutos)) {
+                        stmtProdutos.setLong(1, os.getId());
+                        try (ResultSet rsProdutos = stmtProdutos.executeQuery()) {
+                            while (rsProdutos.next()) {
+                                Produto produto = new Produto();
+                                produto.setId(rsProdutos.getLong("id"));
+                                produto.setNome(rsProdutos.getString("nome"));
+                                Material material = new Material();
+                                material.setId(rsProdutos.getInt("material_id"));
+                                material.setNome(rsProdutos.getString("nome"));
+                                produto.setMaterial(material.getId() != 0 ? material : null);
+                                produtos.add(produto);
+                            }
+                        }
+                    }
+                    ordens.add(os);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return ordens;
     }
 
+
     public OrdemServico OrdemServicoById(Long id) {
-        String sql = "SELECT os.*, c.*, m.*, v.* " +
+        String sql = "SELECT os.*, c.*, m.*" +
                 "FROM os " +
                 "LEFT JOIN cliente c ON os.cliente_id = c.id " +
                 "LEFT JOIN funcionario m ON os.funcionario_id = m.id " +
@@ -207,14 +274,14 @@ public class OrdemServicoRepository {
             if (result.next()) {
                 OrdemServico os = new OrdemServico();
                 os.setStatusOS(StatusOS.valueOf(result.getString("status_os")));
+                os.setEntregaOS(EntregaOS.valueOf(result.getString("entrega_os")));
                 os.setEndereco(result.getString("endereco"));
-                os.setImagens(Arrays.asList(result.getString("imagens").split(",")));
                 java.sql.Date dataSql = result.getDate("dataa");
                 os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
                 os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
-                os.setObservacao(result.getString("observacao"));
-                os.setCliente(new ClienteRepository().getClienteById(result.getInt("id_cliente")));
-                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(result.getInt("id_mecanico")));
+                os.setObservacao(result.getString("observacoes"));
+                os.setCliente(new ClienteRepository().getClienteById(result.getInt("cliente_id")));
+                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(result.getInt("funcionario_id")));
 
                 return os;
             } else {

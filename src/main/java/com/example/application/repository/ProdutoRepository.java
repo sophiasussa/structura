@@ -169,33 +169,53 @@ public class ProdutoRepository {
     
 
     public Produto getProdutoById(int id) {
-        String sql = "SELECT * FROM produto WHERE id = ?";
+        String sql = "SELECT p.*, m.nome AS material_nome, um.nome AS unid_medida_nome, mo.nome AS modelo_nome " +
+                     "FROM produto p " +
+                     "LEFT JOIN material m ON p.material_id = m.id " +
+                     "LEFT JOIN unidMedida um ON p.unid_medida_id = um.id " +
+                     "LEFT JOIN modelo mo ON p.modelo_id = mo.id " +
+                     "WHERE p.id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 Produto produto = new Produto();
                 produto.setId(resultSet.getLong("id"));
-                produto.setNome(resultSet.getString("nome"));
+                produto.setNome(resultSet.getString("nome") != null ? resultSet.getString("nome") : "Nome não disponível");
                 produto.setQuantidadeAtual(resultSet.getInt("quantidadeAtual"));
                 produto.setQuantidadeMinima(resultSet.getInt("quantidadeMinima"));
                 produto.setCustoUnitario(resultSet.getDouble("custoUnitario"));
-
+    
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
-                material.setNome(resultSet.getString("material_nome"));
+                String materialNome = resultSet.getString("material_nome");
+                if (materialNome != null) {
+                    material.setNome(materialNome);
+                } else {
+                    material.setNome("N/A"); // Ou qualquer valor padrão
+                }
                 produto.setMaterial(material.getId() != 0 ? material : null);
-
+    
                 UnidMedida unidMedida = new UnidMedida();
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
-                unidMedida.setNome(resultSet.getString("unid_medida_nome"));
+                String unidMedidaNome = resultSet.getString("unid_medida_nome");
+                if (unidMedidaNome != null) {
+                    unidMedida.setNome(unidMedidaNome);
+                } else {
+                    unidMedida.setNome("N/A");
+                }
                 produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
-
+                
                 Modelo modelo = new Modelo();
                 modelo.setId(resultSet.getInt("modelo_id"));
-                modelo.setNome(resultSet.getString("modelo_nome"));
+                String modeloNome = resultSet.getString("modelo_nome");
+                if (modeloNome != null) {
+                    modelo.setNome(modeloNome);
+                } else {
+                    modelo.setNome("N/A");
+                }
                 produto.setModelo(modelo.getId() != 0 ? modelo : null);
-
+    
                 return produto;
             }
         } catch (SQLException e) {
@@ -204,7 +224,7 @@ public class ProdutoRepository {
         }
         return null;
     }
-
+    
     public List<Produto> pesquisarProdutoComQuantidadeMinimaIgual() {
         List<Produto> lista = new ArrayList<>();
         String consulta = """

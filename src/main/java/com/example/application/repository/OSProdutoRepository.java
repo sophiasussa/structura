@@ -22,15 +22,15 @@ public class OSProdutoRepository {
 
     public List<ProdutoOS> getProdutoOSsByOrdemServicoId(long idOs) {
         List<ProdutoOS> osProdutosList = new ArrayList<>();
-        String sql = "SELECT * FROM os_produto WHERE id_os = ?";
+        String sql = "SELECT * FROM produto_os WHERE os_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, idOs);
             try (ResultSet result = stmt.executeQuery()) {
                 while (result.next()) {
                     ProdutoOS osProduto = new ProdutoOS();
-                    osProduto.setOrdemServico(new OrdemServicoRepository().OrdemServicoById(result.getLong("id_os")));
-                    osProduto.setProduto(new ProdutoRepository().getProdutoById(result.getInt("id_produto")));
+                    osProduto.setOrdemServico(new OrdemServicoRepository().OrdemServicoById(result.getLong("os_id")));
+                    osProduto.setProduto(new ProdutoRepository().getProdutoById(result.getInt("produto_id")));
                     osProdutosList.add(osProduto);
                 }
             }
