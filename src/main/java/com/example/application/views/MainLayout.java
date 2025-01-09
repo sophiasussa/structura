@@ -8,6 +8,7 @@ import com.example.application.views.home.HomeView;
 import com.example.application.views.ordemServico.OrdemServicoView;
 import com.example.application.views.agenda.AgendaView;
 import com.example.application.views.produto.ProdutoView;
+import com.example.application.views.projeto.ProjetoView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -136,6 +137,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         nav.setCollapsible(true);
         nav.setExpanded(false);
         nav.addItem(new SideNavItem("Ordem de Serviço", OrdemServicoView.class, VaadinIcon.CLIPBOARD_TEXT.create()));
+        nav.addItem(new SideNavItem("Projeto", ProjetoView.class, VaadinIcon.FILE_TEXT.create()));
 
         return nav;
     }

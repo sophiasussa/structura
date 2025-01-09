@@ -3,6 +3,7 @@ package com.example.application.controller;
 import com.example.application.model.OrdemServico;
 import com.example.application.repository.OrdemServicoRepository;
 import com.example.application.model.Produto;
+import com.example.application.model.ImagemOS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,13 @@ public class OSController {
         }
     }
 
-    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos) {
+    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos, List<ImagemOS> imagens) {
         if (os == null) {
             logger.warn("Tentativa de salvar Ordem de Serviço com valor nulo");
             return null;
         }
         try {
-            return daoOS.saveOrdemServico(os, produtos);
+            return daoOS.saveOrdemServico(os, produtos, imagens);
         } catch (Exception e) {
             logger.error("Erro ao salvar Ordem de Serviço", e);
             return null;

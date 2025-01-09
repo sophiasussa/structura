@@ -1,5 +1,7 @@
 package com.example.application.repository;
 
+import java.io.IOException;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,9 +9,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.File;
+import java.io.IOException;
+
 
 import com.example.application.model.Cliente;
 import com.example.application.model.EntregaOS;
+import com.example.application.model.ImagemOS;
 import com.example.application.model.Material;
 import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
@@ -24,58 +33,85 @@ public class OrdemServicoRepository {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    public long saveOrdemServico(OrdemServico os, List<Produto> produtos) throws SQLException {
+    public long saveOrdemServico(OrdemServico os, List<Produto> produtos, List<ImagemOS> imagens) throws SQLException, IOException {
         String sqlOS = "INSERT INTO os (status_os, entrega_os, endereco, dataa, datap, observacoes, cliente_id, funcionario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         String sqlOsProdutos = "INSERT INTO produto_os (os_id, produto_id) VALUES (?, ?)";
-    
+        String sqlOsImagens = "INSERT INTO os_imagens (os_id, caminho_imagem) VALUES (?, ?)";
+
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            // Inserir OS
             stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
             stmtOS.setString(2, os.getEntregaOS() != null ? os.getEntregaOS().name() : null);
             stmtOS.setString(3, os.getEndereco());
             stmtOS.setDate(4, os.getDataAbertura() != null ? java.sql.Date.valueOf(os.getDataAbertura()) : null);
             stmtOS.setDate(5, os.getDataPrevFinaliza() != null ? java.sql.Date.valueOf(os.getDataPrevFinaliza()) : null);
             stmtOS.setString(6, os.getObservacao());
-    
+
             if (os.getCliente() == null || os.getCliente().getId() == null) {
                 throw new IllegalArgumentException("O cliente ou o ID do cliente não pode ser nulo.");
             }
             stmtOS.setLong(7, os.getCliente().getId());
-    
+
             if (os.getFuncionario() != null && os.getFuncionario().getId() != null) {
                 stmtOS.setLong(8, os.getFuncionario().getId());
             } else {
                 stmtOS.setNull(8, java.sql.Types.BIGINT);
             }
-    
+
             int rowsInserted = stmtOS.executeUpdate();
-    
+
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmtOS.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         long idOs = generatedKeys.getLong(1);
-    
+
+                        // Inserir produtos associados
                         if (produtos != null && !produtos.isEmpty()) {
                             try (PreparedStatement stmtOsProdutos = connection.prepareStatement(sqlOsProdutos)) {
                                 for (Produto produto : produtos) {
-                                    if (produto != null && produto.getId() != null) {
-                                        stmtOsProdutos.setLong(1, idOs);
-                                        stmtOsProdutos.setLong(2, produto.getId());
-                                        stmtOsProdutos.addBatch();
-                                    }
+                                    stmtOsProdutos.setLong(1, idOs);
+                                    stmtOsProdutos.setLong(2, produto.getId());
+                                    stmtOsProdutos.addBatch();
                                 }
                                 stmtOsProdutos.executeBatch();
                             }
                         }
+
+                        // Mover imagens e inserir caminhos definitivos
+                        if (imagens != null && !imagens.isEmpty()) {
+                            String finalDir = "C:/imagens/os/" + idOs + "/";
+                            Files.createDirectories(Paths.get(finalDir));
+
+                            try (PreparedStatement stmtOsImagens = connection.prepareStatement(sqlOsImagens)) {
+                                for (ImagemOS imagem : imagens) {
+                                    if (imagem != null && imagem.getCaminhoImagem() != null) {
+                                        // Mover arquivo para o diretório definitivo
+                                        Path tempPath = Paths.get(imagem.getCaminhoImagem());
+                                        Path finalPath = Paths.get(finalDir, tempPath.getFileName().toString());
+                                        Files.move(tempPath, finalPath, StandardCopyOption.REPLACE_EXISTING);
+
+                                        // Salvar caminho no banco de dados
+                                        stmtOsImagens.setLong(1, idOs);
+                                        stmtOsImagens.setString(2, finalPath.toString());
+                                        stmtOsImagens.addBatch();
+                                    }
+                                }
+                                stmtOsImagens.executeBatch();
+                            }
+                        }
+
                         return idOs;
                     }
                 }
             }
             return -1;
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
             throw e;
         }
     }
+
+
     
     public boolean updateOrdemServico(OrdemServico os, List<Produto> produtos) {
         String sqlOS = "UPDATE os SET status_os = ?, entrega_os = ?, endereco = ?, dataa = ?, datap = ?, observacoes = ?, cliente_id = ?, funcionario_id = ? WHERE id = ?";
