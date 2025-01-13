@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserRepository {
 
@@ -16,21 +17,38 @@ public class UserRepository {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    public User findByUsernameAndPassword(String username, String password) {
-        String sql = "SELECT * FROM User WHERE username = ? AND password = ?";
+    public User findByUsername(String username) {
+        String sql = "SELECT id, username, password FROM User WHERE username = ?";
+        
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, username);
-            stmt.setString(2, password);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    User user = new User(resultSet.getString("username"), resultSet.getString("password"));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
                     return user;
                 }
             }
         } catch (SQLException e) {
-            logger.error("Erro ao buscar usuário com username: " + username, e);
-            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar usuário por username.", e);
         }
+
         return null;
     }
+
+    public User login(String username, String rawPassword) {
+        User user = findByUsername(username);
+
+        if (user != null && BCrypt.checkpw(rawPassword, user.getPassword())) {
+            return user;
+        }
+
+        return null;
+    }
+
+    
 }

@@ -135,6 +135,7 @@ public class AgendaView extends VerticalLayout {
         descricao.setMaxLength(255);
         data = new DateTimePicker("Data");
         data.setStep(Duration.ofMinutes(1));
+        data.getStyle().set("color", "#b0b0b0");
         funcionario = new ComboBox<>("Funcionario");
         endereco = new TextArea("Endereço");
         endereco.setMaxLength(255);

@@ -25,7 +25,7 @@ public class UserController {
             return null;
         }
         try {
-            User user = userRepository.findByUsernameAndPassword(username, password);
+            User user = userRepository.login(username, password);
             if (user != null) {
                 logger.info("Login bem-sucedido para o usuário: " + username);
             } else {

@@ -30,6 +30,7 @@ public class UserView extends Div {
             .set("padding", "var(--lumo-space-l)");
 
         LoginForm loginForm = new LoginForm();
+        loginForm.setForgotPasswordButtonVisible(false);
         loginForm.addLoginListener(e -> {
             String username = e.getUsername();
             String password = e.getPassword();
@@ -58,5 +59,6 @@ public class UserView extends Div {
             .set("align-items", "center");
 
         add(loginJunto);
+
     }
 }
