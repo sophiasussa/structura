@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 
+import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 public class ModeloRepository {
 
@@ -70,6 +71,21 @@ public class ModeloRepository {
             throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         }
         return lista;
+    }
+
+    public boolean isModeloInUse(Modelo modelo) {
+        String sql = "SELECT COUNT(*) FROM produto WHERE modelo_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, modelo.getId());
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                int count = result.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 

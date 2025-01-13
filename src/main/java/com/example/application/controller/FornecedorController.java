@@ -60,7 +60,7 @@ public class FornecedorController {
             return false;
         }
     }
-
+    
     public boolean excluir(Fornecedor fornecedor) {
         if (fornecedor == null) {
             logger.warn("Tentativa de excluir fornecedor com valor nulo");

@@ -3,6 +3,8 @@ package com.example.application.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
+
+import com.example.application.model.Modelo;
 import com.example.application.model.UnidMedida;
 import com.example.application.repository.UnidMedidaRepository;
 import org.slf4j.Logger;
@@ -60,10 +62,16 @@ public class UnidMedidaController {
         }
     }
 
+    public boolean isUnidMedidaInUse(UnidMedida unidMedida) {
+        return daoUnidMedida.isUnidMedidaInUse(unidMedida);
+    }
+
     public boolean excluir(UnidMedida unidMedida) {
         if (unidMedida == null) {
             logger.warn("Tentativa de excluir unidade de medida com valor nulo");
             return false;
+        }else if(isUnidMedidaInUse(unidMedida)){
+            logger.warn("Não é possível excluir o unidMedida. O unidMedida está associado a um produto");
         }
         try {
             boolean sucesso = daoUnidMedida.excluir(unidMedida);

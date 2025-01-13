@@ -110,7 +110,7 @@ public class ProjetoView extends Composite<VerticalLayout> {
             grid.setItems(resultados);
         });
 
-        grid.addColumn(Projeto::getId).setHeader("Número");
+        grid.addColumn(Projeto::getId).setHeader("Número").setWidth("150px").setFlexGrow(0);
         grid.addColumn(projeto -> {
             Cliente cliente = projeto.getCliente();
             return cliente != null ? cliente.getNome() : "Cliente não definido";

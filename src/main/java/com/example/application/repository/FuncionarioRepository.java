@@ -141,4 +141,30 @@ public class FuncionarioRepository {
         }
         return null;
     }
+
+    public boolean isFuncionarioInUse(Funcionario funcionario) {
+        String sql = """
+            SELECT COUNT(*) AS total
+            FROM (
+                SELECT funcionario_id FROM os WHERE funcionario_id = ?
+                UNION ALL
+                SELECT funcionario_id FROM projeto WHERE funcionario_id = ?
+            ) AS combined
+        """;
+    
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, funcionario.getId());
+            stmt.setLong(2, funcionario.getId());
+            ResultSet result = stmt.executeQuery();
+    
+            if (result.next()) {
+                int count = result.getInt("total");
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
 }

@@ -79,10 +79,16 @@ public class ClienteController {
         }
     }
 
+    public boolean isClienteInUse(Cliente cliente) {
+        return daoCliente.isClienteInUse(cliente);
+    }
+
     public boolean excluir(Cliente cliente) {
         if (cliente == null || cliente.getId() == null) {
             logger.warn("Tentativa de excluir cliente com valor nulo ou ID inválido");
             return false;
+        }else if(isClienteInUse(cliente)){
+            logger.warn("Não é possível excluir o cliente. O cliente está associado a uma OS ou projeto");
         }
         try {
             boolean sucesso = daoCliente.excluir(cliente);

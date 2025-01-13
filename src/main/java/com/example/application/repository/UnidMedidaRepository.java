@@ -71,4 +71,19 @@ public class UnidMedidaRepository {
         }
         return lista;
     }
+
+    public boolean isUnidMedidaInUse(UnidMedida unidMedida) {
+        String sql = "SELECT COUNT(*) FROM produto WHERE unidMedida_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, unidMedida.getId());
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                int count = result.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

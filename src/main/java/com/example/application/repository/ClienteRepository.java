@@ -125,6 +125,33 @@ public class ClienteRepository {
         }
         return null;
     }
+
+    public boolean isClienteInUse(Cliente cliente) {
+        String sql = """
+            SELECT COUNT(*) AS total
+            FROM (
+                SELECT cliente_id FROM os WHERE cliente_id = ?
+                UNION ALL
+                SELECT cliente_id FROM projeto WHERE cliente_id = ?
+            ) AS combined
+        """;
+    
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, cliente.getId());
+            stmt.setLong(2, cliente.getId());
+            ResultSet result = stmt.executeQuery();
+    
+            if (result.next()) {
+                int count = result.getInt("total");
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    
 }
 
 

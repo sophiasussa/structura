@@ -62,10 +62,16 @@ public class FuncionarioController {
         }
     }
 
+    public boolean isFuncionarioInUse(Funcionario funcionario) {
+        return daoFuncionario.isFuncionarioInUse(funcionario);
+    }
+
     public boolean excluir(Funcionario funcionario) {
         if (funcionario == null) {
             logger.warn("Tentativa de excluir funcionário com valor nulo");
             return false;
+        }else if(isFuncionarioInUse(funcionario)){
+            logger.warn("Não é possível excluir o funcionario. O funcionario está associado a um agendamento ou OS");
         }
         try {
             boolean sucesso = daoFuncionario.excluir(funcionario);

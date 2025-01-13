@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
 
+import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 import com.example.application.repository.ModeloRepository;
 import org.slf4j.Logger;
@@ -61,10 +62,16 @@ public class ModeloController {
         }
     }
 
+    public boolean isModeloInUse(Modelo modelo) {
+        return daoModelo.isModeloInUse(modelo);
+    }
+
     public boolean excluir(Modelo modelo) {
         if (modelo == null) {
             logger.warn("Tentativa de excluir modelo com valor nulo");
             return false;
+        }else if(isModeloInUse(modelo)){
+            logger.warn("Não é possível excluir o modelo. O modelo está associado a um produto");
         }
         try {
             boolean sucesso = daoModelo.excluir(modelo);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
 
+import com.example.application.model.Cliente;
 import com.example.application.model.Material;
 import com.example.application.repository.MaterialRepository;
 import org.slf4j.Logger;
@@ -61,10 +62,16 @@ public class MaterialController {
         }
     }
 
+    public boolean isMaterialInUse(Material material) {
+        return daoMaterial.isMaterialInUse(material);
+    }
+
     public boolean excluir(Material material) {
         if (material == null) {
             logger.warn("Tentativa de excluir material com valor nulo");
             return false;
+        }else if(isMaterialInUse(material)){
+            logger.warn("Não é possível excluir o material. O material está associado a um produto");
         }
         try {
             boolean sucesso = daoMaterial.excluir(material);

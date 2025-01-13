@@ -22,6 +22,7 @@ import com.example.application.model.ProdutoOS;
 import com.example.application.model.StatusOS;
 import com.example.application.controller.ClienteController;
 import com.example.application.controller.FuncionarioController;
+import com.example.application.controller.ImagemController;
 import com.example.application.controller.OSProdutoController;
 import com.example.application.controller.OSController;
 import com.example.application.controller.ProdutoController;
@@ -36,7 +37,11 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -48,6 +53,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -60,7 +66,7 @@ import com.vaadin.flow.component.Component;
 public class OrdemServicoView extends VerticalLayout {
 
     private ProdutoController produtoController = new ProdutoController();
-    //private OSImagemController imagemController;
+    private ImagemController imagemController = new ImagemController();
     private FuncionarioController funcionarioController = new FuncionarioController();
     private ClienteController clienteController = new ClienteController();
     private OSController osController = new OSController();
@@ -193,7 +199,7 @@ public class OrdemServicoView extends VerticalLayout {
         MemoryBuffer buffer = new MemoryBuffer();
         Upload upload = new Upload(buffer);
         upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
-        upload.setMaxFiles(4);
+        upload.setMaxFiles(1);
         upload.setMaxFileSize(5 * 1024 * 1024);
         upload.setDropAllowed(true);
 
@@ -209,21 +215,18 @@ public class OrdemServicoView extends VerticalLayout {
             }
 
             String fileName = event.getFileName();
-            String uploadDir = "C:/temp/uploads/"; // Diretório temporário
+            String uploadDir = "C:/temp/uploads/";
 
             try {
-                // Salvar no diretório temporário
                 File tempFile = new File(uploadDir + fileName);
                 try (InputStream inputStream = buffer.getInputStream()) {
                     Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
 
-                // Criar a instância de ImagemOS
                 ImagemOS imagemOS = new ImagemOS();
-                imagemOS.setCaminhoImagem(tempFile.getAbsolutePath()); // Caminho temporário
+                imagemOS.setCaminhoImagem(tempFile.getAbsolutePath());
                 osImagemList.add(imagemOS);
 
-                // Atualizar interface
                 imagePaths.add(tempFile.getAbsolutePath());
                 imagemPathField.setValue(String.join(", ", imagePaths));
                 addImageToGallery(imageGallery, tempFile.getAbsolutePath(), imagePaths);
@@ -234,7 +237,6 @@ public class OrdemServicoView extends VerticalLayout {
                 Notification.show("Erro ao salvar a imagem: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
             }
         });
-
 
         Button saveButton = new Button("Salvar", event -> {
             if (cliente.isEmpty() || entrega.isEmpty() || funcionario.isEmpty() || status.isEmpty()) {
@@ -263,7 +265,7 @@ public class OrdemServicoView extends VerticalLayout {
                 } else {
                     Notification.show("Erro ao atualizar a OS", 3000, Notification.Position.MIDDLE);
                 }
-            }/*else {
+            }else {
                 long idOs = osController.saveOrdemServico(os, osProdutoList, osImagemList);
                 sucesso = idOs > 0;
                 if (sucesso) {
@@ -271,7 +273,7 @@ public class OrdemServicoView extends VerticalLayout {
                 } else {
                     Notification.show("Erro ao salvar a OS", 3000, Notification.Position.MIDDLE);
                 }
-            }*/ 
+            }
     
             if (sucesso) {
                 clearForm();
@@ -324,64 +326,100 @@ public class OrdemServicoView extends VerticalLayout {
         grid.addClassName("borderless-grid");
         grid.setAllRowsVisible(true);
 
-        grid.addColumn(OrdemServico::getId).setHeader("Número OS").setSortable(true);
+        grid.addColumn(OrdemServico::getId).setHeader("Número OS").setSortable(true).setWidth("150px").setFlexGrow(0);
         grid.addColumn(ordemServico -> ordemServico.getCliente().getNome()).setHeader("Cliente").setSortable(true);
-        grid.addColumn(ordemServico -> ordemServico.getStatusOS().getDescricao()).setHeader("Status").setSortable(true);
+        grid.addColumn(OrdemServico::getDataAbertura).setHeader("Data Abertura").setWidth("160px").setFlexGrow(0);
+        grid.addColumn(OrdemServico::getDataPrevFinaliza).setHeader("Data de Previsão").setWidth("160px").setFlexGrow(0);
 
-        grid.addColumn(OrdemServico::getDataAbertura).setHeader("Data Abertura");
-        grid.addColumn(OrdemServico::getDataPrevFinaliza).setHeader("Data de Previsão");
+        grid.addColumn(new ComponentRenderer<>(ordemServico -> {
+            Span statusBadge = new Span(ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().getDescricao() : "Indefinido");
+            statusBadge.addClassName("status-badge");
+            
+            if (ordemServico.getStatusOS() != null) {
+                switch (ordemServico.getStatusOS()) {
+                    case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
+                    case EM_ANDAMENTO -> statusBadge.getStyle().set("background-color", "lightgoldenrodyellow");
+                    case CONCLUIDA -> statusBadge.getStyle().set("background-color", "lightgreen");
+                    case CANCELADA -> statusBadge.getStyle().set("background-color", "lightcoral");
+                    default -> statusBadge.getStyle().set("background-color", "lightgray");
+                }
+            }
+            statusBadge.getStyle()
+                .set("color", "black")
+                .set("padding", "5px 10px")
+                .set("border-radius", "12px")
+                .set("font-weight", "bold");
+            
+            return statusBadge;
+        })).setHeader("Status").setWidth("190px").setFlexGrow(0);
 
         grid.addComponentColumn(ordemServico -> {
-            Button detalhes = new Button("Ver Detalhes", e -> {
+            Button detalhes = new Button();
+            detalhes.setIcon(VaadinIcon.EYE.create());
+            detalhes.addThemeVariants(ButtonVariant.LUMO_ICON);
+            detalhes.getStyle()
+                .set("border-radius", "50%")
+                .set("width", "40px")
+                .set("height", "40px")
+                .set("padding", "0")
+                .set("background-color", "var(--lumo-primary-color)")
+                .set("color", "white");
+        
+            detalhes.addClickListener(e -> {
                 Dialog dialog = new Dialog();
-                dialog.setHeaderTitle("Detalhes da OS " + ordemServico.getId());
-
+                dialog.setHeaderTitle("Detalhes da OS #" + ordemServico.getId());
+                dialog.setWidth("600px");
+                dialog.setHeight("500px");
+        
                 VerticalLayout content = new VerticalLayout();
                 content.setPadding(true);
-                content.setSpacing(true);
-                /*
-                List<ImagemOS> imagens = imagemController.getImagensByOrdemServicoId(ordemServico.getId());
+                content.setSpacing(false);
+        
+                List<ImagemOS> imagens = imagemController.getImagemOSByOrdemServicoId(ordemServico.getId());
                 if (imagens != null && !imagens.isEmpty()) {
+                    content.add(new H4("Imagens:"));
                     HorizontalLayout imageLayout = new HorizontalLayout();
-                    for (ImagemOS imagem : imagens) {
+                    imageLayout.setSpacing(true);
+                    imagens.forEach(imagem -> {
                         Image image = new Image(imagem.getCaminhoImagem(), "Imagem da OS");
-                        image.setWidth("100px");
-                        image.setHeight("100px");
+                        image.setWidth("80px");
+                        image.setHeight("80px");
+                        image.getStyle()
+                            .set("border", "1px solid #ccc")
+                            .set("border-radius", "5px")
+                            .set("padding", "5px");
                         imageLayout.add(image);
-                    }
-                    content.add(new Text("Imagens:"));
+                    });
+                    imageLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
                     content.add(imageLayout);
                 } else {
-                    content.add(new Text("Nenhuma imagem disponível."));
+                    content.add(new Text("Nenhuma imagem."));
                 }
-                 */
-             /*   List<ProdutoOS> produtosOS = osProdutoController.getProdutoOSsByOrdemServicoId(ordemServico.getId());
+        
+                content.add(new Hr());
+                List<ProdutoOS> produtosOS = osProdutoController.getProdutoOSByOrdemServicoId(ordemServico.getId());
                 if (produtosOS != null && !produtosOS.isEmpty()) {
-                    content.add(new Text("Produtos:"));
+                    content.add(new H4("Produtos:"));
                     produtosOS.forEach(produtoOS -> {
-                    Produto produto = produtoOS.getProduto();
-                    content.add(new Text("- " + produto.getNome()));
+                        Produto produto = produtoOS.getProduto();
+                        content.add(new Paragraph("- " + produto.getNome()));
                     });
                 } else {
                     content.add(new Text("Nenhum produto associado a esta OS."));
-                }*/
-
+                }
         
-                content.add(new Text("Funcionário: " + (ordemServico.getFuncionario().getNome())));
-                content.add(new Text("Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "N/A")));
-                content.add(new Text ("Entrega: " + (ordemServico.getEntregaOS().getDescricao())));
-                content.add(new Text("Observação: " + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "N/A")));
-
-                Button closeButton = new Button("Fechar", event -> dialog.close());
-                content.add(closeButton);
-
+                content.add(new Hr());
+                content.add(new Paragraph("Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "")));
+                content.add(new Paragraph("Entrega: " + (ordemServico.getEntregaOS().getDescricao())));
+                content.add(new Paragraph("Observação: " + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "")));
+                content.add(new Paragraph("Funcionário: " + (ordemServico.getFuncionario().getNome())));
+        
                 dialog.add(content);
                 dialog.open();
             });
-
-            detalhes.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        
             return detalhes;
-        }).setHeader("Detalhes");
+        }).setHeader("Detalhes").setWidth("140px").setFlexGrow(0);
 
         grid.addComponentColumn(ordemServico -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
@@ -403,7 +441,7 @@ public class OrdemServicoView extends VerticalLayout {
             });
             delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
             return delete;
-        }).setHeader("Ações");
+        }).setHeader("Ações").setWidth("140px").setFlexGrow(0);
 
         grid.addItemDoubleClickListener(event -> {
             OrdemServico os = event.getItem();
@@ -443,22 +481,23 @@ public class OrdemServicoView extends VerticalLayout {
         osId = os.getId();
         status.setValue(os.getStatusOS());
         endereco.setValue(String.valueOf(os.getEndereco()));
+        entrega.setValue(os.getEntregaOS());
         observacao.setValue(String.valueOf(os.getObservacao()));
         funcionario.setValue(os.getFuncionario());
         cliente.setValue(os.getCliente());
         data.setValue(os.getDataAbertura());
         datap.setValue(os.getDataPrevFinaliza());
-      /*  List<ProdutoOS> produtosSelecionados = osProdutoController.getProdutoOSsByOrdemServicoId(osId);
+        List<ProdutoOS> produtosSelecionados = osProdutoController.getProdutoOSByOrdemServicoId(osId);
         Set<Produto> produtos = produtosSelecionados.stream()
             .map(ProdutoOS::getProduto)
             .collect(Collectors.toSet());
-        produto.setValue(produtos);*/
+        produto.setValue(produtos);
         imagePaths.clear();
         imageLayout.removeAll();
                 
         imagePaths.clear();
         imageLayout.removeAll();
-        /*List<ImagemOS> imagens = imagemController.getImagensByOrdemServicoId(osId);
+        List<ImagemOS> imagens = imagemController.getImagemOSByOrdemServicoId(osId);
         if (imagens != null && !imagens.isEmpty()) {
             for (ImagemOS imagem : imagens) {
                 String imagePath = imagem.getCaminhoImagem();
@@ -470,7 +509,7 @@ public class OrdemServicoView extends VerticalLayout {
         } else {
             imagemPathField.clear();
             Notification.show("Nenhuma imagem associada.", 3000, Notification.Position.MIDDLE);
-        }*/
+        }
     }
 
     private Component createImageComponent(String imagePath) {
@@ -519,12 +558,12 @@ public class OrdemServicoView extends VerticalLayout {
     }
 
     private void deleteOrdemServico(OrdemServico os) {
-      /*   boolean success = osController.deleteOrdemServico(os.getId());
+        boolean success = osController.deleteOrdemServico(os);
         if (success) {
             refreshGrid();
         } else {
             System.out.println("Erro ao excluir OS");
-        }*/
+        }
     }
 
     private void clearForm() {

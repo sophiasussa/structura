@@ -39,7 +39,6 @@ public class OrdemServicoRepository {
         String sqlOsImagens = "INSERT INTO os_imagens (os_id, caminho_imagem) VALUES (?, ?)";
 
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            // Inserir OS
             stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
             stmtOS.setString(2, os.getEntregaOS() != null ? os.getEntregaOS().name() : null);
             stmtOS.setString(3, os.getEndereco());
@@ -65,7 +64,6 @@ public class OrdemServicoRepository {
                     if (generatedKeys.next()) {
                         long idOs = generatedKeys.getLong(1);
 
-                        // Inserir produtos associados
                         if (produtos != null && !produtos.isEmpty()) {
                             try (PreparedStatement stmtOsProdutos = connection.prepareStatement(sqlOsProdutos)) {
                                 for (Produto produto : produtos) {
@@ -77,7 +75,6 @@ public class OrdemServicoRepository {
                             }
                         }
 
-                        // Mover imagens e inserir caminhos definitivos
                         if (imagens != null && !imagens.isEmpty()) {
                             String finalDir = "C:/imagens/os/" + idOs + "/";
                             Files.createDirectories(Paths.get(finalDir));
@@ -85,12 +82,10 @@ public class OrdemServicoRepository {
                             try (PreparedStatement stmtOsImagens = connection.prepareStatement(sqlOsImagens)) {
                                 for (ImagemOS imagem : imagens) {
                                     if (imagem != null && imagem.getCaminhoImagem() != null) {
-                                        // Mover arquivo para o diretório definitivo
                                         Path tempPath = Paths.get(imagem.getCaminhoImagem());
                                         Path finalPath = Paths.get(finalDir, tempPath.getFileName().toString());
                                         Files.move(tempPath, finalPath, StandardCopyOption.REPLACE_EXISTING);
 
-                                        // Salvar caminho no banco de dados
                                         stmtOsImagens.setLong(1, idOs);
                                         stmtOsImagens.setString(2, finalPath.toString());
                                         stmtOsImagens.addBatch();
@@ -110,8 +105,6 @@ public class OrdemServicoRepository {
             throw e;
         }
     }
-
-
     
     public boolean updateOrdemServico(OrdemServico os, List<Produto> produtos) {
         String sqlOS = "UPDATE os SET status_os = ?, entrega_os = ?, endereco = ?, dataa = ?, datap = ?, observacoes = ?, cliente_id = ?, funcionario_id = ? WHERE id = ?";
@@ -166,24 +159,30 @@ public class OrdemServicoRepository {
     
 
     public boolean deleteOrdemServico(Long idOs) {
+        String sqlDeleteImagens = "DELETE FROM os_imagens WHERE os_id = ?";
         String sqlDeleteProdutos = "DELETE FROM produto_os WHERE os_id = ?";
         String sqlDeleteOS = "DELETE FROM os WHERE id = ?";
+    
+        try (PreparedStatement stmtDeleteImagens = connection.prepareStatement(sqlDeleteImagens);
+             PreparedStatement stmtDeleteProdutos = connection.prepareStatement(sqlDeleteProdutos);
+             PreparedStatement stmtDeleteOS = connection.prepareStatement(sqlDeleteOS)) {
 
-        try (PreparedStatement stmtDeleteProdutos = connection.prepareStatement(sqlDeleteProdutos);
-                PreparedStatement stmtDeleteOS = connection.prepareStatement(sqlDeleteOS)) {
+            stmtDeleteImagens.setLong(1, idOs);
+            stmtDeleteImagens.executeUpdate();
 
             stmtDeleteProdutos.setLong(1, idOs);
             stmtDeleteProdutos.executeUpdate();
 
             stmtDeleteOS.setLong(1, idOs);
             int rowsDeleted = stmtDeleteOS.executeUpdate();
-
+    
             return rowsDeleted > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+    
 
     public List<OrdemServico> getAllOrdensServico() {
         List<OrdemServico> ordens = new ArrayList<>();
@@ -191,6 +190,7 @@ public class OrdemServicoRepository {
         String sqlProdutos = "SELECT p.* FROM produto p " +
                             "JOIN produto_os po ON p.id = po.produto_id " +
                             "WHERE po.os_id = ?";
+        String sqlImagens = "SELECT caminho_imagem FROM os_imagens WHERE os_id = ?";
 
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS);
             ResultSet rsOS = stmtOS.executeQuery()) {
@@ -204,28 +204,13 @@ public class OrdemServicoRepository {
                 os.setEntregaOS(entrega != null ? EntregaOS.valueOf(entrega) : null);
                 os.setEndereco(rsOS.getString("endereco"));
                 java.sql.Date dataSql = rsOS.getDate("dataa");
+                java.sql.Date datapSql = rsOS.getDate("datap");
                 os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
-                os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataPrevFinaliza(datapSql != null ? datapSql.toLocalDate() : null);
                 os.setObservacao(rsOS.getString("observacoes"));
                 os.setCliente(new ClienteRepository().getClienteById(rsOS.getInt("cliente_id")));
                 os.setFuncionario(new FuncionarioRepository().getFuncionarioById(rsOS.getInt("funcionario_id")));
-
-                List<Produto> produtos = new ArrayList<>();
-                try (PreparedStatement stmtProdutos = connection.prepareStatement(sqlProdutos)) {
-                    stmtProdutos.setLong(1, os.getId());
-                    try (ResultSet rsProdutos = stmtProdutos.executeQuery()) {
-                        while (rsProdutos.next()) {
-                            Produto produto = new Produto();
-                            produto.setId(rsProdutos.getLong("id"));
-                            produto.setNome(rsProdutos.getString("nome"));
-                            Material material = new Material();
-                            material.setId(rsProdutos.getInt("material_id"));
-                            material.setNome(rsProdutos.getString("nome"));
-                            produto.setMaterial(material.getId() != 0 ? material : null);
-                            produtos.add(produto);
-                        }
-                    }
-                }
+                
                 ordens.add(os);
             }
         } catch (SQLException e) {

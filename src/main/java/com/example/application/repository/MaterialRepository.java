@@ -3,12 +3,15 @@ package com.example.application.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import com.example.application.model.Material;
-import java.sql.SQLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.example.application.model.Cliente;
+import com.example.application.model.Material;
 
 public class MaterialRepository {
 
@@ -57,7 +60,7 @@ public class MaterialRepository {
         List<Material> lista = new ArrayList<>();
         String sql = "SELECT * FROM material";
         try (PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet resultSet = stmt.executeQuery()) {
+                ResultSet resultSet = stmt.executeQuery()) {
 
             while (resultSet.next()) {
                 Material material = new Material();
@@ -71,5 +74,19 @@ public class MaterialRepository {
         }
         return lista;
     }
-}
 
+    public boolean isMaterialInUse(Material material) {
+        String sql = "SELECT COUNT(*) FROM produto WHERE material_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, material.getId());
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                int count = result.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
