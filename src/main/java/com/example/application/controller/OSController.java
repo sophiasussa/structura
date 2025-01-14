@@ -3,6 +3,7 @@ package com.example.application.controller;
 import com.example.application.model.OrdemServico;
 import com.example.application.repository.OrdemServicoRepository;
 import com.example.application.model.Produto;
+import com.example.application.model.Agenda;
 import com.example.application.model.ImagemOS;
 
 import java.util.ArrayList;
@@ -97,6 +98,17 @@ public class OSController {
         } catch (Exception e) {
             logger.error("Erro ao buscar Ordem de Serviço com pesquisa: " + searchTerm, e);
             return null;
+        }
+    }
+
+    public List<OrdemServico> OrdemServicoPorDataPrevista() {
+        try {
+            List<OrdemServico> lista = daoOS.OrdemServicoPorDataPrevista();
+            logger.info("Pesquisadas " + (lista != null ? lista.size() : 0) + " OSs de hoje.");
+            return lista;
+        } catch (Exception e) {
+            logger.error("Erro ao buscar OSs de hoje", e);
+            return new ArrayList<>();
         }
     }
 }

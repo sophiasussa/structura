@@ -59,6 +59,5 @@ public class UserView extends Div {
             .set("align-items", "center");
 
         add(loginJunto);
-
     }
 }

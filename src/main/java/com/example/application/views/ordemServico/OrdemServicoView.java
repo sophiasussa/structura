@@ -93,22 +93,16 @@ public class OrdemServicoView extends VerticalLayout {
         this.getStyle().set("flex-grow", "1");
         tabSheet.setWidth("100%");
         setTabSheetSampleData(tabSheet);
-
         this.add(tabSheet);
     }
 
-    // This method sets up two tabs
     private void setTabSheetSampleData(TabSheet tabSheet) {
         Div osContent = createOSContent();
         tabSheet.add("Ordens de Serviço", osContent);
-
         Div addOSContent = createAddOSContent();
         tabSheet.add("Adicionar Ordem de Serviço", addOSContent);
     }
 
-    // This method creates the content for the "Ordens de Serviço" tab, which
-    // consists of a
-    // form to see all the Ordens de Serviço and search for a specific os
     private Div createOSContent() {
         Div osContentDiv = new Div();
         Div space = new Div();
@@ -118,24 +112,6 @@ public class OrdemServicoView extends VerticalLayout {
         HorizontalLayout layoutRow = new HorizontalLayout();
         TextField textField = new TextField("Pesquisar");
         Button buttonPrimary = new Button();
-
-        buttonPrimary.addClickListener(event -> {
-            String pesquisa = textField.getValue().trim();
-            List<OrdemServico> resultados;
-
-            if (pesquisa.isEmpty()) {
-                resultados = osController.getAllOrdensServico();
-            } else {
-                resultados = osController.searchOS(pesquisa);
-            }
-
-            if (resultados.isEmpty()) {
-                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
-            }
-            grid.setItems(resultados);
-        });
-
-        // For a better interface
         textField.setPlaceholder("NumeroOS, Cliente ou Status");
         textField.setWidth("250px");
         layoutRow.setWidthFull();
@@ -148,25 +124,34 @@ public class OrdemServicoView extends VerticalLayout {
         buttonPrimary.setIcon(VaadinIcon.SEARCH.create());
         buttonPrimary.getStyle().set("border-radius", "50%");
         textField.addClassName("rounded-text-field");
-        layoutRow.add(textField, buttonPrimary);
+
+        buttonPrimary.addClickListener(event -> {
+            String pesquisa = textField.getValue().trim();
+            List<OrdemServico> resultados;
+            if (pesquisa.isEmpty()) {
+                resultados = osController.getAllOrdensServico();
+            } else {
+                resultados = osController.searchOS(pesquisa);
+            }
+            if (resultados.isEmpty()) {
+                Notification.show("Nenhum resultado encontrado para: " + pesquisa);
+            }
+            grid.setItems(resultados);
+        });
 
         grid = createGrid();
-
         grid.addItemDoubleClickListener(event -> {
             OrdemServico ordemServico = event.getItem();
             editOrdemServico(ordemServico);
             tabSheet.setSelectedIndex(1);
         });
 
+        layoutRow.add(textField, buttonPrimary);
         layout.add(layoutRow, space, grid);
         osContentDiv.add(layout);
-
         return osContentDiv;
     }
 
-    // This method creates the content for the "Adicionar Ordem de Serviço" tab,
-    // which
-    // consists of a form to add a new Ordem de Serviço.
     private Div createAddOSContent() {
         Div addOSContentDiv = new Div();
         Div space = new Div();
@@ -195,6 +180,25 @@ public class OrdemServicoView extends VerticalLayout {
         setComboBoxClienteData(cliente);
         setComboBoxFuncionarioData(funcionario);
         setComboBoxProdutoData(produto);
+        status.addClassName("rounded-text-field");
+        entrega.addClassName("rounded-text-field");
+        endereco.addClassName("rounded-text-field");
+        observacao.addClassName("rounded-text-field");
+        data.addClassName("rounded-text-field");
+        produto.addClassName("rounded-text-field");
+        datap.addClassName("rounded-text-field");
+        cliente.addClassName("rounded-text-field");
+        cliente.setRequiredIndicatorVisible(isVisible());
+        status.setRequiredIndicatorVisible(isVisible());
+        entrega.setRequiredIndicatorVisible(isVisible());
+        funcionario.setRequiredIndicatorVisible(isVisible());
+        funcionario.addClassName("rounded-text-field");
+        layout2.getStyle().set("border-radius", "15px");
+        layout2.getStyle().set("border", "1px solid #ccc");
+        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
+        layout2.setWidth("1100px");
+        layout2.getStyle().set("margin", "0 auto");
+        layout3.setAlignItems(FlexComponent.Alignment.END);
 
         MemoryBuffer buffer = new MemoryBuffer();
         Upload upload = new Upload(buffer);
@@ -274,53 +278,27 @@ public class OrdemServicoView extends VerticalLayout {
                     Notification.show("Erro ao salvar a OS", 3000, Notification.Position.MIDDLE);
                 }
             }
-    
             if (sucesso) {
                 clearForm();
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
             }
-           
         });
 
-        // Configurações de estilo e layout
-        status.addClassName("rounded-text-field");
-        entrega.addClassName("rounded-text-field");
-        endereco.addClassName("rounded-text-field");
-        observacao.addClassName("rounded-text-field");
-        data.addClassName("rounded-text-field");
-        produto.addClassName("rounded-text-field");
-        datap.addClassName("rounded-text-field");
-        cliente.addClassName("rounded-text-field");
-        cliente.setRequiredIndicatorVisible(isVisible());
-        status.setRequiredIndicatorVisible(isVisible());
-        entrega.setRequiredIndicatorVisible(isVisible());
-        funcionario.setRequiredIndicatorVisible(isVisible());
-        funcionario.addClassName("rounded-text-field");
-        layout2.getStyle().set("border-radius", "15px");
-        layout2.getStyle().set("border", "1px solid #ccc");
-        layout2.getStyle().set("box-shadow", "0 0 2px rgba(0 , 0, 0, 0.2)");
-        layout2.setWidth("1100px");
-        layout2.getStyle().set("margin", "0 auto");
-        layout3.setAlignItems(FlexComponent.Alignment.END);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.getStyle().set("border-radius", "25px");
-
         formLayout3Col.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("500px", 3));
-
         formLayout2Col.add(status, endereco, observacao, funcionario, produto, entrega, upload);
         formLayout3Col.add(cliente, data, datap);
         layout2.add(formLayout3Col, formLayout2Col, imageGallery, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addOSContentDiv.add(space1, layout);
-
         return addOSContentDiv;
     }
 
-    //Grid content
     private Grid<OrdemServico> createGrid() {
         grid = new Grid<>(OrdemServico.class, false);
         grid.addClassName("borderless-grid");
@@ -334,7 +312,6 @@ public class OrdemServicoView extends VerticalLayout {
         grid.addColumn(new ComponentRenderer<>(ordemServico -> {
             Span statusBadge = new Span(ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().getDescricao() : "Indefinido");
             statusBadge.addClassName("status-badge");
-            
             if (ordemServico.getStatusOS() != null) {
                 switch (ordemServico.getStatusOS()) {
                     case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
@@ -349,7 +326,6 @@ public class OrdemServicoView extends VerticalLayout {
                 .set("padding", "5px 10px")
                 .set("border-radius", "12px")
                 .set("font-weight", "bold");
-            
             return statusBadge;
         })).setHeader("Status").setWidth("190px").setFlexGrow(0);
 
@@ -395,8 +371,8 @@ public class OrdemServicoView extends VerticalLayout {
                 } else {
                     content.add(new Text("Nenhuma imagem."));
                 }
-        
                 content.add(new Hr());
+
                 List<ProdutoOS> produtosOS = osProdutoController.getProdutoOSByOrdemServicoId(ordemServico.getId());
                 if (produtosOS != null && !produtosOS.isEmpty()) {
                     content.add(new H4("Produtos:"));
@@ -413,11 +389,9 @@ public class OrdemServicoView extends VerticalLayout {
                 content.add(new Paragraph("Entrega: " + (ordemServico.getEntregaOS().getDescricao())));
                 content.add(new Paragraph("Observação: " + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "")));
                 content.add(new Paragraph("Funcionário: " + (ordemServico.getFuncionario().getNome())));
-        
                 dialog.add(content);
                 dialog.open();
             });
-        
             return detalhes;
         }).setHeader("Detalhes").setWidth("140px").setFlexGrow(0);
 
@@ -432,7 +406,6 @@ public class OrdemServicoView extends VerticalLayout {
                     deleteOrdemServico(ordemServico);
                     confirm.close();
                 });
-
                 Button cancel = new Button("Cancelar", event -> confirm.close());
 
                 confirm.getFooter().add(confirmButton, cancel);
@@ -450,7 +423,6 @@ public class OrdemServicoView extends VerticalLayout {
         });
 
         grid.setItems(osController.getAllOrdensServico());
-
         return grid;
     }
 
@@ -472,7 +444,6 @@ public class OrdemServicoView extends VerticalLayout {
             Notification.show("Imagem removida com sucesso!", 3000, Notification.Position.MIDDLE);
         });
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-    
         imageContainer.add(image, deleteButton);
         imageGallery.add(imageContainer);
     }
@@ -494,7 +465,6 @@ public class OrdemServicoView extends VerticalLayout {
         produto.setValue(produtos);
         imagePaths.clear();
         imageLayout.removeAll();
-                
         imagePaths.clear();
         imageLayout.removeAll();
         List<ImagemOS> imagens = imagemController.getImagemOSByOrdemServicoId(osId);

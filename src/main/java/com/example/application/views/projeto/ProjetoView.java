@@ -270,7 +270,6 @@ public class ProjetoView extends Composite<VerticalLayout> {
                     Notification.show("Erro ao salvar o projeto", 3000, Notification.Position.MIDDLE);
                 }
             }
-
             if (sucesso) {
                 tabSheet.setSelectedIndex(0);
                 refreshGrid();
@@ -334,7 +333,7 @@ public class ProjetoView extends Composite<VerticalLayout> {
     private void atualizarValorFinal() {
         double valorProjeto = 0.0;
         double descontoPercentual = 0.0;
-    
+        
         try {
             if (!valor.isEmpty()) {
                 valorProjeto = Double.parseDouble(valor.getValue());

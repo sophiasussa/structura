@@ -313,4 +313,40 @@ public class OrdemServicoRepository {
             return null;
         }
     }
+
+    public List<OrdemServico> OrdemServicoPorDataPrevista() {
+        String sql = "SELECT os.*, c.*, m.* " +
+                     "FROM os " +
+                     "LEFT JOIN cliente c ON os.cliente_id = c.id " +
+                     "LEFT JOIN funcionario m ON os.funcionario_id = m.id " +
+                     "WHERE os.data_prev_finaliza = CURDATE()";
+    
+        List<OrdemServico> ordensServico = new ArrayList<>();
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet result = stmt.executeQuery();
+    
+            while (result.next()) {
+                OrdemServico os = new OrdemServico();
+                os.setStatusOS(StatusOS.valueOf(result.getString("status_os")));
+                os.setEntregaOS(EntregaOS.valueOf(result.getString("entrega_os")));
+                os.setEndereco(result.getString("endereco"));
+                
+                java.sql.Date dataSql = result.getDate("dataa");
+                os.setDataAbertura(dataSql != null ? dataSql.toLocalDate() : null);
+                os.setDataPrevFinaliza(dataSql != null ? dataSql.toLocalDate() : null);
+                
+                os.setObservacao(result.getString("observacoes"));
+                os.setCliente(new ClienteRepository().getClienteById(result.getInt("cliente_id")));
+                os.setFuncionario(new FuncionarioRepository().getFuncionarioById(result.getInt("funcionario_id")));
+    
+                ordensServico.add(os);
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return ordensServico;
+    }
 }

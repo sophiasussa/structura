@@ -3,6 +3,7 @@ package com.example.application.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.application.model.Agenda;
 import com.example.application.model.Cliente;
 import com.example.application.model.Produto;
 import com.example.application.repository.ProdutoRepository;

@@ -192,7 +192,7 @@ public class ProdutoRepository {
                 if (materialNome != null) {
                     material.setNome(materialNome);
                 } else {
-                    material.setNome("N/A"); // Ou qualquer valor padrão
+                    material.setNome("N/A");
                 }
                 produto.setMaterial(material.getId() != 0 ? material : null);
     
