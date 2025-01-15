@@ -292,7 +292,6 @@ public class ClienteView extends Composite<VerticalLayout> {
             rgField.addClassName("rounded-text-field");
     
             detailsLayout.add(cpfField, rgField);
-    
             return detailsLayout;
         });
     }

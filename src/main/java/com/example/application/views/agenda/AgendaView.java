@@ -96,7 +96,6 @@ public class AgendaView extends VerticalLayout {
         buttonPrimary.addClickListener(event -> {
             String pesquisa = textField.getValue().trim();
             List<Agenda> resultados;
-
             if (pesquisa.isEmpty()) {
                 resultados = agendaController.pesquisarTodos();
             } else {
@@ -105,7 +104,6 @@ public class AgendaView extends VerticalLayout {
             if (resultados.isEmpty()) {
                 Notification.show("Nenhum resultado encontrado para: " + pesquisa);
             }
-
             grid.setItems(resultados);
         });
 
@@ -113,7 +111,6 @@ public class AgendaView extends VerticalLayout {
 
         layout.add(layoutRow, space, grid);
         osContentDiv.add(layout);
-
         return osContentDiv;
     }
 
@@ -217,15 +214,10 @@ public class AgendaView extends VerticalLayout {
         grid.setItemDetailsRenderer(createAgendaDetailsRenderer());
 
         grid.addColumn(Agenda::getTitulo).setHeader("Titulo").setSortable(true);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        grid.addColumn(agenda -> agenda.getDataHora() != null ? agenda.getDataHora().format(formatter) : "")
-            .setHeader("Data")
-            .setSortable(true);
-
+        grid.addColumn(agenda -> agenda.getDataHora() != null ? agenda.getDataHora().format(formatter) : "").setHeader("Data").setSortable(true);
         grid.addColumn(new ComponentRenderer<>(agenda -> {
             Span statusBadge = new Span(agenda.getStatus() != null ? agenda.getStatus().getDescricao() : "Indefinido");
-            statusBadge.addClassName("status-badge");
             if (agenda.getStatus() != null) {
                 switch (agenda.getStatus()) {
                     case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
@@ -255,7 +247,6 @@ public class AgendaView extends VerticalLayout {
                     confirm.close();
                 });
                 Button cancel = new Button("Cancelar", event -> confirm.close());
-
                 confirm.getFooter().add(confirmButton, cancel);
                 confirm.add(content);
                 confirm.open();
@@ -341,7 +332,6 @@ public class AgendaView extends VerticalLayout {
             funcionarioField.addClassName("rounded-text-field");
     
             detailsLayout.add(funcionarioField, descricaoArea, enderecoArea);
-    
             return detailsLayout;
         });
     }

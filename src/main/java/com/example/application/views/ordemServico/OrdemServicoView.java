@@ -217,7 +217,6 @@ public class OrdemServicoView extends VerticalLayout {
                 Notification.show("Limite de 4 imagens atingido!", 3000, Notification.Position.MIDDLE);
                 return;
             }
-
             String fileName = event.getFileName();
             String uploadDir = "C:/temp/uploads/";
 
@@ -237,7 +236,6 @@ public class OrdemServicoView extends VerticalLayout {
 
                 Notification.show("Imagem carregada com sucesso: " + fileName, 3000, Notification.Position.MIDDLE);
             } catch (IOException e) {
-                e.printStackTrace();
                 Notification.show("Erro ao salvar a imagem: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
             }
         });
@@ -311,7 +309,6 @@ public class OrdemServicoView extends VerticalLayout {
 
         grid.addColumn(new ComponentRenderer<>(ordemServico -> {
             Span statusBadge = new Span(ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().getDescricao() : "Indefinido");
-            statusBadge.addClassName("status-badge");
             if (ordemServico.getStatusOS() != null) {
                 switch (ordemServico.getStatusOS()) {
                     case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");

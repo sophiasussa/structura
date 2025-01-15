@@ -121,7 +121,6 @@ public class ProdutoView extends VerticalLayout {
         layoutRow.add(textField, buttonPrimary);
         layout.add(layoutRow, space, grid);
         produtosContentDiv.add(layout);
-
         return produtosContentDiv;
     }
 
@@ -195,7 +194,6 @@ public class ProdutoView extends VerticalLayout {
 
             Produto produto = new Produto(nomeProduto, quantidadeAtualProduto, quantidadeMinimaProduto,
                     custoUnitarioProduto, materialProduto, unidMedidaProduto, modeloProduto);
-            
             produto.setId(produtoId);
 
             boolean sucesso;
@@ -229,7 +227,6 @@ public class ProdutoView extends VerticalLayout {
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addProdutosContentDiv.add(space1, layout);
-
         return addProdutosContentDiv;
     }
 
@@ -377,7 +374,6 @@ public class ProdutoView extends VerticalLayout {
             custoUnitarioField.addClassName("rounded-text-field");
 
             detailsLayout.add(unidMedidaField, quantidadeAtualField, quantidadeMinimaField, custoUnitarioField);
-
             return detailsLayout;
         });
     }
@@ -679,9 +675,7 @@ public class ProdutoView extends VerticalLayout {
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         buttonLayout.setPadding(false);
         buttonLayout.setSpacing(true);
-
         formLayout.add(nomeField, confirmarButton);
-
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, grid, buttonLayout);
         dialog.add(dialogLayout);
         dialog.open();
@@ -832,9 +826,7 @@ public class ProdutoView extends VerticalLayout {
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         buttonLayout.setPadding(false);
         buttonLayout.setSpacing(true);
-
         formLayout.add(nomeField, confirmarButton);
-
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, grid, buttonLayout);
         dialog.add(dialogLayout);
         dialog.open();

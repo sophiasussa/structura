@@ -88,22 +88,19 @@ public class HomeView extends Composite<VerticalLayout> {
                 
                 h34.setText("Agendamentos para Hoje");
                 h34.setWidth("max-content");
-                minimalistGrid4.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
-                        GridVariant.LUMO_NO_ROW_BORDERS);
+                minimalistGrid4.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,GridVariant.LUMO_NO_ROW_BORDERS);
                 minimalistGrid4.setWidth("100%");
                 minimalistGrid4.getStyle().set("flex-grow", "0");
 
                 h35.setText("OS para Hoje");
                 h35.setWidth("max-content");
-                minimalistGrid5.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
-                        GridVariant.LUMO_NO_ROW_BORDERS);
+                minimalistGrid5.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,GridVariant.LUMO_NO_ROW_BORDERS);
                 minimalistGrid5.setWidth("100%");
                 minimalistGrid5.getStyle().set("flex-grow", "0");
 
                 h36.setText("Produtos com Estoque Baixo");
                 h36.setWidth("max-content");
-                minimalistGrid6.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
-                        GridVariant.LUMO_NO_ROW_BORDERS);
+                minimalistGrid6.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,GridVariant.LUMO_NO_ROW_BORDERS);
                 minimalistGrid6.setWidth("100%");
                 minimalistGrid6.getStyle().set("flex-grow", "0");
 
@@ -165,7 +162,6 @@ public class HomeView extends Composite<VerticalLayout> {
                 minimalistGrid4.setItemDetailsRenderer(createAgendaDetailsRenderer());
 
                 minimalistGrid4.addColumn(Agenda::getTitulo).setHeader("Titulo").setSortable(true);
-
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                 minimalistGrid4.addColumn(agenda -> agenda.getDataHora() != null ? agenda.getDataHora().format(formatter) : "")
                 .setHeader("Data")
@@ -173,7 +169,6 @@ public class HomeView extends Composite<VerticalLayout> {
 
                 minimalistGrid4.addColumn(new ComponentRenderer<>(agenda -> {
                 Span statusBadge = new Span(agenda.getStatus() != null ? agenda.getStatus().getDescricao() : "Indefinido");
-                statusBadge.addClassName("status-badge");
                 if (agenda.getStatus() != null) {
                         switch (agenda.getStatus()) {
                         case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
@@ -222,7 +217,6 @@ public class HomeView extends Composite<VerticalLayout> {
                 funcionarioField.addClassName("rounded-text-field");
         
                 detailsLayout.add(funcionarioField, descricaoArea, enderecoArea);
-        
                 return detailsLayout;
                 });
         }
@@ -239,9 +233,7 @@ public class HomeView extends Composite<VerticalLayout> {
                 minimalistGrid5.addColumn(OrdemServico::getDataPrevFinaliza).setHeader("Data de Previsão");
 
                 minimalistGrid5.addColumn(new ComponentRenderer<>(ordemServico -> {
-                Span statusBadge = new Span(ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().getDescricao() : "Indefinido");
-                statusBadge.addClassName("status-badge");
-                
+                Span statusBadge = new Span(ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().getDescricao() : "Indefinido");               
                 if (ordemServico.getStatusOS() != null) {
                         switch (ordemServico.getStatusOS()) {
                         case ABERTA -> statusBadge.getStyle().set("background-color", "lightblue");
@@ -261,40 +253,38 @@ public class HomeView extends Composite<VerticalLayout> {
                 })).setHeader("Status");
 
                 minimalistGrid5.addComponentColumn(ordemServico -> {
-                Button detalhes = new Button();
-                detalhes.setIcon(VaadinIcon.EYE.create());
-                detalhes.addThemeVariants(ButtonVariant.LUMO_ICON);
-                detalhes.getStyle()
-                        .set("border-radius", "50%")
-                        .set("width", "40px")
-                        .set("height", "40px")
-                        .set("padding", "0")
-                        .set("background-color", "var(--lumo-primary-color)")
-                        .set("color", "white");
-                
-                detalhes.addClickListener(e -> {
-                        Dialog dialog = new Dialog();
-                        dialog.setHeaderTitle("Detalhes da OS #" + ordemServico.getId());
-                        dialog.setWidth("600px");
-                        dialog.setHeight("500px");
-                
-                        VerticalLayout content = new VerticalLayout();
-                        content.setPadding(true);
-                        content.setSpacing(false);
-                
-                        content.add(new Hr());
-                        content.add(new Paragraph("Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "")));
-                        content.add(new Paragraph("Entrega: " + (ordemServico.getEntregaOS().getDescricao())));
-                        content.add(new Paragraph("Observação: " + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "")));
-                        content.add(new Paragraph("Funcionário: " + (ordemServico.getFuncionario().getNome())));
-                
-                        dialog.add(content);
-                        dialog.open();
-                });
-                
-                return detalhes;
+                        Button detalhes = new Button();
+                        detalhes.setIcon(VaadinIcon.EYE.create());
+                        detalhes.addThemeVariants(ButtonVariant.LUMO_ICON);
+                        detalhes.getStyle()
+                                .set("border-radius", "50%")
+                                .set("width", "40px")
+                                .set("height", "40px")
+                                .set("padding", "0")
+                                .set("background-color", "var(--lumo-primary-color)")
+                                .set("color", "white");
+                        
+                        detalhes.addClickListener(e -> {
+                                Dialog dialog = new Dialog();
+                                dialog.setHeaderTitle("Detalhes da OS #" + ordemServico.getId());
+                                dialog.setWidth("600px");
+                                dialog.setHeight("500px");
+                        
+                                VerticalLayout content = new VerticalLayout();
+                                content.setPadding(true);
+                                content.setSpacing(false);
+                        
+                                content.add(new Hr());
+                                content.add(new Paragraph("Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "")));
+                                content.add(new Paragraph("Entrega: " + (ordemServico.getEntregaOS().getDescricao())));
+                                content.add(new Paragraph("Observação: " + (ordemServico.getObservacao() != null ? ordemServico.getObservacao() : "")));
+                                content.add(new Paragraph("Funcionário: " + (ordemServico.getFuncionario().getNome())));
+                        
+                                dialog.add(content);
+                                dialog.open();
+                        });
+                        return detalhes;
                 }).setHeader("Detalhes");
-
                 return minimalistGrid5;
         }
 
@@ -305,7 +295,6 @@ public class HomeView extends Composite<VerticalLayout> {
                 minimalistGrid6.getStyle().set("box-shadow", "0 0 1px rgba(0 , 0, 0, 0.1)");
                 minimalistGrid6.setDetailsVisibleOnClick(false);
                 minimalistGrid6.setItemDetailsRenderer(createProdutoDetailsRenderer());
-
 
                 minimalistGrid6.addColumn(Produto::getNome).setHeader("Nome").setSortable(true);
                 minimalistGrid6.addColumn(produto -> produto.getMaterial() != null && produto.getMaterial().getNome() != null
@@ -357,9 +346,7 @@ public class HomeView extends Composite<VerticalLayout> {
                 custoUnitarioField.addClassName("rounded-text-field");
 
                 detailsLayout.add(unidMedidaField, quantidadeAtualField, quantidadeMinimaField, custoUnitarioField);
-
                 return detailsLayout;
                 });
         }
-
 }

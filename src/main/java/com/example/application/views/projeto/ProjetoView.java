@@ -115,7 +115,6 @@ public class ProjetoView extends Composite<VerticalLayout> {
             Cliente cliente = projeto.getCliente();
             return cliente != null ? cliente.getNome() : "Cliente não definido";
         }).setHeader("Cliente").setSortable(true);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         grid.addColumn(projeto -> projeto.getData() != null ? projeto.getData().format(formatter) : "").setHeader("Data").setSortable(true);
 
@@ -124,7 +123,6 @@ public class ProjetoView extends Composite<VerticalLayout> {
 
         grid.addColumn(new ComponentRenderer<>(projeto -> {
             Span statusBadge = new Span(projeto.getStatusPr() != null ? projeto.getStatusPr().getDescricao() : "Indefinido");
-            statusBadge.addClassName("status-badge");
             if (projeto.getStatusPr() != null) {
                 switch (projeto.getStatusPr()) {
                     case NOVO -> statusBadge.getStyle().set("background-color", "lightblue");
@@ -233,7 +231,6 @@ public class ProjetoView extends Composite<VerticalLayout> {
         desconto.addValueChangeListener(event -> atualizarValorFinal());
 
         Button saveButton = new Button("Salvar", event -> {
-
             if (cliente.isEmpty() || status.isEmpty() || data.isEmpty() || descricao.isEmpty()) {
                 Notification.show("Preencha os campos obrigatórios: Cliente, Status, Data e Descrição", 3000, Notification.Position.MIDDLE);
                 return;
@@ -251,7 +248,6 @@ public class ProjetoView extends Composite<VerticalLayout> {
             Projeto projeto = new Projeto(statusProjeto, dataProjeto, valorProjeto, descontoProjeto, valorFinalProjeto, descricaoProjeto, medidasProjeto, clienteProjeto);
 
             boolean sucesso = false;
-
             if (projetoId != null && projetoId > 0) {
                 projeto.setId(projetoId);
                 sucesso = projetoController.alterar(projeto);
@@ -371,7 +367,7 @@ public class ProjetoView extends Composite<VerticalLayout> {
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
             String valorFormatado = currencyFormat.format(projeto.getValor());
             String valorfinalFormatado = currencyFormat.format(projeto.getValorFinal());
-    
+
             TextField valorField = new TextField("Valor");
             valorField.setValue(valorFormatado);
             valorField.setReadOnly(true);
@@ -388,7 +384,6 @@ public class ProjetoView extends Composite<VerticalLayout> {
             descontoField.addClassName("rounded-text-field");
 
             detailsLayout.add(descricaoField, medidasField, valorField, descontoField, valorfinalField);
-
             return detailsLayout;
         });
     }

@@ -123,7 +123,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
             delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
             return delete;
         }).setHeader("Ações");
-
         grid.setDetailsVisibleOnClick(false);
         grid.setItemDetailsRenderer(createPersonDetailsRenderer());
 
@@ -146,7 +145,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
 
         layout.add(layoutRow, space, grid);
         fornecedorContentDiv.add(layout);
-
         return fornecedorContentDiv;
     }
 
@@ -161,7 +159,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         VerticalLayout layout2 = new VerticalLayout();
         VerticalLayout layout3 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
-        
         empresa = new TextField("Empresa");
         empresa.setMaxLength(100);
         vendedor = new TextField("Vendedor");
@@ -274,7 +271,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addFornecedorContentDiv.add(space1, layout);
-
         return addFornecedorContentDiv;
     }
 
@@ -342,7 +338,6 @@ public class FornecedorView extends Composite<VerticalLayout> {
             produtoArea.addClassName("rounded-text-field");
     
             detailsLayout.add(cpfField, rgField, emailField ,produtoArea);
-    
             return detailsLayout;
         });
     }

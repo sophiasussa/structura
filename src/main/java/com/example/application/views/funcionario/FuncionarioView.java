@@ -265,7 +265,6 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addFuncionariosContentDiv.add(space1, layout);
-
         return addFuncionariosContentDiv;
     }
 
@@ -322,14 +321,12 @@ public class FuncionarioView extends Composite<VerticalLayout> {
 
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
             String salarioFormatado = currencyFormat.format(funcionario.getSalario());
-    
             TextField salarioField = new TextField("Salário");
             salarioField.setValue(salarioFormatado);
             salarioField.setReadOnly(true);
             salarioField.addClassName("rounded-text-field");
     
             detailsLayout.add(cpfField, rgField, salarioField);
-    
             return detailsLayout;
         });
     }

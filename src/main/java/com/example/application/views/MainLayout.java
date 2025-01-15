@@ -101,9 +101,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         drawerContent.setPadding(true);
         drawerContent.setSizeFull();
         drawerContent.setAlignItems(FlexComponent.Alignment.STRETCH);
-    
         drawerContent.setFlexGrow(1, scroller);
-    
         addToDrawer(drawerContent);
     }
     
@@ -112,7 +110,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Home", HomeView.class, VaadinIcon.HOME.create()));
-
         return nav;
     }
 
@@ -126,7 +123,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         nav.addItem(new SideNavItem("Fornecedor", FornecedorView.class, VaadinIcon.HANDSHAKE.create()));
         nav.addItem(new SideNavItem("Funcionário", FuncionarioView.class, VaadinIcon.MALE.create()));
         nav.addItem(new SideNavItem("Produto", ProdutoView.class, VaadinIcon.PACKAGE.create()));
-
         return nav;
     }
 
@@ -138,7 +134,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         nav.setExpanded(false);
         nav.addItem(new SideNavItem("Ordem de Serviço", OrdemServicoView.class, VaadinIcon.CLIPBOARD_TEXT.create()));
         nav.addItem(new SideNavItem("Projeto", ProjetoView.class, VaadinIcon.FILE_TEXT.create()));
-
         return nav;
     }
 
@@ -146,15 +141,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Agenda", AgendaView.class, VaadinIcon.BOOK.create()));
-
         return nav;
     }
 
-
-
     private Footer createFooter() {
         Footer layout = new Footer();
-
         return layout;
     }
 
