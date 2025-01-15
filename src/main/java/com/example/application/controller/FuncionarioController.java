@@ -91,25 +91,26 @@ public class FuncionarioController {
         }
     }
 
-    public boolean excluir(Funcionario funcionario) {
+    public String excluir(Funcionario funcionario) {
         if (funcionario == null || funcionario.getId() == null) {
             logger.warn("Tentativa de excluir funcionário com valor nulo ou ID inválido");
-            return false;
+            return "Funcionário inválido ou não encontrado.";
         } else if (isFuncionarioInUse(funcionario)) {
-            logger.warn("Não é possível excluir o funcionário. O funcionário está associado a um agendamento ou OS");
-            return false;
+            logger.warn("Não é possível excluir o funcionário. Ele está associado a um agendamento ou OS.");
+            return "Não é possível excluir o funcionário, pois ele está associado a um agendamento ou ordem de serviço.";
         }
         try {
             boolean sucesso = daoFuncionario.excluir(funcionario);
             if (sucesso) {
                 logger.info("Funcionário excluído com sucesso: " + funcionario.getId());
+                return null;
             } else {
                 logger.warn("Nenhuma linha excluída para o funcionário com ID: " + funcionario.getId());
+                return "Nenhuma exclusão realizada. Funcionário não encontrado.";
             }
-            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir funcionário com ID: " + funcionario.getId(), e);
-            return false;
+            return "Erro interno ao tentar excluir o funcionário. Por favor, entre em contato com o suporte.";
         }
     }
 

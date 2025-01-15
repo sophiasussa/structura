@@ -250,13 +250,15 @@ public class ClienteView extends Composite<VerticalLayout> {
     }
 
     private void deleteCliente(Cliente cliente) {
-        boolean success = clienteController.excluir(cliente);
-        if (success) {
+        String errorMessage = clienteController.excluir(cliente);
+        if (errorMessage == null) {
             refreshGrid();
+            Notification.show("Cliente excluído com sucesso.", 3000, Notification.Position.MIDDLE);
         } else {
-            Notification.show("Erro ao excluir cliente", 3000, Notification.Position.MIDDLE);
+            Notification.show(errorMessage, 3000, Notification.Position.MIDDLE);
         }
     }
+    
 
     private void editCliente(Cliente cliente) {
         clienteId = cliente.getId();

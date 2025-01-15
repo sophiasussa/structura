@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
@@ -273,12 +274,21 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         grid.setItems(funcionarios);
     }
 
-    private void deleteFuncionario(Funcionario funcionario){
-        boolean sucess = funcionarioController.excluir(funcionario);
-        if(sucess){
+    private void deleteFuncionario(Funcionario funcionario) {
+        String errorMessage = funcionarioController.excluir(funcionario);
+        if (errorMessage == null) {
+            Notification notification = new Notification(
+                    "Funcionário excluído com sucesso.", 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
             refreshGrid();
-        }else{
-            Notification.show("Erro ao excluir funcionário", 3000, Notification.Position.MIDDLE);
+        } else {
+            Notification notification = new Notification(
+                    errorMessage, 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
         }
     }
 

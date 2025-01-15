@@ -269,4 +269,21 @@ public class ProdutoRepository {
         }
         return lista;
     }
+
+    public boolean isProdutoInUse(Produto produto) {
+        String sql = "SELECT COUNT(*) FROM produto_os WHERE produto_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, produto.getId());
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                int count = result.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            logger.error("Erro ao verificar se o produto está em uso.", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+        }
+        return false;
+    }
+    
 }

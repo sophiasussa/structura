@@ -85,27 +85,29 @@ public class UnidMedidaController {
         }
     }
 
-    public boolean excluir(UnidMedida unidMedida) {
+    public String excluir(UnidMedida unidMedida) {
         if (unidMedida == null) {
             logger.warn("Tentativa de excluir unidade de medida com valor nulo");
-            return false;
-        }else if(isUnidMedidaInUse(unidMedida)){
-            logger.warn("Não é possível excluir o unidMedida. O unidMedida está associado a um produto");
+            return "Unidade de medida inválida ou não encontrada.";
+        } else if (isUnidMedidaInUse(unidMedida)) {
+            logger.warn("Não é possível excluir a unidade de medida. Ela está associada a um produto.");
+            return "Não é possível excluir a unidade de medida, pois ela está associada a um produto.";
         }
         try {
             boolean sucesso = daoUnidMedida.excluir(unidMedida);
             if (sucesso) {
                 logger.info("Unidade de medida excluída com sucesso: " + unidMedida.getId());
+                return null;
             } else {
                 logger.warn("Nenhuma linha excluída para a unidade de medida com ID: " + unidMedida.getId());
+                return "Nenhuma exclusão realizada. Unidade de medida não encontrada.";
             }
-            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir unidade de medida", e);
-            return false;
+            return "Erro interno ao tentar excluir a unidade de medida. Por favor, entre em contato com o suporte.";
         }
     }
-
+    
     public List<UnidMedida> pesquisarTodos() {
         try {
             List<UnidMedida> lista = daoUnidMedida.pesquisarTodos();

@@ -83,31 +83,34 @@ public class ClienteController {
         try {
             return daoCliente.isClienteInUse(cliente);
         } catch (Exception e) {
-            logger.error("Erro ao buscar vlientes em uso", e);
+            logger.error("Erro ao buscar clientes em uso", e);
             return false;
         }
     }
 
-    public boolean excluir(Cliente cliente) {
+    public String excluir(Cliente cliente) {
         if (cliente == null || cliente.getId() == null) {
             logger.warn("Tentativa de excluir cliente com valor nulo ou ID inválido");
-            return false;
-        }else if(isClienteInUse(cliente)){
+            return "Cliente inválido ou não encontrado.";
+        } else if (isClienteInUse(cliente)) {
             logger.warn("Não é possível excluir o cliente. O cliente está associado a uma OS ou projeto");
+            return "Não é possível excluir o cliente, pois ele está associado a uma ordem de serviço ou projeto.";
         }
         try {
             boolean sucesso = daoCliente.excluir(cliente);
             if (sucesso) {
                 logger.info("Cliente excluído com sucesso: " + cliente.getId());
+                return null;
             } else {
                 logger.warn("Nenhuma linha excluída para o cliente com ID: " + cliente.getId());
+                return "Nenhuma exclusão realizada. Cliente não encontrado.";
             }
-            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir cliente", e);
-            return false;
+            return "Erro interno ao tentar excluir o cliente. Por favor, entre em contato com o suporte.";
         }
     }
+    
 
     public List<Cliente> pesquisarTodos() {
         try {

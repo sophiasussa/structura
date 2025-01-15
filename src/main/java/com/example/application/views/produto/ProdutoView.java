@@ -310,11 +310,20 @@ public class ProdutoView extends VerticalLayout {
     }
 
     private void deleteProduto(Produto produto) {
-        boolean success = produtoController.excluir(produto);
-        if (success) {
+        String resultado = produtoController.excluir(produto);
+        if (resultado == null) {
+            Notification notification = new Notification(
+                    "Produto deletado com sucesso.", 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
             refreshGrid();
         } else {
-            Notification.show("Erro ao excluir produto", 3000, Notification.Position.MIDDLE);
+            Notification notification = new Notification(
+                    resultado, 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
         }
     }
 
@@ -447,19 +456,20 @@ public class ProdutoView extends VerticalLayout {
         grid.addComponentColumn(modelo -> {
             Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
-                if (modeloController.excluir(modelo)) {
+                String errorMessage = modeloController.excluir(modelo);
+                if (errorMessage == null) {
                     Notification notification = new Notification(
                             "Modelo deletado com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
-
+            
                     modelos.clear();
                     modelos.addAll(modeloController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
-                            "Erro ao deletar. Tente novamente.", 3000);
+                            errorMessage, 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
@@ -600,25 +610,27 @@ public class ProdutoView extends VerticalLayout {
         grid.addComponentColumn(material -> {
             Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
-                if (materialController.excluir(material)) {
+                String errorMessage = materialController.excluir(material);
+                if (errorMessage == null) {
                     Notification notification = new Notification(
                             "Material deletado com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
-
+            
                     materiais.clear();
                     materiais.addAll(materialController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
-                            "Erro ao deletar. Tente novamente.", 3000);
+                            errorMessage, 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
                 }
             });
             return deletarButton;
+            
         }).setHeader("Deletar");
 
         Button confirmarButton = new Button("Salvar", event -> {
@@ -751,19 +763,19 @@ public class ProdutoView extends VerticalLayout {
         grid.addComponentColumn(unidMedida -> {
             Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
-                if (unidMedidaController.excluir(unidMedida)) {
+                String errorMessage = unidMedidaController.excluir(unidMedida);
+                if (errorMessage == null) {
                     Notification notification = new Notification(
                             "Unidade de medida deletada com sucesso.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
-
                     medidas.clear();
                     medidas.addAll(unidMedidaController.pesquisarTodos());
                     grid.getDataProvider().refreshAll();
                 } else {
                     Notification notification = new Notification(
-                            "Erro ao deletar. Tente novamente.", 3000);
+                            errorMessage, 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();

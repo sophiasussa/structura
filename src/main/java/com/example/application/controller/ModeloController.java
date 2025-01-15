@@ -84,27 +84,30 @@ public class ModeloController {
         }
     }
 
-    public boolean excluir(Modelo modelo) {
+    public String excluir(Modelo modelo) {
         if (modelo == null) {
-            logger.warn("Tentativa de excluir modelo com valor nulo");
-            return false;
-        }else if(isModeloInUse(modelo)){
-            logger.warn("Não é possível excluir o modelo. O modelo está associado a um produto");
+            logger.warn("Tentativa de excluir modelo com valor nulo ou ID inválido");
+            return "Modelo inválido ou não encontrado.";
+        } else if (isModeloInUse(modelo)) {
+            logger.warn("Não é possível excluir o modelo. Ele está associado a um produto.");
+            return "Não é possível excluir o modelo, pois ele está associado a um produto.";
         }
+    
         try {
             boolean sucesso = daoModelo.excluir(modelo);
             if (sucesso) {
                 logger.info("Modelo excluído com sucesso: " + modelo.getId());
+                return null;
             } else {
                 logger.warn("Nenhuma linha excluída para o modelo com ID: " + modelo.getId());
+                return "Nenhuma exclusão realizada. Modelo não encontrado.";
             }
-            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir modelo com ID: " + modelo.getId(), e);
-            return false;
+            return "Erro interno ao tentar excluir o modelo. Por favor, entre em contato com o suporte.";
         }
     }
-
+    
     public List<Modelo> pesquisarTodos() {
         try {
             List<Modelo> lista = daoModelo.pesquisarTodos();

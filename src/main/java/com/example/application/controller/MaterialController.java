@@ -85,28 +85,29 @@ public class MaterialController {
         }
     }
 
-    public boolean excluir(Material material) {
+    public String excluir(Material material) {
         if (material == null) {
-            logger.warn("Tentativa de excluir material com valor nulo");
-            return false;
+            logger.warn("Tentativa de excluir material com valor nulo ou ID inválido");
+            return "Material inválido ou não encontrado.";
         } else if (isMaterialInUse(material)) {
-            logger.warn("Não é possível excluir o material. O material está associado a um produto");
-            return false;
+            logger.warn("Não é possível excluir o material. Ele está associado a um produto.");
+            return "Não é possível excluir o material, pois ele está associado a um produto.";
         }
         try {
             boolean sucesso = daoMaterial.excluir(material);
             if (sucesso) {
                 logger.info("Material excluído com sucesso: " + material.getId());
+                return null;
             } else {
                 logger.warn("Nenhuma linha excluída para o material com ID: " + material.getId());
+                return "Nenhuma exclusão realizada. Material não encontrado.";
             }
-            return sucesso;
         } catch (Exception e) {
             logger.error("Erro ao excluir material com ID: " + material.getId(), e);
-            return false;
+            return "Erro interno ao tentar excluir o material. Por favor, entre em contato com o suporte.";
         }
     }
-
+    
     public List<Material> pesquisarTodos() {
         try {
             List<Material> lista = daoMaterial.pesquisarTodos();

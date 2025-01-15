@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.application.model.Agenda;
 import com.example.application.model.Cliente;
+import com.example.application.model.Material;
 import com.example.application.model.Produto;
 import com.example.application.repository.ProdutoRepository;
 import java.sql.SQLException;
@@ -91,24 +92,38 @@ public class ProdutoController {
         }
     }
 
-    public boolean excluir(Produto produto) {
+    public boolean isProdutoInUse(Produto produto) {
+        try {
+            return daoProduto.isProdutoInUse(produto);
+        } catch (Exception e) {
+            logger.error("Erro ao verificar uso do Produto", e);
+            return false;
+        }
+    }
+
+    public String excluir(Produto produto) {
         if (produto == null || produto.getId() == null) {
             logger.warn("Tentativa de excluir produto com valor nulo ou ID inválido");
-            return false;
+            return "Produto inválido ou não encontrado.";
+        } else if (isProdutoInUse(produto)) {
+            logger.warn("Não é possível excluir o produto. Ele está associado a um agendamento ou OS.");
+            return "Não é possível excluir o produto, pois ele está associado a um agendamento ou OS.";
         }
         try {
             boolean sucesso = daoProduto.excluir(produto);
             if (sucesso) {
                 logger.info("Produto excluído com sucesso: " + produto.getId());
+                return null;
             } else {
                 logger.warn("Nenhuma linha excluída para o produto com ID: " + produto.getId());
+                return "Nenhuma exclusão realizada. Produto não encontrado.";
             }
-            return sucesso;
         } catch (Exception e) {
-            logger.error("Erro ao excluir produto: " + produto.getId(), e);
-            return false;
+            logger.error("Erro ao excluir produto com ID: " + produto.getId(), e);
+            return "Erro interno ao tentar excluir o produto. Por favor, entre em contato com o suporte.";
         }
     }
+    
 
     public List<Produto> pesquisarTodos() {
         try {
