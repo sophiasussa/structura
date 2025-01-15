@@ -55,7 +55,6 @@ public class AgendaController {
             logger.warn("Funcionario_id da agenda é obrigatório");
             return false;
         }
-    
         return true;
     }
 

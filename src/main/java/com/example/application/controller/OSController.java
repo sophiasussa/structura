@@ -25,9 +25,28 @@ public class OSController {
         }
     }
 
-    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos, List<ImagemOS> imagens) {
+    private boolean validarOrdemServico(OrdemServico os) {
         if (os == null) {
-            logger.warn("Tentativa de salvar Ordem de Serviço com valor nulo");
+            logger.warn("Tentativa de inserir Ordem de Serviço com valor nulo");
+            return false;
+        }
+        if (os.getEndereco().length() > 255) {
+            logger.warn("Endereço da Ordem de Serviço não pode ter mais de 255 caracteres");
+            return false;
+        }
+        if (os.getCliente() == null) {
+            logger.warn("Cliente da Ordem de Serviço é obrigatório");
+            return false;
+        }
+        if (os.getObservacao().length() > 255) {
+            logger.warn("Observações da Ordem de Serviço não podem ter mais de 255 caracteres");
+            return false;
+        }
+        return true;
+    }
+
+    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos, List<ImagemOS> imagens) {
+        if (!validarOrdemServico(os)) {
             return null;
         }
         try {
@@ -48,8 +67,7 @@ public class OSController {
     }
 
     public boolean updateOrdemServico(OrdemServico os, List<Produto> produtos) {
-        if (os == null) {
-            logger.warn("Tentativa de atualizar Ordem de Serviço com valor nulo");
+        if (!validarOrdemServico(os)) {
             return false;
         }
         try {
@@ -97,7 +115,7 @@ public class OSController {
             return daoOS.searchOS(searchTerm);
         } catch (Exception e) {
             logger.error("Erro ao buscar Ordem de Serviço com pesquisa: " + searchTerm, e);
-            return null;
+            return new ArrayList<>();
         }
     }
 

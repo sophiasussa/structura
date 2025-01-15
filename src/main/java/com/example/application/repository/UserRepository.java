@@ -33,10 +33,9 @@ public class UserRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar surname: " + username, e);
             throw new RuntimeException("Erro ao buscar usuário por username.", e);
         }
-
         return null;
     }
 
@@ -49,6 +48,4 @@ public class UserRepository {
 
         return null;
     }
-
-    
 }

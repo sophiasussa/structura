@@ -24,9 +24,24 @@ public class MaterialController {
         }
     }
 
-    public boolean inserir(Material material) {
+    private boolean validarMaterial(Material material) {
         if (material == null) {
-            logger.warn("Tentativa de inserir material com valor nulo");
+            logger.warn("Tentativa de inserir ou alterar material com valor nulo");
+            return false;
+        }
+        if (material.getNome() == null || material.getNome().isEmpty()) {
+            logger.warn("Nome do material é obrigatório");
+            return false;
+        }
+        if (material.getNome().length() > 100) {
+            logger.warn("Nome do material não pode ter mais de 100 caracteres");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean inserir(Material material) {
+        if (!validarMaterial(material)) {
             return false;
         }
         try {
@@ -44,8 +59,7 @@ public class MaterialController {
     }
 
     public boolean alterar(Material material) {
-        if (material == null) {
-            logger.warn("Tentativa de alterar material com valor nulo");
+        if (!validarMaterial(material)) {
             return false;
         }
         try {
@@ -63,15 +77,21 @@ public class MaterialController {
     }
 
     public boolean isMaterialInUse(Material material) {
-        return daoMaterial.isMaterialInUse(material);
+        try {
+            return daoMaterial.isMaterialInUse(material);
+        } catch (Exception e) {
+            logger.error("Erro ao verificar uso do material", e);
+            return false;
+        }
     }
 
     public boolean excluir(Material material) {
         if (material == null) {
             logger.warn("Tentativa de excluir material com valor nulo");
             return false;
-        }else if(isMaterialInUse(material)){
+        } else if (isMaterialInUse(material)) {
             logger.warn("Não é possível excluir o material. O material está associado a um produto");
+            return false;
         }
         try {
             boolean sucesso = daoMaterial.excluir(material);
@@ -98,5 +118,3 @@ public class MaterialController {
         }
     }
 }
-
-

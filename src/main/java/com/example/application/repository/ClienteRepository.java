@@ -146,7 +146,8 @@ public class ClienteRepository {
                 return count > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao buscar cliente em uso: " , e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         }
         return false;
     }

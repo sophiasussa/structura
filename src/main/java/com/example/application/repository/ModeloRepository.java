@@ -8,8 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
-
-import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 public class ModeloRepository {
 
@@ -83,9 +81,9 @@ public class ModeloRepository {
                 return count > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar modelo em uso.", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         }
         return false;
     }
 }
-

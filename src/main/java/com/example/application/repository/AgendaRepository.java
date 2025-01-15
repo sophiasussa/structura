@@ -8,15 +8,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.example.application.model.Agenda;
 import com.example.application.model.Funcionario;
-import com.example.application.model.Modelo;
-import com.example.application.model.Produto;
 import com.example.application.model.StatusAgenda;
-import com.example.application.model.UnidMedida;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

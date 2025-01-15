@@ -5,14 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.example.application.model.Produto;
 import com.example.application.model.UnidMedida;
-import com.example.application.model.Funcionario;
 import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 
@@ -271,5 +269,4 @@ public class ProdutoRepository {
         }
         return lista;
     }
-    
 }

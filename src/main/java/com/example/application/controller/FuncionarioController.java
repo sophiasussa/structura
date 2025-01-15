@@ -3,7 +3,6 @@ package com.example.application.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
 import com.example.application.repository.FuncionarioRepository;
 import org.slf4j.Logger;
@@ -24,9 +23,40 @@ public class FuncionarioController {
         }
     }
 
-    public boolean inserir(Funcionario funcionario) {
+    private boolean validarFuncionario(Funcionario funcionario) {
         if (funcionario == null) {
             logger.warn("Tentativa de inserir funcionário com valor nulo");
+            return false;
+        }
+        if (funcionario.getNome() == null || funcionario.getNome().isEmpty()) {
+            logger.warn("Nome do funcionário é obrigatório");
+            return false;
+        }
+        if (funcionario.getNome().length() > 100) {
+            logger.warn("Nome do funcionário não pode ter mais de 100 caracteres");
+            return false;
+        }
+        if (funcionario.getCpf().length() > 20) {
+            logger.warn("CPF do funcionário não pode ter mais de 20 caracteres");
+            return false;
+        }
+        if (funcionario.getRg().length() > 20) {
+            logger.warn("RG do funcionário não pode ter mais de 20 caracteres");
+            return false;
+        }
+        if (funcionario.getTelefone() == null || funcionario.getTelefone().isEmpty()) {
+            logger.warn("Telefone do funcionário é obrigatório");
+            return false;
+        }
+        if (funcionario.getTelefone().length() > 20) {
+            logger.warn("Telefone do funcionário não pode ter mais de 20 caracteres");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean inserir(Funcionario funcionario) {
+        if (!validarFuncionario(funcionario)) {
             return false;
         }
         try {
@@ -44,8 +74,7 @@ public class FuncionarioController {
     }
 
     public boolean alterar(Funcionario funcionario) {
-        if (funcionario == null) {
-            logger.warn("Tentativa de alterar funcionário com valor nulo");
+        if (!validarFuncionario(funcionario)) {
             return false;
         }
         try {
@@ -62,16 +91,13 @@ public class FuncionarioController {
         }
     }
 
-    public boolean isFuncionarioInUse(Funcionario funcionario) {
-        return daoFuncionario.isFuncionarioInUse(funcionario);
-    }
-
     public boolean excluir(Funcionario funcionario) {
-        if (funcionario == null) {
-            logger.warn("Tentativa de excluir funcionário com valor nulo");
+        if (funcionario == null || funcionario.getId() == null) {
+            logger.warn("Tentativa de excluir funcionário com valor nulo ou ID inválido");
             return false;
-        }else if(isFuncionarioInUse(funcionario)){
-            logger.warn("Não é possível excluir o funcionario. O funcionario está associado a um agendamento ou OS");
+        } else if (isFuncionarioInUse(funcionario)) {
+            logger.warn("Não é possível excluir o funcionário. O funcionário está associado a um agendamento ou OS");
+            return false;
         }
         try {
             boolean sucesso = daoFuncionario.excluir(funcionario);
@@ -125,6 +151,15 @@ public class FuncionarioController {
         } catch (Exception e) {
             logger.error("Erro ao buscar funcionário com pesquisa: " + pesquisa, e);
             return new ArrayList<>();
+        }
+    }
+
+    public boolean isFuncionarioInUse(Funcionario funcionario) {
+        try {
+            return daoFuncionario.isFuncionarioInUse(funcionario);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar esse funcionário ", e);
+            return false;
         }
     }
 }

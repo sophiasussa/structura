@@ -27,9 +27,36 @@ public class ProdutoController {
         }
     }
 
-    public boolean inserir(Produto produto) {
+    private boolean validarProduto(Produto produto) {
         if (produto == null) {
             logger.warn("Tentativa de inserir produto com valor nulo");
+            return false;
+        }
+        if (produto.getNome() == null || produto.getNome().isEmpty()) {
+            logger.warn("Nome do produto é obrigatório");
+            return false;
+        }
+        if (produto.getNome().length() > 100) {
+            logger.warn("Nome do produto não pode ter mais de 100 caracteres");
+            return false;
+        }
+        if (produto.getQuantidadeAtual() < 0) {
+            logger.warn("Quantidade atual do produto não pode ser negativa");
+            return false;
+        }
+        if (produto.getQuantidadeMinima() < 0) {
+            logger.warn("Quantidade mínima do produto não pode ser negativa");
+            return false;
+        }
+        if (produto.getCustoUnitario() < 0) {
+            logger.warn("Custo unitário do produto não pode ser negativo");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean inserir(Produto produto) {
+        if (!validarProduto(produto)) {
             return false;
         }
         try {
@@ -47,8 +74,7 @@ public class ProdutoController {
     }
 
     public boolean alterar(Produto produto) {
-        if (produto == null) {
-            logger.warn("Tentativa de alterar produto com valor nulo");
+        if (!validarProduto(produto)) {
             return false;
         }
         try {
@@ -66,8 +92,8 @@ public class ProdutoController {
     }
 
     public boolean excluir(Produto produto) {
-        if (produto == null) {
-            logger.warn("Tentativa de excluir produto com valor nulo");
+        if (produto == null || produto.getId() == null) {
+            logger.warn("Tentativa de excluir produto com valor nulo ou ID inválido");
             return false;
         }
         try {

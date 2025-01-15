@@ -80,7 +80,12 @@ public class ClienteController {
     }
 
     public boolean isClienteInUse(Cliente cliente) {
-        return daoCliente.isClienteInUse(cliente);
+        try {
+            return daoCliente.isClienteInUse(cliente);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar vlientes em uso", e);
+            return false;
+        }
     }
 
     public boolean excluir(Cliente cliente) {
@@ -123,7 +128,6 @@ public class ClienteController {
             logger.warn("Busca de cliente com parâmetro de pesquisa inválido");
             return new ArrayList<>();
         }
-    
         try {
             List<Cliente> lista = daoCliente.pesquisarCliente(pesquisa);
             if (lista == null) {
@@ -142,7 +146,6 @@ public class ClienteController {
             logger.warn("ID de cliente inválido: " + id);
             return null;
         }
-    
         try {
             Cliente cliente = daoCliente.getClienteById(id);
             if (cliente != null) {

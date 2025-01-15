@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
 
-import com.example.application.model.Material;
 import com.example.application.model.Modelo;
 import com.example.application.repository.ModeloRepository;
 import org.slf4j.Logger;
@@ -23,10 +22,25 @@ public class ModeloController {
             throw new RuntimeException("Erro ao conectar ao banco de dados", e);
         }
     }
+    
+    private boolean validarModelo(Modelo modelo) {
+        if (modelo == null) {
+            logger.warn("Tentativa de inserir ou alterar modelo com valor nulo");
+            return false;
+        }
+        if (modelo.getNome() == null || modelo.getNome().isEmpty()) {
+            logger.warn("Nome do modelo é obrigatório");
+            return false;
+        }
+        if (modelo.getNome().length() > 100) {
+            logger.warn("Nome do modelo não pode ter mais de 100 caracteres");
+            return false;
+        }
+        return true;
+    }
 
     public boolean inserir(Modelo modelo) {
-        if (modelo == null) {
-            logger.warn("Tentativa de inserir modelo com valor nulo");
+        if (!validarModelo(modelo)) {
             return false;
         }
         try {
@@ -44,8 +58,7 @@ public class ModeloController {
     }
 
     public boolean alterar(Modelo modelo) {
-        if (modelo == null) {
-            logger.warn("Tentativa de alterar modelo com valor nulo");
+        if (!validarModelo(modelo)) {
             return false;
         }
         try {
@@ -63,7 +76,12 @@ public class ModeloController {
     }
 
     public boolean isModeloInUse(Modelo modelo) {
-        return daoModelo.isModeloInUse(modelo);
+        try {
+            return daoModelo.isModeloInUse(modelo);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar todos os modelos", e);
+            return false;
+        }
     }
 
     public boolean excluir(Modelo modelo) {
@@ -98,4 +116,3 @@ public class ModeloController {
         }
     }
 }
-

@@ -7,7 +7,6 @@ import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.example.application.model.Cliente;
 import com.example.application.model.Funcionario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,9 +161,9 @@ public class FuncionarioRepository {
                 return count > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao buscar funcionário em uso: ", e);
+            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
         }
         return false;
     }
-    
 }

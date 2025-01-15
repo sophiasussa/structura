@@ -24,9 +24,24 @@ public class UnidMedidaController {
         }
     }
 
-    public boolean inserir(UnidMedida unidMedida) {
+    private boolean validarUnidMedida(UnidMedida unidMedida) {
         if (unidMedida == null) {
-            logger.warn("Tentativa de inserir unidade de medida com valor nulo");
+            logger.warn("Tentativa de inserir ou alterar unidMedida com valor nulo");
+            return false;
+        }
+        if (unidMedida.getNome() == null || unidMedida.getNome().isEmpty()) {
+            logger.warn("Nome do unidMedida é obrigatório");
+            return false;
+        }
+        if (unidMedida.getNome().length() > 100) {
+            logger.warn("Nome do unidMedida não pode ter mais de 100 caracteres");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean inserir(UnidMedida unidMedida) {
+        if (!validarUnidMedida(unidMedida)) {
             return false;
         }
         try {
@@ -44,8 +59,7 @@ public class UnidMedidaController {
     }
 
     public boolean alterar(UnidMedida unidMedida) {
-        if (unidMedida == null) {
-            logger.warn("Tentativa de alterar unidade de medida com valor nulo");
+        if (!validarUnidMedida(unidMedida)) {
             return false;
         }
         try {
@@ -63,7 +77,12 @@ public class UnidMedidaController {
     }
 
     public boolean isUnidMedidaInUse(UnidMedida unidMedida) {
-        return daoUnidMedida.isUnidMedidaInUse(unidMedida);
+        try {
+            return daoUnidMedida.isUnidMedidaInUse(unidMedida);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar todas as unidades de medida", e);
+            return false;
+        }
     }
 
     public boolean excluir(UnidMedida unidMedida) {

@@ -7,26 +7,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import java.io.File;
-import java.io.IOException;
 
 
-import com.example.application.model.Cliente;
 import com.example.application.model.EntregaOS;
 import com.example.application.model.ImagemOS;
 import com.example.application.model.Material;
 import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
-import com.example.application.model.StatusAgenda;
 import com.example.application.model.StatusOS;
 
 public class OrdemServicoRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrdemServicoRepository.class);
     private Connection connection;
     
     public OrdemServicoRepository() throws SQLException {
@@ -94,15 +94,14 @@ public class OrdemServicoRepository {
                                 stmtOsImagens.executeBatch();
                             }
                         }
-
                         return idOs;
                     }
                 }
             }
             return -1;
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            throw e;
+            logger.error("Erro ao salvar Ordem de Serviço", e);
+            throw new RuntimeException("Erro ao salvar Ordem de Serviço", e);
         }
     }
     
@@ -149,11 +148,10 @@ public class OrdemServicoRepository {
                 }
                 return true;
             }
-    
             return false;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro ao atualizar Ordem de Serviço com ID: " + os.getId(), e);
+            throw new RuntimeException("Erro ao atualizar Ordem de Serviço", e);
         }
     }
     
@@ -178,8 +176,8 @@ public class OrdemServicoRepository {
     
             return rowsDeleted > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            logger.error("Erro ao excluir Ordem de Serviço com ID: " + idOs, e);
+            throw new RuntimeException("Erro ao excluir Ordem de Serviço", e);
         }
     }
     
@@ -214,7 +212,8 @@ public class OrdemServicoRepository {
                 ordens.add(os);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar todos as OS: ", e);
+            throw new RuntimeException("Erro ao pesquisar todos as OS", e);
         }
         return ordens;
     }
@@ -275,11 +274,11 @@ public class OrdemServicoRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar a OS: ", e);
+            throw new RuntimeException("Erro ao pesquisar a OS", e);
         }
         return ordens;
     }
-
 
     public OrdemServico OrdemServicoById(Long id) {
         String sql = "SELECT os.*, c.*, m.*" +
@@ -309,8 +308,8 @@ public class OrdemServicoRepository {
                 return null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            logger.error("Erro ao pesquisar a OS: ", e);
+            throw new RuntimeException("Erro ao pesquisar a OS", e);
         }
     }
 
@@ -344,9 +343,9 @@ public class OrdemServicoRepository {
     
                 ordensServico.add(os);
             }
-    
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Erro ao pesquisar a OS pela data: ", e);
+            throw new RuntimeException("Erro ao pesquisar a OS pela data", e);
         }
         return ordensServico;
     }
