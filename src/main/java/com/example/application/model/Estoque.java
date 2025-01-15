@@ -14,7 +14,6 @@ public abstract class Estoque {
     }
 
     protected Estoque(){
-        
     }
 
     public String getNome() {

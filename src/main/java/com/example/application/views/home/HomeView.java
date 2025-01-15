@@ -60,24 +60,22 @@ public class HomeView extends Composite<VerticalLayout> {
         private Grid<Agenda> minimalistGrid4 = new Grid<>(Agenda.class, false);
         private Grid<OrdemServico> minimalistGrid5 = new Grid<>(OrdemServico.class, false);
         private Grid<Produto> minimalistGrid6 = new Grid<>(Produto.class, false);
+        private VerticalLayout layoutColumn2 = new VerticalLayout();
 
         public HomeView() {
-        VerticalLayout layoutColumn2 = new VerticalLayout();
+                layoutColumn2 = new VerticalLayout();
                 H1 h12 = new H1();
                 Hr hr4 = new Hr();
                 H3 h34 = new H3();
-                Grid minimalistGrid4 = new Grid();
-                minimalistGrid4 =  createGrid();
+                minimalistGrid4 = new Grid();
                 minimalistGrid4.setAllRowsVisible(true);
                 Hr hr5 = new Hr();
                 H3 h35 = new H3();
-                Grid minimalistGrid5 = new Grid();
-                minimalistGrid5 =  createGrid2();
+                minimalistGrid5 = new Grid();
                 minimalistGrid5.setAllRowsVisible(true);
                 Hr hr6 = new Hr();
                 H3 h36 = new H3();
-                Grid minimalistGrid6 = new Grid();
-                minimalistGrid6 =  createGrid3();
+                minimalistGrid6 = new Grid();
                 minimalistGrid6.setAllRowsVisible(true);
                 getContent().setWidth("100%");
                 getContent().getStyle().set("flex-grow", "1");
@@ -113,27 +111,58 @@ public class HomeView extends Composite<VerticalLayout> {
                 layoutColumn2.add(h12);
                 layoutColumn2.add(hr4);
                 layoutColumn2.add(h34);
-                layoutColumn2.add(minimalistGrid4);
+                mudar();
                 layoutColumn2.add(hr5);
                 layoutColumn2.add(h35);
-                layoutColumn2.add(minimalistGrid5);
+                mudar2();
                 layoutColumn2.add(hr6);
                 layoutColumn2.add(h36);
-                layoutColumn2.add(minimalistGrid6);
+                mudar3();
+        }
+
+        private void mudar(){
+                List<Agenda> listaDeAgendas = agendaController.pesquisarTarefasDeHoje();
+                if (listaDeAgendas.isEmpty()) {
+                        layoutColumn2.add(new Span("Nenhum agendamento encontrada para hoje."));
+                        layoutColumn2.remove(minimalistGrid4);
+                }else {
+                        minimalistGrid4 =  createGrid();
+                        layoutColumn2.add(minimalistGrid4);
+                        minimalistGrid4.setItems(listaDeAgendas);
+                }
+        }
+
+        private void mudar2(){
+                List<OrdemServico> listaDeOrdemServicos = osController.OrdemServicoPorDataPrevista();
+                if (listaDeOrdemServicos.isEmpty()) {
+                        layoutColumn2.add(new Span("Nenhuma ordem de serviço encontrado para hoje."));
+                        layoutColumn2.remove(minimalistGrid5);
+                }else{
+                        minimalistGrid5 =  createGrid2();
+                        layoutColumn2.add(minimalistGrid5);
+                        minimalistGrid5.setItems(listaDeOrdemServicos);
+                }
+        }
+
+        private void mudar3(){
+                List<Produto> listaDeProdutos = produtoController.pesquisarProdutoComQuantidadeMinimaIgual();
+                if (listaDeProdutos.isEmpty()) {
+                        layoutColumn2.add(new Span("Nenhum produto com baixo estoque."));
+                        layoutColumn2.remove(minimalistGrid6);
+                } else{
+                        minimalistGrid6 =  createGrid3();
+                        layoutColumn2.add(minimalistGrid6);
+                        minimalistGrid6.setItems(listaDeProdutos);
+                }
         }
 
         private Grid<Agenda> createGrid() {
                 minimalistGrid4 = new Grid<>(Agenda.class, false);
-                minimalistGrid4.addClassName("borderless-grid");
                 minimalistGrid4.setAllRowsVisible(true);
+                minimalistGrid4.getStyle().set("border-radius", "15px");
+                minimalistGrid4.getStyle().set("box-shadow", "0 0 1px rgba(0 , 0, 0, 0.1)");
                 minimalistGrid4.setDetailsVisibleOnClick(false);
                 minimalistGrid4.setItemDetailsRenderer(createAgendaDetailsRenderer());
-
-                List<Agenda> listaDeAgendas = agendaController.pesquisarTarefasDeHoje();
-                if (listaDeAgendas == null) {
-                listaDeAgendas = Collections.emptyList();
-                }
-                minimalistGrid4.setItems(listaDeAgendas);
 
                 minimalistGrid4.addColumn(Agenda::getTitulo).setHeader("Titulo").setSortable(true);
 
@@ -200,19 +229,14 @@ public class HomeView extends Composite<VerticalLayout> {
 
         private Grid<OrdemServico> createGrid2() {
                 minimalistGrid5 = new Grid<>(OrdemServico.class, false);
-                minimalistGrid5.addClassName("borderless-grid");
                 minimalistGrid5.setAllRowsVisible(true);
-
-                List<OrdemServico> listaDeOrdemServicos = osController.OrdemServicoPorDataPrevista();
-                if (listaDeOrdemServicos == null) {
-                listaDeOrdemServicos = Collections.emptyList();
-                }
-                minimalistGrid5.setItems(listaDeOrdemServicos);
-
+                minimalistGrid5.getStyle().set("border-radius", "15px");
+                minimalistGrid5.getStyle().set("box-shadow", "0 0 1px rgba(0 , 0, 0, 0.1)");
+                
                 minimalistGrid5.addColumn(OrdemServico::getId).setHeader("Número OS").setSortable(true).setWidth("150px").setFlexGrow(0);
-                minimalistGrid5.addColumn(ordemServico -> ordemServico.getCliente().getNome()).setHeader("Cliente").setSortable(true);
-                minimalistGrid5.addColumn(OrdemServico::getDataAbertura).setHeader("Data Abertura").setWidth("160px").setFlexGrow(0);
-                minimalistGrid5.addColumn(OrdemServico::getDataPrevFinaliza).setHeader("Data de Previsão").setWidth("160px").setFlexGrow(0);
+                minimalistGrid5.addColumn(ordemServico -> ordemServico.getCliente().getNome()).setHeader("Cliente");
+                minimalistGrid5.addColumn(OrdemServico::getDataAbertura).setHeader("Data Abertura");
+                minimalistGrid5.addColumn(OrdemServico::getDataPrevFinaliza).setHeader("Data de Previsão");
 
                 minimalistGrid5.addColumn(new ComponentRenderer<>(ordemServico -> {
                 Span statusBadge = new Span(ordemServico.getStatusOS() != null ? ordemServico.getStatusOS().getDescricao() : "Indefinido");
@@ -234,7 +258,7 @@ public class HomeView extends Composite<VerticalLayout> {
                         .set("font-weight", "bold");
                 
                 return statusBadge;
-                })).setHeader("Status").setWidth("190px").setFlexGrow(0);
+                })).setHeader("Status");
 
                 minimalistGrid5.addComponentColumn(ordemServico -> {
                 Button detalhes = new Button();
@@ -269,23 +293,19 @@ public class HomeView extends Composite<VerticalLayout> {
                 });
                 
                 return detalhes;
-                }).setHeader("Detalhes").setWidth("140px").setFlexGrow(0);
+                }).setHeader("Detalhes");
 
                 return minimalistGrid5;
         }
 
         private Grid<Produto> createGrid3() {
                 minimalistGrid6 = new Grid<>(Produto.class, false);
-                minimalistGrid6.addClassName("borderless-grid");
                 minimalistGrid6.setAllRowsVisible(true);
+                minimalistGrid6.getStyle().set("border-radius", "15px");
+                minimalistGrid6.getStyle().set("box-shadow", "0 0 1px rgba(0 , 0, 0, 0.1)");
                 minimalistGrid6.setDetailsVisibleOnClick(false);
                 minimalistGrid6.setItemDetailsRenderer(createProdutoDetailsRenderer());
 
-                List<Produto> listaDeProdutos = produtoController.pesquisarProdutoComQuantidadeMinimaIgual();
-                if (listaDeProdutos == null) {
-                listaDeProdutos = Collections.emptyList();
-                }
-                minimalistGrid6.setItems(listaDeProdutos);
 
                 minimalistGrid6.addColumn(Produto::getNome).setHeader("Nome").setSortable(true);
                 minimalistGrid6.addColumn(produto -> produto.getMaterial() != null && produto.getMaterial().getNome() != null

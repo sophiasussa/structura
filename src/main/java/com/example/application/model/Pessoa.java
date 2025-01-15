@@ -14,7 +14,6 @@ public abstract class Pessoa {
     }
 
     protected Pessoa() {
-
     }
 
     public String getNome() {

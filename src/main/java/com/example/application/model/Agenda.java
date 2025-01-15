@@ -30,9 +30,6 @@ public class Agenda {
         return id;
     }
     public void setId(Long id) {
-        if (this.id != null) {
-            throw new UnsupportedOperationException("ID não pode ser alterado");
-        }
         this.id = id;
     }
     public String getTitulo() {
@@ -68,9 +65,7 @@ public class Agenda {
     public Funcionario getFuncionario() {
         return funcionario;
     }
-
     public void setFuncionario(Funcionario funcionario) {
         this.funcionario = funcionario;
     }
-
 }

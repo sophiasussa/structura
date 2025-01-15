@@ -319,7 +319,7 @@ public class OrdemServicoRepository {
                      "FROM os " +
                      "LEFT JOIN cliente c ON os.cliente_id = c.id " +
                      "LEFT JOIN funcionario m ON os.funcionario_id = m.id " +
-                     "WHERE os.data_prev_finaliza = CURDATE()";
+                     "WHERE os.datap = CURDATE()";
     
         List<OrdemServico> ordensServico = new ArrayList<>();
         
@@ -328,6 +328,8 @@ public class OrdemServicoRepository {
     
             while (result.next()) {
                 OrdemServico os = new OrdemServico();
+
+                os.setId(result.getLong("id"));
                 os.setStatusOS(StatusOS.valueOf(result.getString("status_os")));
                 os.setEntregaOS(EntregaOS.valueOf(result.getString("entrega_os")));
                 os.setEndereco(result.getString("endereco"));
@@ -346,7 +348,6 @@ public class OrdemServicoRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    
         return ordensServico;
     }
 }
