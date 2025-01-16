@@ -18,7 +18,6 @@ import java.nio.file.Files;
 
 
 import com.example.application.model.EntregaOS;
-import com.example.application.model.ImagemOS;
 import com.example.application.model.Material;
 import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
@@ -33,14 +32,14 @@ public class OrdemServicoRepository {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    public long saveOrdemServico(OrdemServico os, List<Produto> produtos, List<ImagemOS> imagens) throws SQLException, IOException {
+    public long saveOrdemServico(OrdemServico os, List<Produto> produtos) throws SQLException {
         String sqlOS = "INSERT INTO os (status_os, entrega_os, endereco, dataa, datap, observacoes, cliente_id, funcionario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         String sqlOsProdutos = "INSERT INTO produto_os (os_id, produto_id) VALUES (?, ?)";
         String sqlOsImagens = "INSERT INTO os_imagens (os_id, caminho_imagem) VALUES (?, ?)";
 
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
-            stmtOS.setString(2, os.getEntregaOS() != null ? os.getEntregaOS().name() : null);
+            stmtOS.setString(1, os.getStatusOS().name());
+            stmtOS.setString(2, os.getEntregaOS().name());
             stmtOS.setString(3, os.getEndereco());
             stmtOS.setDate(4, os.getDataAbertura() != null ? java.sql.Date.valueOf(os.getDataAbertura()) : null);
             stmtOS.setDate(5, os.getDataPrevFinaliza() != null ? java.sql.Date.valueOf(os.getDataPrevFinaliza()) : null);
@@ -51,11 +50,10 @@ public class OrdemServicoRepository {
             }
             stmtOS.setLong(7, os.getCliente().getId());
 
-            if (os.getFuncionario() != null && os.getFuncionario().getId() != null) {
-                stmtOS.setLong(8, os.getFuncionario().getId());
-            } else {
-                stmtOS.setNull(8, java.sql.Types.BIGINT);
+            if (os.getFuncionario() == null || os.getFuncionario().getId() == null) {
+                throw new IllegalArgumentException("O funcionario ou o ID do funcionario não pode ser nulo.");
             }
+            stmtOS.setLong(8, os.getFuncionario().getId());
 
             int rowsInserted = stmtOS.executeUpdate();
 
@@ -74,32 +72,12 @@ public class OrdemServicoRepository {
                                 stmtOsProdutos.executeBatch();
                             }
                         }
-
-                        if (imagens != null && !imagens.isEmpty()) {
-                            String finalDir = "C:/imagens/os/" + idOs + "/";
-                            Files.createDirectories(Paths.get(finalDir));
-
-                            try (PreparedStatement stmtOsImagens = connection.prepareStatement(sqlOsImagens)) {
-                                for (ImagemOS imagem : imagens) {
-                                    if (imagem != null && imagem.getCaminhoImagem() != null) {
-                                        Path tempPath = Paths.get(imagem.getCaminhoImagem());
-                                        Path finalPath = Paths.get(finalDir, tempPath.getFileName().toString());
-                                        Files.move(tempPath, finalPath, StandardCopyOption.REPLACE_EXISTING);
-
-                                        stmtOsImagens.setLong(1, idOs);
-                                        stmtOsImagens.setString(2, finalPath.toString());
-                                        stmtOsImagens.addBatch();
-                                    }
-                                }
-                                stmtOsImagens.executeBatch();
-                            }
-                        }
                         return idOs;
                     }
                 }
             }
             return -1;
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             logger.error("Erro ao salvar Ordem de Serviço", e);
             throw new RuntimeException("Erro ao salvar Ordem de Serviço", e);
         }
@@ -111,15 +89,22 @@ public class OrdemServicoRepository {
         String insertOsProdutos = "INSERT INTO produto_os (os_id, produto_id) VALUES (?, ?)";
     
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS)) {
-            stmtOS.setString(1, os.getStatusOS() != null ? os.getStatusOS().name() : null);
-            stmtOS.setString(2, os.getEntregaOS() != null ? os.getEntregaOS().name() : null);
+            stmtOS.setString(1, os.getStatusOS().name());
+            stmtOS.setString(2, os.getEntregaOS().name());
             stmtOS.setString(3, os.getEndereco());
             stmtOS.setDate(4, os.getDataAbertura() != null ? java.sql.Date.valueOf(os.getDataAbertura()) : null);
             stmtOS.setDate(5, os.getDataPrevFinaliza() != null ? java.sql.Date.valueOf(os.getDataPrevFinaliza()) : null);
             stmtOS.setString(6, os.getObservacao());
-    
-            stmtOS.setLong(7, os.getCliente() != null && os.getCliente().getId() != null ? os.getCliente().getId() : 0);
-            stmtOS.setLong(8, os.getFuncionario() != null && os.getFuncionario().getId() != null ? os.getFuncionario().getId() : 0);
+
+            if (os.getCliente() == null || os.getCliente().getId() == null) {
+                throw new IllegalArgumentException("O cliente ou o ID do cliente não pode ser nulo.");
+            }
+            stmtOS.setLong(7, os.getCliente().getId());
+
+            if (os.getFuncionario() == null || os.getFuncionario().getId() == null) {
+                throw new IllegalArgumentException("O funcionario ou o ID do funcionario não pode ser nulo.");
+            }
+            stmtOS.setLong(8, os.getFuncionario().getId());
     
             if (os.getId() == null) {
                 throw new IllegalArgumentException("ID da OS não pode ser nulo para a atualização.");
@@ -157,16 +142,11 @@ public class OrdemServicoRepository {
     
 
     public boolean deleteOrdemServico(Long idOs) {
-        String sqlDeleteImagens = "DELETE FROM os_imagens WHERE os_id = ?";
         String sqlDeleteProdutos = "DELETE FROM produto_os WHERE os_id = ?";
         String sqlDeleteOS = "DELETE FROM os WHERE id = ?";
     
-        try (PreparedStatement stmtDeleteImagens = connection.prepareStatement(sqlDeleteImagens);
-             PreparedStatement stmtDeleteProdutos = connection.prepareStatement(sqlDeleteProdutos);
+        try (PreparedStatement stmtDeleteProdutos = connection.prepareStatement(sqlDeleteProdutos);
              PreparedStatement stmtDeleteOS = connection.prepareStatement(sqlDeleteOS)) {
-
-            stmtDeleteImagens.setLong(1, idOs);
-            stmtDeleteImagens.executeUpdate();
 
             stmtDeleteProdutos.setLong(1, idOs);
             stmtDeleteProdutos.executeUpdate();
@@ -185,10 +165,6 @@ public class OrdemServicoRepository {
     public List<OrdemServico> getAllOrdensServico() {
         List<OrdemServico> ordens = new ArrayList<>();
         String sqlOS = "SELECT * FROM os";
-        String sqlProdutos = "SELECT p.* FROM produto p " +
-                            "JOIN produto_os po ON p.id = po.produto_id " +
-                            "WHERE po.os_id = ?";
-        String sqlImagens = "SELECT caminho_imagem FROM os_imagens WHERE os_id = ?";
 
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS);
             ResultSet rsOS = stmtOS.executeQuery()) {
@@ -223,9 +199,6 @@ public class OrdemServicoRepository {
         String sqlOS = "SELECT os.*, c.nome AS cliente_nome FROM os " +
                     "JOIN cliente c ON os.cliente_id = c.id " +
                     "WHERE (os.id = ? OR c.nome LIKE ? OR os.status_os LIKE ?)";
-        String sqlProdutos = "SELECT p.* FROM produto p " +
-                            "JOIN produto_os op ON p.id = op.produto_id " +
-                            "WHERE op.os_id = ?";
 
         try (PreparedStatement stmtOS = connection.prepareStatement(sqlOS)) {
             try {
@@ -253,23 +226,6 @@ public class OrdemServicoRepository {
                     os.setObservacao(rsOS.getString("observacoes"));
                     os.setCliente(new ClienteRepository().getClienteById(rsOS.getInt("cliente_id")));
                     os.setFuncionario(new FuncionarioRepository().getFuncionarioById(rsOS.getInt("funcionario_id")));
-
-                    List<Produto> produtos = new ArrayList<>();
-                    try (PreparedStatement stmtProdutos = connection.prepareStatement(sqlProdutos)) {
-                        stmtProdutos.setLong(1, os.getId());
-                        try (ResultSet rsProdutos = stmtProdutos.executeQuery()) {
-                            while (rsProdutos.next()) {
-                                Produto produto = new Produto();
-                                produto.setId(rsProdutos.getLong("id"));
-                                produto.setNome(rsProdutos.getString("nome"));
-                                Material material = new Material();
-                                material.setId(rsProdutos.getInt("material_id"));
-                                material.setNome(rsProdutos.getString("nome"));
-                                produto.setMaterial(material.getId() != 0 ? material : null);
-                                produtos.add(produto);
-                            }
-                        }
-                    }
                     ordens.add(os);
                 }
             }

@@ -4,7 +4,6 @@ import com.example.application.model.OrdemServico;
 import com.example.application.repository.OrdemServicoRepository;
 import com.example.application.model.Produto;
 import com.example.application.model.Agenda;
-import com.example.application.model.ImagemOS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +29,24 @@ public class OSController {
             logger.warn("Tentativa de inserir Ordem de Serviço com valor nulo");
             return false;
         }
+        if (os.getCliente() == null || os.getCliente().getId() == null) {
+            logger.warn("Tentativa de inserir Ordem de Serviço com cliente nulo");
+            return false;
+        }
+        if (os.getFuncionario() == null || os.getFuncionario().getId() == null) {
+            logger.warn("Tentativa de inserir Ordem de Serviço com Funcionario nulo");
+            return false;
+        }
         if (os.getEndereco().length() > 255) {
             logger.warn("Endereço da Ordem de Serviço não pode ter mais de 255 caracteres");
             return false;
         }
-        if (os.getCliente() == null) {
-            logger.warn("Cliente da Ordem de Serviço é obrigatório");
+        if (os.getStatusOS() == null) {
+            logger.warn("Status da Ordem de Serviço é obrigatório");
+            return false;
+        }
+        if (os.getEntregaOS() == null) {
+            logger.warn("Entrega da Ordem de Serviço é obrigatório");
             return false;
         }
         if (os.getObservacao().length() > 255) {
@@ -45,12 +56,12 @@ public class OSController {
         return true;
     }
 
-    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos, List<ImagemOS> imagens) {
+    public Long saveOrdemServico(OrdemServico os, List<Produto> produtos) {
         if (!validarOrdemServico(os)) {
             return null;
         }
         try {
-            return daoOS.saveOrdemServico(os, produtos, imagens);
+            return daoOS.saveOrdemServico(os, produtos);
         } catch (Exception e) {
             logger.error("Erro ao salvar Ordem de Serviço", e);
             return null;

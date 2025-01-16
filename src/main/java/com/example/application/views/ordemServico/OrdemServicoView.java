@@ -15,14 +15,12 @@ import java.util.stream.Collectors;
 import com.example.application.model.Cliente;
 import com.example.application.model.EntregaOS;
 import com.example.application.model.Funcionario;
-import com.example.application.model.ImagemOS;
 import com.example.application.model.OrdemServico;
 import com.example.application.model.Produto;
 import com.example.application.model.ProdutoOS;
 import com.example.application.model.StatusOS;
 import com.example.application.controller.ClienteController;
 import com.example.application.controller.FuncionarioController;
-import com.example.application.controller.ImagemController;
 import com.example.application.controller.OSProdutoController;
 import com.example.application.controller.OSController;
 import com.example.application.controller.ProdutoController;
@@ -66,7 +64,6 @@ import com.vaadin.flow.component.Component;
 public class OrdemServicoView extends VerticalLayout {
 
     private ProdutoController produtoController = new ProdutoController();
-    private ImagemController imagemController = new ImagemController();
     private FuncionarioController funcionarioController = new FuncionarioController();
     private ClienteController clienteController = new ClienteController();
     private OSController osController = new OSController();
@@ -83,9 +80,6 @@ public class OrdemServicoView extends VerticalLayout {
     private MultiSelectComboBox<Produto> produto = new MultiSelectComboBox<>("Produto");
     private Long osId;
     private TabSheet tabSheet;
-    private TextField imagemPathField;
-    private List<String> imagePaths;
-    private FlexLayout imageLayout;
 
     public OrdemServicoView() {
         tabSheet = new TabSheet();
@@ -200,46 +194,6 @@ public class OrdemServicoView extends VerticalLayout {
         layout2.getStyle().set("margin", "0 auto");
         layout3.setAlignItems(FlexComponent.Alignment.END);
 
-        MemoryBuffer buffer = new MemoryBuffer();
-        Upload upload = new Upload(buffer);
-        upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
-        upload.setMaxFiles(1);
-        upload.setMaxFileSize(5 * 1024 * 1024);
-        upload.setDropAllowed(true);
-
-        List<ImagemOS> osImagemList = new ArrayList<>();
-        FlexLayout imageGallery = new FlexLayout();
-        imageGallery.setFlexWrap(FlexWrap.WRAP);
-        imageGallery.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
-
-        upload.addSucceededListener(event -> {
-            if (osImagemList.size() >= 4) {
-                Notification.show("Limite de 4 imagens atingido!", 3000, Notification.Position.MIDDLE);
-                return;
-            }
-            String fileName = event.getFileName();
-            String uploadDir = "C:/temp/uploads/";
-
-            try {
-                File tempFile = new File(uploadDir + fileName);
-                try (InputStream inputStream = buffer.getInputStream()) {
-                    Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
-
-                ImagemOS imagemOS = new ImagemOS();
-                imagemOS.setCaminhoImagem(tempFile.getAbsolutePath());
-                osImagemList.add(imagemOS);
-
-                imagePaths.add(tempFile.getAbsolutePath());
-                imagemPathField.setValue(String.join(", ", imagePaths));
-                addImageToGallery(imageGallery, tempFile.getAbsolutePath(), imagePaths);
-
-                Notification.show("Imagem carregada com sucesso: " + fileName, 3000, Notification.Position.MIDDLE);
-            } catch (IOException e) {
-                Notification.show("Erro ao salvar a imagem: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
-            }
-        });
-
         Button saveButton = new Button("Salvar", event -> {
             if (cliente.isEmpty() || entrega.isEmpty() || funcionario.isEmpty() || status.isEmpty()) {
                 Notification.show("Preencha o campo obrigatório: Cliente, Funcionário, Status e Entrega", 3000, Notification.Position.MIDDLE);
@@ -268,7 +222,7 @@ public class OrdemServicoView extends VerticalLayout {
                     Notification.show("Erro ao atualizar a OS", 3000, Notification.Position.MIDDLE);
                 }
             }else {
-                long idOs = osController.saveOrdemServico(os, osProdutoList, osImagemList);
+                long idOs = osController.saveOrdemServico(os, osProdutoList);
                 sucesso = idOs > 0;
                 if (sucesso) {
                     Notification.show("OS salva com sucesso!");
@@ -288,9 +242,9 @@ public class OrdemServicoView extends VerticalLayout {
         formLayout3Col.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("500px", 3));
-        formLayout2Col.add(status, endereco, observacao, funcionario, produto, entrega, upload);
+        formLayout2Col.add(status, endereco, observacao, funcionario, produto, entrega);
         formLayout3Col.add(cliente, data, datap);
-        layout2.add(formLayout3Col, formLayout2Col, imageGallery, space);
+        layout2.add(formLayout3Col, formLayout2Col, space);
         layout3.add(saveButton);
         layout.add(layout2, layout3);
         addOSContentDiv.add(space1, layout);
@@ -347,28 +301,6 @@ public class OrdemServicoView extends VerticalLayout {
                 VerticalLayout content = new VerticalLayout();
                 content.setPadding(true);
                 content.setSpacing(false);
-        
-                List<ImagemOS> imagens = imagemController.getImagemOSByOrdemServicoId(ordemServico.getId());
-                if (imagens != null && !imagens.isEmpty()) {
-                    content.add(new H4("Imagens:"));
-                    HorizontalLayout imageLayout = new HorizontalLayout();
-                    imageLayout.setSpacing(true);
-                    imagens.forEach(imagem -> {
-                        Image image = new Image(imagem.getCaminhoImagem(), "Imagem da OS");
-                        image.setWidth("80px");
-                        image.setHeight("80px");
-                        image.getStyle()
-                            .set("border", "1px solid #ccc")
-                            .set("border-radius", "5px")
-                            .set("padding", "5px");
-                        imageLayout.add(image);
-                    });
-                    imageLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
-                    content.add(imageLayout);
-                } else {
-                    content.add(new Text("Nenhuma imagem."));
-                }
-                content.add(new Hr());
 
                 List<ProdutoOS> produtosOS = osProdutoController.getProdutoOSByOrdemServicoId(ordemServico.getId());
                 if (produtosOS != null && !produtosOS.isEmpty()) {
@@ -423,28 +355,6 @@ public class OrdemServicoView extends VerticalLayout {
         return grid;
     }
 
-    private void addImageToGallery(FlexLayout imageGallery, String imagePath, List<String> imagePaths) {
-        VerticalLayout imageContainer = new VerticalLayout();
-        imageContainer.setSpacing(false);
-        imageContainer.setPadding(false);
-        imageContainer.setAlignItems(FlexComponent.Alignment.CENTER);
-    
-        Image image = new Image("file:///" + imagePath, "Uploaded Image");
-        image.setWidth("150px");
-        image.setHeight("150px");
-        image.getStyle().set("object-fit", "cover");
-
-        Button deleteButton = new Button("Excluir", VaadinIcon.TRASH.create(), event -> {
-            imagePaths.remove(imagePath);
-            imageGallery.remove(imageContainer);
-            imagemPathField.setValue(String.join(", ", imagePaths));
-            Notification.show("Imagem removida com sucesso!", 3000, Notification.Position.MIDDLE);
-        });
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-        imageContainer.add(image, deleteButton);
-        imageGallery.add(imageContainer);
-    }
-
     private void editOrdemServico(OrdemServico os) {
         osId = os.getId();
         status.setValue(os.getStatusOS());
@@ -460,47 +370,8 @@ public class OrdemServicoView extends VerticalLayout {
             .map(ProdutoOS::getProduto)
             .collect(Collectors.toSet());
         produto.setValue(produtos);
-        imagePaths.clear();
-        imageLayout.removeAll();
-        imagePaths.clear();
-        imageLayout.removeAll();
-        List<ImagemOS> imagens = imagemController.getImagemOSByOrdemServicoId(osId);
-        if (imagens != null && !imagens.isEmpty()) {
-            for (ImagemOS imagem : imagens) {
-                String imagePath = imagem.getCaminhoImagem();
-                imagePaths.add(imagePath);
-                imageLayout.add(createImageComponent(imagePath));
-            }
-            imagemPathField.setValue(String.join(", ", imagePaths));
-            Notification.show("Imagens carregadas", 3000, Notification.Position.MIDDLE);
-        } else {
-            imagemPathField.clear();
-            Notification.show("Nenhuma imagem associada.", 3000, Notification.Position.MIDDLE);
-        }
     }
 
-    private Component createImageComponent(String imagePath) {
-        VerticalLayout imageContainer = new VerticalLayout();
-        imageContainer.setSpacing(false);
-        imageContainer.setPadding(false);
-        imageContainer.setAlignItems(FlexComponent.Alignment.CENTER);
-    
-        Image image = new Image("file:///" + imagePath, "Uploaded Image");
-        image.setWidth("150px");
-        image.setHeight("150px");
-        image.getStyle().set("object-fit", "cover");
-    
-        Button deleteButton = new Button("Excluir", VaadinIcon.TRASH.create(), event -> {
-            imagePaths.remove(imagePath);
-            imageLayout.remove(imageContainer);
-            imagemPathField.setValue(String.join(", ", imagePaths));
-            Notification.show("Imagem removida com sucesso!", 3000, Notification.Position.MIDDLE);
-        });
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-        imageContainer.add(image, deleteButton);
-        return imageContainer;
-    }
-    
     private void setComboBoxProdutoData(MultiSelectComboBox<Produto> comboBox) {
         List<Produto> produtos = produtoController.pesquisarTodos();
         comboBox.setItems(produtos);

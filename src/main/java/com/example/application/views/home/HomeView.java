@@ -33,7 +33,6 @@ import com.example.application.controller.OSController;
 import com.example.application.controller.ProdutoController;
 import com.example.application.model.Agenda;
 import com.example.application.model.Cliente;
-import com.example.application.model.ImagemOS;
 import com.example.application.model.Produto;
 import com.example.application.model.ProdutoOS;
 import com.example.application.model.OrdemServico;
