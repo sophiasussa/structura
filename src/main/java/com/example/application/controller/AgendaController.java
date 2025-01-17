@@ -31,6 +31,10 @@ public class AgendaController {
             logger.warn("Título da agenda é obrigatório");
             return false;
         }
+        if (agenda.getStatus() == null) {
+            logger.warn("Status da agenda é obrigatório");
+            return false;
+        }
         if (agenda.getTitulo().length() > 50) {
             logger.warn("Título da agenda não pode ter mais de 50 caracteres");
             return false;
@@ -43,16 +47,8 @@ public class AgendaController {
             logger.warn("Endereço da agenda não pode ter mais de 255 caracteres");
             return false;
         }
-        if (agenda.getDataHora() == null) {
-            logger.warn("Data da agenda é obrigatória");
-            return false;
-        }
         if (agenda.getStatus().name().length() > 20) {
             logger.warn("Status da agenda não pode ter mais de 20 caracteres");
-            return false;
-        }
-        if (agenda.getFuncionario() == null) {
-            logger.warn("Funcionario_id da agenda é obrigatório");
             return false;
         }
         return true;

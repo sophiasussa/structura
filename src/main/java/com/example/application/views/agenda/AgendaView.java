@@ -143,6 +143,7 @@ public class AgendaView extends VerticalLayout {
         endereco.addClassName("rounded-text-field");
         funcionario.addClassName("rounded-text-field");
         titulo.setRequiredIndicatorVisible(true);
+        status.setRequiredIndicatorVisible(true);
         layout3.setAlignItems(FlexComponent.Alignment.END);
         layout2.getStyle().set("border-radius", "15px");
         layout2.getStyle().set("border", "1px solid #ccc");
@@ -151,8 +152,8 @@ public class AgendaView extends VerticalLayout {
         layout2.getStyle().set("margin", "0 auto");
 
         Button saveButton = new Button("Salvar", event -> {
-            if (titulo.isEmpty()) {
-                Notification.show("Preencha o campo obrigatório: título", 3000, Notification.Position.MIDDLE);
+            if (titulo.isEmpty() || status.isEmpty()) {
+                Notification.show("Preencha o campo obrigatório: título e status", 3000, Notification.Position.MIDDLE);
                 return;
             }
             StatusAgenda statusAgenda = status.getValue();

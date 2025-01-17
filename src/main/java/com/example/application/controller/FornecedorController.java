@@ -40,12 +40,12 @@ public class FornecedorController {
             logger.warn("O nome do vendedor não pode ter mais de 100 caracteres");
             return false;
         }
-        if (fornecedor.getCnpj().length() > 20) {
-            logger.warn("O CNPJ não pode ter mais de 20 caracteres");
+        if (fornecedor.getCnpj().length() > 25) {
+            logger.warn("O CNPJ não pode ter mais de 25 caracteres");
             return false;
         }
-        if (fornecedor.getIe().length() > 20) {
-            logger.warn("A inscrição estadual não pode ter mais de 20 caracteres");
+        if (fornecedor.getIe().length() > 25) {
+            logger.warn("A inscrição estadual não pode ter mais de 25 caracteres");
             return false;
         }
         if (fornecedor.getTelefone() == null || fornecedor.getTelefone().isEmpty()) {

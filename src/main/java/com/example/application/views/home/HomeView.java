@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.example.application.controller.AgendaController;
 import com.example.application.controller.OSController;
+import com.example.application.controller.OSProdutoController;
 import com.example.application.controller.ProdutoController;
 import com.example.application.model.Agenda;
 import com.example.application.model.Cliente;
@@ -60,6 +61,7 @@ public class HomeView extends Composite<VerticalLayout> {
         private Grid<OrdemServico> minimalistGrid5 = new Grid<>(OrdemServico.class, false);
         private Grid<Produto> minimalistGrid6 = new Grid<>(Produto.class, false);
         private VerticalLayout layoutColumn2 = new VerticalLayout();
+        private OSProdutoController osProdutoController = new OSProdutoController();
 
         public HomeView() {
                 layoutColumn2 = new VerticalLayout();
@@ -131,7 +133,7 @@ public class HomeView extends Composite<VerticalLayout> {
         private void mudar2(){
                 List<OrdemServico> listaDeOrdemServicos = osController.OrdemServicoPorDataPrevista();
                 if (listaDeOrdemServicos.isEmpty()) {
-                        layoutColumn2.add(new Span("Nenhuma ordem de serviço encontrado para hoje."));
+                        layoutColumn2.add(new Span("Nenhuma ordem de serviço encontrada para hoje."));
                         layoutColumn2.remove(minimalistGrid5);
                 }else{
                         minimalistGrid5 =  createGrid2();
@@ -272,6 +274,17 @@ public class HomeView extends Composite<VerticalLayout> {
                                 VerticalLayout content = new VerticalLayout();
                                 content.setPadding(true);
                                 content.setSpacing(false);
+
+                                List<ProdutoOS> produtosOS = osProdutoController.getProdutoOSByOrdemServicoId(ordemServico.getId());
+                                if (produtosOS != null && !produtosOS.isEmpty()) {
+                                    content.add(new H4("Produtos:"));
+                                    produtosOS.forEach(produtoOS -> {
+                                        Produto produto = produtoOS.getProduto();
+                                        content.add(new Paragraph("- " + produto.getNome()));
+                                    });
+                                } else {
+                                    content.add(new Text("Nenhum produto associado a esta OS."));
+                                }
                         
                                 content.add(new Hr());
                                 content.add(new Paragraph("Endereço: " + (ordemServico.getEndereco() != null ? ordemServico.getEndereco() : "")));

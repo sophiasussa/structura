@@ -201,8 +201,8 @@ public class OrdemServicoView extends VerticalLayout {
             }
             StatusOS statusOrdemServico = status.getValue();
             EntregaOS entregaOrdemServico = entrega.getValue();
-            String enderecoOrdemServico = endereco.isEmpty() ? null : endereco.getValue();
-            String observacaoOrdemServico = observacao.isEmpty() ? null : observacao.getValue();
+            String enderecoOrdemServico = endereco.isEmpty() ? "" : endereco.getValue();
+            String observacaoOrdemServico = observacao.isEmpty() ? "" : observacao.getValue();
             LocalDate dataAOrdemServico = data.isEmpty() ? null : data.getValue();
             LocalDate dataPOrdemServico = datap.isEmpty() ? null : datap.getValue();
             Cliente clienteOrdemServico = cliente.getValue();

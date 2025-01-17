@@ -147,7 +147,7 @@ public class FuncionarioRepository {
             FROM (
                 SELECT funcionario_id FROM os WHERE funcionario_id = ?
                 UNION ALL
-                SELECT funcionario_id FROM projeto WHERE funcionario_id = ?
+                SELECT funcionario_id FROM agenda WHERE funcionario_id = ?
             ) AS combined
         """;
     
@@ -157,13 +157,12 @@ public class FuncionarioRepository {
             ResultSet result = stmt.executeQuery();
     
             if (result.next()) {
-                int count = result.getInt("total");
-                return count > 0;
+                return result.getInt("total") > 0;
             }
         } catch (SQLException e) {
-            logger.error("Erro ao buscar funcionário em uso: ", e);
-            throw new RuntimeException("Erro ao processar a solicitação. Tente novamente.", e);
+            logger.error("Erro ao verificar se funcionário está em uso: ", e);
         }
         return false;
     }
+    
 }

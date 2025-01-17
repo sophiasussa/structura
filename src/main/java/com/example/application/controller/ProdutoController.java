@@ -37,6 +37,18 @@ public class ProdutoController {
             logger.warn("Nome do produto é obrigatório");
             return false;
         }
+        if (produto.getMaterial() == null) {
+            logger.warn("Material é obrigatório");
+            return false;
+        }
+        if (produto.getModelo() == null) {
+            logger.warn("Modelo é obrigatório");
+            return false;
+        }
+        if (produto.getUnidMedida() == null) {
+            logger.warn("UnidMedida é obrigatório");
+            return false;
+        }
         if (produto.getNome().length() > 100) {
             logger.warn("Nome do produto não pode ter mais de 100 caracteres");
             return false;

@@ -219,6 +219,20 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         });
         telefone.setMaxLength(15);
 
+        salario.addValueChangeListener(event -> {
+            String valor = event.getValue();
+            if (valor != null) {
+                if (valor.contains(",")) {
+                    Notification.show("Por favor, use '.' em vez de ',' para separar decimais.", 3000, Notification.Position.MIDDLE);
+                    salario.clear();
+                }
+                else if (!valor.matches("\\d*\\.?\\d*")) {
+                    Notification.show("O valor deve conter apenas números e, opcionalmente, um ponto para separar decimais.", 3000, Notification.Position.MIDDLE);
+                    salario.clear();
+                }
+            }
+        });
+
         Button saveButton = new Button("Salvar", event -> {
             if(nome.isEmpty() || telefone.isEmpty()){
                 Notification.show("Preencha os campos obrigatórios: Nome e Telefone", 3000, Notification.Position.MIDDLE);
@@ -279,14 +293,12 @@ public class FuncionarioView extends Composite<VerticalLayout> {
         if (errorMessage == null) {
             Notification notification = new Notification(
                     "Funcionário excluído com sucesso.", 3000);
-            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             notification.setPosition(Notification.Position.MIDDLE);
             notification.open();
             refreshGrid();
         } else {
             Notification notification = new Notification(
                     errorMessage, 3000);
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.setPosition(Notification.Position.MIDDLE);
             notification.open();
         }

@@ -143,17 +143,20 @@ public class ProdutoView extends VerticalLayout {
         custoUnitario = new TextField("Custo Unitário");
         setComboBoxMaterialData(material);
         material.setWidth("min-content");
+        material.setRequiredIndicatorVisible(true);
         buttonTertiary2.setText("+ Material");
         buttonTertiary2.setWidth("min-content");
         buttonTertiary2.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         buttonTertiary2.addClickListener(event -> openDialog2());
         setComboBoxUnidMedidaData(unidMedida);
+        unidMedida.setRequiredIndicatorVisible(true);
         unidMedida.setWidth("min-content");
         buttonTertiary3.setText("+ Unidade de Medida");
         buttonTertiary3.setWidth("min-content");
         buttonTertiary3.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         buttonTertiary3.addClickListener(event -> openDialog3());
         setComboBoxModeloData(modelo);
+        modelo.setRequiredIndicatorVisible(true);
         modelo.setWidth("min-content");
         buttonTertiary.setText("+ Modelo");
         buttonTertiary.setWidth("min-content");
@@ -178,18 +181,54 @@ public class ProdutoView extends VerticalLayout {
                 new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("500px", 3));
 
+        custoUnitario.addValueChangeListener(event -> {
+            String valor = event.getValue();
+            if (valor != null) {
+                if (!valor.matches("\\d*(\\.\\d+)?")) {
+                    Notification.show("Por favor, insira apenas números. Letras e outros caracteres não são permitidos.", 3000, Notification.Position.MIDDLE);
+                    custoUnitario.setValue("");
+                } else if (valor.contains(",")) {
+                    Notification.show("Por favor, use '.' em vez de ',' para separar decimais.", 3000, Notification.Position.MIDDLE);
+                }
+            }
+        });
+
+        quantidadeMinima.addValueChangeListener(event -> {
+            String valor = event.getValue();
+            if (valor != null) {
+                if (!valor.matches("\\d*(\\.\\d+)?")) {
+                    Notification.show("Por favor, insira apenas números. Letras e outros caracteres não são permitidos.", 3000, Notification.Position.MIDDLE);
+                    quantidadeMinima.setValue("");
+                } else if (valor.contains(",")) {
+                    Notification.show("Por favor, use '.' em vez de ',' para separar decimais.", 3000, Notification.Position.MIDDLE);
+                }
+            }
+        });
+
+        quantidadeAtual.addValueChangeListener(event -> {
+            String valor = event.getValue();
+            if (valor != null) {
+                if (!valor.matches("\\d*(\\.\\d+)?")) {
+                    Notification.show("Por favor, insira apenas números. Letras e outros caracteres não são permitidos.", 3000, Notification.Position.MIDDLE);
+                    quantidadeAtual.setValue("");
+                } else if (valor.contains(",")) {
+                    Notification.show("Por favor, use '.' em vez de ',' para separar decimais.", 3000, Notification.Position.MIDDLE);
+                }
+            }
+        });
+                
         Button saveButton = new Button("Salvar", event -> {
-            if (nome.isEmpty()) {
-                Notification.show("Preencha o campo obrigatório: Nome", 3000, Notification.Position.MIDDLE);
+            if (nome.isEmpty() || material.isEmpty() || unidMedida.isEmpty() || modelo.isEmpty()) {
+                Notification.show("Preencha o campo obrigatório: Nome, Material, Modelo e Unidade de Medida", 3000, Notification.Position.MIDDLE);
                 return;
             }
             
             String nomeProduto = nome.getValue();
-            Integer quantidadeAtualProduto = quantidadeAtual.isEmpty() ? null : Integer.valueOf(quantidadeAtual.getValue());
-            Integer quantidadeMinimaProduto = quantidadeMinima.isEmpty() ? null : Integer.valueOf(quantidadeMinima.getValue());
-            Material materialProduto = material.isEmpty() ? null : material.getValue();
-            UnidMedida unidMedidaProduto = unidMedida.isEmpty() ? null : unidMedida.getValue();
-            Modelo modeloProduto = modelo.isEmpty() ? null : modelo.getValue();
+            Integer quantidadeAtualProduto = quantidadeAtual.isEmpty() ? 0 : Integer.valueOf(quantidadeAtual.getValue());
+            Integer quantidadeMinimaProduto = quantidadeMinima.isEmpty() ? 0 : Integer.valueOf(quantidadeMinima.getValue());
+            Material materialProduto = material.getValue();
+            UnidMedida unidMedidaProduto = unidMedida.getValue();
+            Modelo modeloProduto = modelo.getValue();
             Double custoUnitarioProduto = custoUnitario.isEmpty() ? 0.0 : Double.parseDouble(custoUnitario.getValue());
 
             Produto produto = new Produto(nomeProduto, quantidadeAtualProduto, quantidadeMinimaProduto,
@@ -238,12 +277,8 @@ public class ProdutoView extends VerticalLayout {
         grid.setItemDetailsRenderer(createProdutoDetailsRenderer());
 
         grid.addColumn(Produto::getNome).setHeader("Nome").setSortable(true);
-        grid.addColumn(produto -> produto.getMaterial() != null && produto.getMaterial().getNome() != null
-                ? produto.getMaterial().getNome()
-                : "Sem Material").setHeader("Material").setSortable(true);
-        grid.addColumn(produto -> produto.getModelo() != null && produto.getModelo().getNome() != null
-                ? produto.getModelo().getNome()
-                : "Sem Modelo").setHeader("Modelo").setSortable(true);
+        grid.addColumn(produto -> produto.getMaterial().getNome()).setHeader("Material").setSortable(true);
+        grid.addColumn(produto -> produto.getModelo().getNome()).setHeader("Modelo").setSortable(true);
 
         grid.addComponentColumn(produto -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
@@ -314,14 +349,12 @@ public class ProdutoView extends VerticalLayout {
         if (resultado == null) {
             Notification notification = new Notification(
                     "Produto deletado com sucesso.", 3000);
-            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             notification.setPosition(Notification.Position.MIDDLE);
             notification.open();
             refreshGrid();
         } else {
             Notification notification = new Notification(
                     resultado, 3000);
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.setPosition(Notification.Position.MIDDLE);
             notification.open();
         }
@@ -357,9 +390,7 @@ public class ProdutoView extends VerticalLayout {
             detailsLayout.addClassName("details-layout");
 
             TextField unidMedidaField = new TextField("Unidade de Medida");
-            String unidMedidaValue = produto.getUnidMedida() != null && produto.getUnidMedida().getNome() != null
-                    ? produto.getUnidMedida().getNome()
-                    : "Sem Unidade de Medida";
+            String unidMedidaValue = produto.getUnidMedida().getNome();
             unidMedidaField.setValue(unidMedidaValue);
             unidMedidaField.setReadOnly(true);
             unidMedidaField.addClassName("rounded-text-field");

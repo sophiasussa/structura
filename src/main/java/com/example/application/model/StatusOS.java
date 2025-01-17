@@ -2,7 +2,7 @@ package com.example.application.model;
 
 public enum StatusOS {
     ABERTA("Aberta"),
-    EM_ANDAMENTO("Em andamento"),
+    EM_ANDAMENTO("Em_andamento"),
     CONCLUIDA("Concluída"),
     CANCELADA("Cancelada");
 

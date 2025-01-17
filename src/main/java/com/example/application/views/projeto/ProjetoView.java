@@ -217,6 +217,10 @@ public class ProjetoView extends Composite<VerticalLayout> {
         cliente.setRequiredIndicatorVisible(true);
         status.setRequiredIndicatorVisible(true);
         descricao.setRequiredIndicatorVisible(true);
+        descricao.setMaxLength(255);
+        medidas.setMaxLength(80);
+        valor.setMaxLength(20);
+        desconto.setMaxLength(20);
         data.setRequiredIndicatorVisible(true);
         valorfinal.setReadOnly(true);
         setComboBoxClienteData(cliente);

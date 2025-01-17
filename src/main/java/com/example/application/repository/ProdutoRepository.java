@@ -27,12 +27,12 @@ public class ProdutoRepository {
         String sql = "INSERT INTO produto (nome, quantidadeAtual, quantidadeMinima, custoUnitario, material_id, unid_medida_id, modelo_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, produto.getNome());
-            stmt.setObject(2, produto.getQuantidadeAtual());
-            stmt.setObject(3, produto.getQuantidadeMinima());
-            stmt.setDouble(4, produto.getCustoUnitario());
-            stmt.setObject(5, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
-            stmt.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
-            stmt.setObject(7, produto.getModelo() != null ? produto.getModelo().getId() : null, java.sql.Types.INTEGER);
+            stmt.setObject(2, produto.getQuantidadeAtual() != null ? produto.getQuantidadeAtual() : 0);
+            stmt.setObject(3, produto.getQuantidadeMinima() != null ? produto.getQuantidadeMinima() : 0);
+            stmt.setDouble(4, produto.getCustoUnitario() != null ? produto.getCustoUnitario() : 0.0);
+            stmt.setObject(5, produto.getMaterial().getId());
+            stmt.setObject(6, produto.getUnidMedida().getId());
+            stmt.setObject(7, produto.getModelo().getId());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -45,12 +45,12 @@ public class ProdutoRepository {
         String sql = "UPDATE produto SET nome = ?, quantidadeAtual = ?, quantidadeMinima = ?, custoUnitario = ?, material_id = ?, unid_medida_id = ?, modelo_id = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, produto.getNome());
-            stmt.setObject(2, produto.getQuantidadeAtual());
-            stmt.setObject(3, produto.getQuantidadeMinima());
-            stmt.setDouble(4, produto.getCustoUnitario());
-            stmt.setObject(5, produto.getMaterial() != null ? produto.getMaterial().getId() : null, java.sql.Types.INTEGER);
-            stmt.setObject(6, produto.getUnidMedida() != null ? produto.getUnidMedida().getId() : null, java.sql.Types.INTEGER);
-            stmt.setObject(7, produto.getModelo() != null ? produto.getModelo().getId() : null, java.sql.Types.INTEGER);
+            stmt.setObject(2, produto.getQuantidadeAtual() != null ? produto.getQuantidadeAtual() : 0);
+            stmt.setObject(3, produto.getQuantidadeMinima() != null ? produto.getQuantidadeMinima() : 0);
+            stmt.setDouble(4, produto.getCustoUnitario() != null ? produto.getCustoUnitario() : 0.0);
+            stmt.setObject(5, produto.getMaterial().getId());
+            stmt.setObject(6, produto.getUnidMedida().getId());
+            stmt.setObject(7, produto.getModelo().getId());
             stmt.setLong(8, produto.getId());
 
             return stmt.executeUpdate() > 0;
@@ -93,18 +93,21 @@ public class ProdutoRepository {
 
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
-                material.setNome(resultSet.getString("material_nome"));
-                produto.setMaterial(material.getId() != 0 ? material : null);
-
+                String materialNome = resultSet.getString("material_nome");
+                material.setNome(materialNome);
+                produto.setMaterial(material);
+    
                 UnidMedida unidMedida = new UnidMedida();
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
-                unidMedida.setNome(resultSet.getString("unid_medida_nome"));
-                produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
-
+                String unidMedidaNome = resultSet.getString("unid_medida_nome");
+                unidMedida.setNome(unidMedidaNome);
+                produto.setUnidMedida(unidMedida);
+                
                 Modelo modelo = new Modelo();
                 modelo.setId(resultSet.getInt("modelo_id"));
-                modelo.setNome(resultSet.getString("modelo_nome"));
-                produto.setModelo(modelo.getId() != 0 ? modelo : null);
+                String modeloNome = resultSet.getString("modelo_nome");
+                modelo.setNome(modeloNome);
+                produto.setModelo(modelo);
 
                 lista.add(produto);
             }
@@ -142,18 +145,21 @@ public class ProdutoRepository {
     
                     Material material = new Material();
                     material.setId(resultSet.getInt("material_id"));
-                    material.setNome(resultSet.getString("material_nome"));
-                    produto.setMaterial(material.getId() != 0 ? material : null);
-    
+                    String materialNome = resultSet.getString("material_nome");
+                    material.setNome(materialNome);
+                    produto.setMaterial(material);
+        
                     UnidMedida unidMedida = new UnidMedida();
                     unidMedida.setId(resultSet.getInt("unid_medida_id"));
-                    unidMedida.setNome(resultSet.getString("unid_medida_nome"));
-                    produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
-    
+                    String unidMedidaNome = resultSet.getString("unid_medida_nome");
+                    unidMedida.setNome(unidMedidaNome);
+                    produto.setUnidMedida(unidMedida);
+                    
                     Modelo modelo = new Modelo();
                     modelo.setId(resultSet.getInt("modelo_id"));
-                    modelo.setNome(resultSet.getString("modelo_nome"));
-                    produto.setModelo(modelo.getId() != 0 ? modelo : null);
+                    String modeloNome = resultSet.getString("modelo_nome");
+                    modelo.setNome(modeloNome);
+                    produto.setModelo(modelo);
     
                     lista.add(produto);
                 }
@@ -187,32 +193,20 @@ public class ProdutoRepository {
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
                 String materialNome = resultSet.getString("material_nome");
-                if (materialNome != null) {
-                    material.setNome(materialNome);
-                } else {
-                    material.setNome("N/A");
-                }
-                produto.setMaterial(material.getId() != 0 ? material : null);
+                material.setNome(materialNome);
+                produto.setMaterial(material);
     
                 UnidMedida unidMedida = new UnidMedida();
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
                 String unidMedidaNome = resultSet.getString("unid_medida_nome");
-                if (unidMedidaNome != null) {
-                    unidMedida.setNome(unidMedidaNome);
-                } else {
-                    unidMedida.setNome("N/A");
-                }
-                produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
+                unidMedida.setNome(unidMedidaNome);
+                produto.setUnidMedida(unidMedida);
                 
                 Modelo modelo = new Modelo();
                 modelo.setId(resultSet.getInt("modelo_id"));
                 String modeloNome = resultSet.getString("modelo_nome");
-                if (modeloNome != null) {
-                    modelo.setNome(modeloNome);
-                } else {
-                    modelo.setNome("N/A");
-                }
-                produto.setModelo(modelo.getId() != 0 ? modelo : null);
+                modelo.setNome(modeloNome);
+                produto.setModelo(modelo);
     
                 return produto;
             }
@@ -247,18 +241,21 @@ public class ProdutoRepository {
     
                 Material material = new Material();
                 material.setId(resultSet.getInt("material_id"));
-                material.setNome(resultSet.getString("material_nome"));
-                produto.setMaterial(material.getId() != 0 ? material : null);
+                String materialNome = resultSet.getString("material_nome");
+                material.setNome(materialNome);
+                produto.setMaterial(material);
     
                 UnidMedida unidMedida = new UnidMedida();
                 unidMedida.setId(resultSet.getInt("unid_medida_id"));
-                unidMedida.setNome(resultSet.getString("unid_medida_nome"));
-                produto.setUnidMedida(unidMedida.getId() != 0 ? unidMedida : null);
-    
+                String unidMedidaNome = resultSet.getString("unid_medida_nome");
+                unidMedida.setNome(unidMedidaNome);
+                produto.setUnidMedida(unidMedida);
+                
                 Modelo modelo = new Modelo();
                 modelo.setId(resultSet.getInt("modelo_id"));
-                modelo.setNome(resultSet.getString("modelo_nome"));
-                produto.setModelo(modelo.getId() != 0 ? modelo : null);
+                String modeloNome = resultSet.getString("modelo_nome");
+                modelo.setNome(modeloNome);
+                produto.setModelo(modelo);
     
                 lista.add(produto);
             }

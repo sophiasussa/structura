@@ -36,10 +36,6 @@ public class ClienteController {
             logger.warn("Telefone do cliente é obrigatório");
             return false;
         }
-        if (!cliente.getTelefone().matches("\\(\\d{2}\\) \\d{4,5}-\\d{4}")) {
-            logger.warn("Telefone do cliente com formato inválido: " + cliente.getTelefone());
-            return false;
-        }
         return true;
     }
 

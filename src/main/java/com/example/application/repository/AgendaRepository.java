@@ -32,7 +32,7 @@ public class AgendaRepository {
             stmt.setString(2, agenda.getDescricao());
             stmt.setString(3, agenda.getEndereco());
             stmt.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
-            stmt.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
+            stmt.setObject(5, agenda.getStatus().name());
             stmt.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -48,7 +48,7 @@ public class AgendaRepository {
             stmt.setString(2, agenda.getDescricao());
             stmt.setString(3, agenda.getEndereco());
             stmt.setObject(4, agenda.getDataHora() != null ? java.sql.Timestamp.valueOf(agenda.getDataHora()) : null, java.sql.Types.TIMESTAMP);
-            stmt.setObject(5, agenda.getStatus() != null ? agenda.getStatus().name() : null, java.sql.Types.VARCHAR);
+            stmt.setObject(5, agenda.getStatus().name());
             stmt.setObject(6, agenda.getFuncionario() != null ? agenda.getFuncionario().getId() : null, java.sql.Types.INTEGER);
             stmt.setLong(7, agenda.getId());
             return stmt.executeUpdate() > 0;
@@ -85,7 +85,7 @@ public class AgendaRepository {
                     ? resultSet.getTimestamp("dataa").toLocalDateTime()
                     : null);
                 String status = resultSet.getString("statuss");
-                agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
+                agenda.setStatus(StatusAgenda.valueOf(status));
 
                 Funcionario funcionario = new Funcionario();
                 funcionario.setId(resultSet.getLong("funcionario_id"));
@@ -129,7 +129,7 @@ public class AgendaRepository {
                         ? resultSet.getTimestamp("dataa").toLocalDateTime()
                         : null);
                     String status = resultSet.getString("statuss");
-                    agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
+                    agenda.setStatus(StatusAgenda.valueOf(status));
 
                     Funcionario funcionario = new Funcionario();
                     funcionario.setId(resultSet.getLong("funcionario_id"));
@@ -162,7 +162,7 @@ public class AgendaRepository {
                     ? resultSet.getTimestamp("dataa").toLocalDateTime()
                     : null);
                 String status = resultSet.getString("statuss");
-                agenda.setStatus(status != null ? StatusAgenda.valueOf(status) : null);
+                agenda.setStatus(StatusAgenda.valueOf(status));
 
                 Funcionario funcionario = new Funcionario();
                 funcionario.setId(resultSet.getLong("funcionario_id"));

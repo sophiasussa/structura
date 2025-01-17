@@ -91,14 +91,26 @@ public class FuncionarioController {
         }
     }
 
+    public boolean isFuncionarioInUse(Funcionario funcionario) {
+        try {
+            return daoFuncionario.isFuncionarioInUse(funcionario);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar esse funcionário ", e);
+            return false;
+        }
+    }
+
     public String excluir(Funcionario funcionario) {
         if (funcionario == null || funcionario.getId() == null) {
             logger.warn("Tentativa de excluir funcionário com valor nulo ou ID inválido");
             return "Funcionário inválido ou não encontrado.";
-        } else if (isFuncionarioInUse(funcionario)) {
+        }
+    
+        if (isFuncionarioInUse(funcionario)) {
             logger.warn("Não é possível excluir o funcionário. Ele está associado a um agendamento ou OS.");
             return "Não é possível excluir o funcionário, pois ele está associado a um agendamento ou ordem de serviço.";
         }
+    
         try {
             boolean sucesso = daoFuncionario.excluir(funcionario);
             if (sucesso) {
@@ -113,6 +125,7 @@ public class FuncionarioController {
             return "Erro interno ao tentar excluir o funcionário. Por favor, entre em contato com o suporte.";
         }
     }
+    
 
     public List<Funcionario> pesquisarTodos() {
         try {
@@ -152,15 +165,6 @@ public class FuncionarioController {
         } catch (Exception e) {
             logger.error("Erro ao buscar funcionário com pesquisa: " + pesquisa, e);
             return new ArrayList<>();
-        }
-    }
-
-    public boolean isFuncionarioInUse(Funcionario funcionario) {
-        try {
-            return daoFuncionario.isFuncionarioInUse(funcionario);
-        } catch (Exception e) {
-            logger.error("Erro ao buscar esse funcionário ", e);
-            return false;
         }
     }
 }

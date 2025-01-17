@@ -2,9 +2,10 @@ package com.example.application.model;
 
 public enum StatusAgenda {
     ABERTA("Aberta"),
-    EM_ANDAMENTO("Em andamento"),
+    EM_ANDAMENTO("Em_andamento"),
     CONCLUIDA("Concluída"),
     CANCELADA("Cancelada");
+
 
     private final String descricao;
 
