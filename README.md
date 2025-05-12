@@ -37,3 +37,6 @@ Para gerar um build de produção, execute `mvnw clean package -Pproduction` (Wi
 Depois que o arquivo JAR for gerado, você pode executá-lo com o comando
 `java -jar target/myapp-1.0-SNAPSHOT.jar`
 (Obs.: substitua `myapp-1.0-SNAPSHOT.jar` pelo nome correto do seu JAR).
+
+## Licença
+Este projeto está licenciado sob a Creative Commons BY-NC 4.0.
