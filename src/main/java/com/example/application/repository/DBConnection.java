@@ -9,8 +9,8 @@ public class DBConnection {
     private Connection conn;
 
     private final String url = "jdbc:mysql://localhost:3306/strutura";
-    private final String usuario = "root";
-    private final String senha = "H123asd@";
+    private final String usuario = "";
+    private final String senha = "";
 
     private DBConnection() throws SQLException{
         try {
