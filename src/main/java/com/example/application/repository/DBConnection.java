@@ -8,7 +8,7 @@ public class DBConnection {
     private static DBConnection instance = null;
     private Connection conn;
 
-    private final String url = "jdbc:mysql://localhost:3306/strutura";
+    private final String url = "jdbc:mysql://localhost:3306/structura";
     private final String usuario = "";
     private final String senha = "";
 
