@@ -4,11 +4,11 @@ Este é um software web desenvolvido para o gerenciamento de marmorarias, com fo
 
 ## Funcionalidades
 
-- Página inicial com:
+- **Página inicial com:**
   - Ordens de serviço do dia
   - Tarefas agendadas
   - Produtos com baixo estoque
-- CRUD de:
+- **CRUD completo de:**
   - Ordens de serviço
   - Projetos
   - Produtos
@@ -22,13 +22,18 @@ Este é um software web desenvolvido para o gerenciamento de marmorarias, com fo
 - Java 17
 - Spring Boot
 - Vaadin
-- Maven
 - MySQL
+- Maven
 
 ## Running the application
 
 O projeto é um projeto Maven padrão. Para executá-lo a partir do terminal, digite `mvnw` (Windows) ou `./mvnw` (Mac & Linux), e depois abra http://localhost:8080 no navegador.
 Você também pode importar o projeto para a IDE de sua preferência, como faria com qualquer projeto Maven.
+
+## Banco de Dados
+
+O script para criar o banco está disponível na pasta [`/database`](./database/schema.sql).  
+Você pode importar esse arquivo em qualquer MySQL local ou container para rodar o projeto corretamente.
 
 ## Deploying to Production
 
