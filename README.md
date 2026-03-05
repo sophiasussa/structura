@@ -1,28 +1,17 @@
-# Sistema de Gerenciamento para Marmorarias
+# Marble Business Management System
 
-Este é um software web desenvolvido para o gerenciamento de marmorarias, com foco na administração operacional. O sistema foi construído com Java e o framework Vaadin para a interface de usuário, como parte do Trabalho de Conclusão de Curso (TCC). O objetivo principal é facilitar o controle das operações e oferecer uma visão clara do negócio.
+Web application for managing marble businesses, focusing on operational administration. Built with Java and Vaadin as a Capstone Project (TCC) to streamline operations and provide a clear business overview.
 
 ---
 
-## Funcionalidades
+## Key Features
 
-- **Dashboard inicial com:**
-  - Ordens de serviço do dia
-  - Tarefas agendadas
-  - Produtos com baixo estoque
-
-- **CRUD completo de:**
-  - Ordens de serviço
-  - Projetos
-  - Produtos
-  - Tarefas agendadas
-  - Clientes
-  - Fornecedores
-  - Funcionários
+- Main Dashboard with: daily service orders, scheduled tasks, low-stock products
+- CRUD Modules: service orders, projects, products, tasks, clients, suppliers, employees
 
 ---
  
-## Tecnologias Utilizadas
+## Technologies Used
 
 - Java 17
 - Spring Boot
@@ -32,32 +21,32 @@ Este é um software web desenvolvido para o gerenciamento de marmorarias, com fo
 
 ---
 
-## Demonstração em Vídeo
+## Video Demo
 
-Assista ao vídeo demonstrativo do sistema em funcionamento:
+Watch a demo of the system in action:
 [https://youtu.be/ikaWbtQyMxw](https://youtu.be/ikaWbtQyMxw)
 
 ---
 
-## Imagens do Sistema
+## System Screenshots
 
-Abaixo estão algumas imagens demonstrativas do software.
+Here are some screenshots of the application.
 
-### Dashboard Inicial
+### Main Dashboard
 ![Home](docs/assets/dashboard.png)
 
-### Fornecedores
-![Ver todos fornecedores](docs/assets/fornecedores.png)
+### Suppliers
+![View all suppliers](docs/assets/fornecedores.png)
 
-### Produto
-![Cadastro de produtos](docs/assets/produtos.png)
+### Product
+![Product registration](docs/assets/produtos.png)
 
-### Ordens de Serviço
-![Ver todas ordens de serviço](docs/assets/os.png)
+### Service Orders
+![View all service orders](docs/assets/os.png)
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 structura/
@@ -83,25 +72,26 @@ structura/
 
 ---
 
-## Como Executar
+## How to Run
 
-O projeto é um projeto Maven padrão. Para executá-lo a partir do terminal, digite `mvnw` (Windows) ou `./mvnw` (Mac & Linux), e depois abra http://localhost:8080 no navegador.
-Você também pode importar o projeto para a IDE de sua preferência, como faria com qualquer projeto Maven.
+This is a standard Maven project. To run it from the terminal, type `mvnw` (Windows) or `./mvnw` (Mac & Linux), then open http://localhost:8080 in your browser.
+You can also import the project into your preferred IDE like any Maven project.
 
-## Banco de Dados
+## Database
 
-O script para criar o banco está disponível na pasta [`/database`](./database/schema.sql).
-Você pode importar esse arquivo em qualquer MySQL local ou container para rodar o projeto corretamente.
+The script to create the database is available in the [`/database`](./database/schema.sql) folder.
+You can import this file into any local MySQL instance or container to run the project correctly.
 
-## Build para Produção
+## Production Build
 
-Para gerar um build de produção, execute `mvnw clean package -Pproduction` (Windows) ou `./mvnw clean package -Pproduction` (Mac & Linux). Isso criará um arquivo JAR com todas as dependências e recursos do front-end, pronto para ser implantado. O arquivo estará disponível na pasta `target` após a conclusão da build.
+To generate a production build, run `mvnw clean package -Pproduction` (Windows) or `./mvnw clean package -Pproduction` (Mac & Linux).
+This will create a JAR file containing all dependencies and front-end resources, ready for deployment. The file will be in the `target` folder after the build completes.
 
-Depois que o arquivo JAR for gerado, você pode executá-lo com o comando
+After the JAR is generated, you can run it using:
 `java -jar target/myapp-1.0-SNAPSHOT.jar`
-(Obs.: substitua `myapp-1.0-SNAPSHOT.jar` pelo nome correto do seu JAR).
+(Note: replace `myapp-1.0-SNAPSHOT.jar` with your actual JAR file name.)
 
 ---
 
-## Licença
-Este projeto está licenciado sob a Creative Commons BY-NC 4.0.
+## License
+This project is licensed under Creative Commons BY-NC 4.0.
