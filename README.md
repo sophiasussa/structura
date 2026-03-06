@@ -49,25 +49,13 @@ Here are some screenshots of the application.
 ## Project Structure
 
 ```
-structura/
-|
-├── .mvn/
-│   └── wrapper/
-├── .vscode/
-├── database/
-│   └── schema.sql
-├── docs/
-├── src/
-│   └── main/
-├── .gitignore
-├── LICENSE.md
-├── README.md
-├── mvnw / mvnw.cmd
-├── package.json / package-lock.json
-├── pom.xml
-├── tsconfig.json
-├── types.d.ts
-└── vite.config.ts
+src/main/java/com/example/application/
+├── controller/     # Handles HTTP requests and application flow
+├── model/          # Domain models and entities
+├── repository/     # Database access layer
+├── utils/          # Helper and utility classes
+├── views/          # Vaadin UI components and views
+└── Application.java  # Spring Boot application entry point
 ```
 
 ---
