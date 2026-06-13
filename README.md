@@ -1,6 +1,8 @@
 # Marble Business Management System
 
-Web application for managing marble businesses, focusing on operational administration. Built with Java and Vaadin as a Capstone Project (TCC) to streamline operations and provide a clear business overview.
+An open-source web application for marble and stone business management, focused on operational administration and workflow organization.
+
+Built with Java and Vaadin, the platform helps businesses manage service orders, projects, products, clients, suppliers, employees, and daily operations through a centralized system.
 
 ---
 
@@ -80,6 +82,15 @@ After the JAR is generated, you can run it using:
 (Note: replace `myapp-1.0-SNAPSHOT.jar` with your actual JAR file name.)
 
 ---
+## Contributing
 
+Contributions are welcome. Feel free to open issues, submit pull requests, or suggest improvements.
+
+---
+## Project History
+
+This project was originally developed as a university Capstone Project (TCC) and later released as an open-source initiative.
+
+---
 ## License
-This project is licensed under Creative Commons BY-NC 4.0.
+This project is licensed under the MIT License.
