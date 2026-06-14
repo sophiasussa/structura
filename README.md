@@ -84,7 +84,7 @@ After the JAR is generated, you can run it using:
 ---
 ## Contributing
 
-Contributions are welcome. Feel free to open issues, submit pull requests, or suggest improvements.
+This repository is currently maintained as a reference and learning project. While direct code contributions to the main repository are not being accepted at this time, anyone is welcome to fork the project, modify it, and use it in accordance with the terms of the license.
 
 ---
 ## Project History
